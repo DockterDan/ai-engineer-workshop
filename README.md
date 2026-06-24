@@ -33,6 +33,6 @@ Two add-on modules step outside the sbx story to show **Docker Agent**, a differ
 
 ## Open the workshop
 
-**[Launch the workshop in your browser](https://dockterdan.github.io/ai-engineer-workshop/)**
+**[Open the workshop](https://dockterdan.github.io/ai-engineer-workshop/)**
 
 The page is served by GitHub Pages from this repo's `main` branch and runs entirely client-side. No installation is required to read the workshop; the hands-on steps inside install everything you need (sbx, Docker Desktop, Docker Agent) at the points where each one becomes relevant.
