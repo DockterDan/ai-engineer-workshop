@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/dan/PKM-D/workshop/index.html#step-7 -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -572,19 +571,17 @@
   <h3>Workshop</h3>
   <ol>
     <li class="group">Setup</li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#overview">Overview</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#getting-started">Getting Started</a></li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li class="group">Hands-on</li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-1">1. SBX basics</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-2">2. Isolation Proof</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-3">3. Network Policy</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-4">4. Connect tools (MCP)</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-5">5. Hardened Output (DHI)</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-6">6. SBX Kits</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-7">7. Multi-agent orchestration</a></li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#step-8">8. Per-role isolation</a></li>
-    <li class="group">Appendix</li>
-    <li><a href="file:///Users/dan/PKM-D/workshop/index.html#wrap">Appendix</a></li>
+    <li><a href="#step-1">1. SBX basics</a></li>
+    <li><a href="#step-2">2. Isolation Proof</a></li>
+    <li><a href="#step-3">3. Network Policy</a></li>
+    <li><a href="#step-4">4. Connect tools (MCP)</a></li>
+    <li><a href="#step-5">5. Hardened Output (DHI)</a></li>
+    <li><a href="#step-6">6. SBX Kits</a></li>
+    <li><a href="#step-7">7. Multi-agent orchestration</a></li>
+    <li><a href="#step-8">8. Per-role isolation</a></li>
   </ol>
 </nav>
 
@@ -620,7 +617,7 @@
     <li>A <strong>terminal</strong> of your choice (MacOS Terminal, iTerm2, Warp, PowerShell, or any equivalent).</li>
     <li>A <strong>supported platform</strong>: MacOS Apple Silicon, Linux x86_64 with KVM access, or Windows 11 x86_64. MacOS Intel is not supported.</li>
   </ul>
-  <p>The detailed install and configuration steps are in <a href="file:///Users/dan/PKM-D/workshop/index.html#getting-started">Getting Started</a>.</p>
+  <p>The detailed install and configuration steps are in <a href="#getting-started">Getting Started</a>.</p>
 </section>
 
 <section class="step" id="getting-started">
@@ -902,7 +899,7 @@ cd ~/workshop/sbx</pre>
 
   <p>You'll create a sandbox on the host, verify it's running, attach your terminal to the agent inside, and then ask the agent three quick questions about its environment. By the end you'll have proved that the agent really is running on Linux in a microVM with its own kernel, its own user, and access to exactly the directory you mounted. Nothing more.</p>
 
-  <p>Assumes you completed <a href="file:///Users/dan/PKM-D/workshop/index.html#getting-started">Getting Started</a> (install, login, secret, workspace setup).</p>
+  <p>Assumes you completed <a href="#getting-started">Getting Started</a> (install, login, secret, workspace setup).</p>
 
   <h3 class="substep">1.1 Create your sandbox</h3>
   <p><code class="inline">sbx create</code> registers a new sandbox with the local sbx daemon and starts it. By the time the command returns, the microVM is up and the agent is running inside it. Your terminal isn't connected to the agent yet; that's the next step. The <code class="inline">--name</code> flag gives the sandbox a label you'll use to refer to it later (in <code class="inline">sbx run</code>, <code class="inline">sbx stop</code>, <code class="inline">sbx rm</code>, and the policy / log commands in Step 3). The final argument is the directory to mount as the sandbox's workspace; whatever lives in that directory is what the agent will see, and the only host directory it will have access to.</p>
@@ -2828,357 +2825,6 @@ agents:
     <p>That's the same shape of idea you saw in Steps 1 through 6 with sbx, just at a different layer of Docker's agent platform. sbx draws the boundary around an agent's environment (its filesystem, its network, its credentials); Docker Agent draws it around each role within a multi-agent team. They're complementary patterns, not strictly stacked. You can use either one alone, or compose them when the architecture justifies it. The bigger lesson: capability isolation in agentic systems is something you enforce at the runtime, never in the prompt.</p>
     <p><strong>Where this is heading.</strong> One pattern worth flagging: a coordinator agent that spawns its own per-role sub-sandboxes. Instead of Docker Agent's in-process toolset scoping, each role gets a fresh sbx microVM with its own network policy, MCP set, and credentials. The boundary becomes a real VM, not just a list of allowed tools. This stitches the two layers together: sbx provides foundational isolation, an orchestrator like Docker Agent provides the multi-agent coordination, and an sbx-as-MCP gateway lets the coordinator request child sandboxes by config. The bridge MCP doesn't exist in Docker's catalog today, so this is forward-looking rather than something you can demo right now. But it's the natural place the pattern is going: per-role isolation enforced at the strongest layer available, with declarative multi-agent on top.</p>
   </div>
-</section>
-
-<section class="step" id="wrap">
-  <div class="step-header">
-    <span class="badge wrap">Appendix</span>
-    <h2>Appendix</h2>
-  </div>
-  <p class="subtitle">Troubleshooting, command reference, cleanup, and where to go next.</p>
-
-  <h3 class="substep">Troubleshooting</h3>
-  <table class="teach">
-    <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">sbx: command not found</code></td><td>Install didn't link properly</td><td><code class="inline">brew link sbx</code> on Mac; verify PATH on Windows</td></tr>
-      <tr><td>Login redirect doesn't complete</td><td>Browser blocked the redirect or corporate proxy</td><td>Try an incognito window</td></tr>
-      <tr><td><code class="inline">sbx run --name sandbox-alpha</code> hangs on first run</td><td>Agent image is being pulled</td><td>Wait 1-2 min. If &gt;5 min, Ctrl+C and re-run.</td></tr>
-      <tr><td>Custom deny rule doesn't apply</td><td>Forgot to restart the sandbox</td><td><code class="inline">sbx stop sandbox-alpha; sbx run --name sandbox-alpha</code></td></tr>
-      <tr><td><code class="inline">Cannot connect to the Docker daemon</code> / <code class="inline">docker.sock: No such file or directory</code></td><td>Docker daemon isn't running on the host</td><td>Open Docker Desktop (Mac/Windows) or start Docker Engine (Linux). Verify with <code class="inline">docker info</code>.</td></tr>
-      <tr><td><code class="inline">sbx mcp add</code> fails with <code class="inline">command not found: exec: "docker"</code></td><td>sbx's mcp runtime can't find <code class="inline">docker</code> in the PATH it inherits (Docker may not be installed, may not be on your shell PATH yet, or sbx may not be inheriting your shell environment)</td><td>Confirm <code class="inline">which docker</code> returns a path. If not, install Docker Desktop or open a fresh terminal so PATH refreshes. If <code class="inline">which docker</code> works but sbx still can't find it, pass the absolute path: <code class="inline">sbx mcp add local-wiki --command "$(which docker)" --args "run,-i,--rm,mcp/wikipedia-mcp"</code>.</td></tr>
-      <tr><td><code class="inline">brew install --cask docker</code> errors with <code class="inline">It seems there is already a Binary at '/usr/local/bin/docker...'</code></td><td>Leftover CLI binaries from a previous non-Homebrew Docker install</td><td><code class="inline">sudo rm -f /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/docker-credential-* /usr/local/bin/com.docker.* /usr/local/bin/hub-tool</code>, then re-run the install</td></tr>
-      <tr><td><code class="inline">docker scout quickview</code> returns <code class="inline">You are not allowed to read data for this team</code> / <code class="inline">FORBIDDEN</code></td><td>A stale Scout org is set on your machine that you don't have read access to (or doesn't have Scout enabled)</td><td>Check with <code class="inline">docker scout config</code>. If an org is set, clear it with <code class="inline">docker scout config organization ""</code> (or <code class="inline">rm -rf ~/.docker/scout/</code> as a last resort) and let Scout infer your namespace. Alternatively, enroll that org for Scout at <a target="_blank" rel="noopener noreferrer" href="https://scout.docker.com/">scout.docker.com</a>.</td></tr>
-      <tr><td><code class="inline">docker pull dhi.io/python:3.14</code> returns <code class="inline">denied: requested access to the resource is denied</code></td><td>Not logged in to the Docker Hardened Images registry, or your Docker account doesn't have DHI access</td><td><code class="inline">docker login dhi.io</code> with your Docker Hub credentials. If your account doesn't have DHI enabled, request it at <a target="_blank" rel="noopener noreferrer" href="https://dhi.io/">dhi.io</a>.</td></tr>
-      <tr><td><code class="inline">docker: 'agent' is not a docker command</code></td><td>The Docker Agent CLI plugin isn't installed (or hasn't linked into Docker's plugin path)</td><td>On Mac, run <code class="inline">brew install docker-agent</code> and open a fresh terminal. On Windows, confirm <code class="inline">task link</code> ran without errors during the git build, then restart your shell.</td></tr>
-      <tr><td><code class="inline">docker agent run</code> fails with <code class="inline">ANTHROPIC_API_KEY not set</code> or 401</td><td>API key missing or expired in the current shell</td><td><code class="inline">export ANTHROPIC_API_KEY=sk-ant-...</code> in the same terminal you'll run Docker Agent in. Check with <code class="inline">echo "${ANTHROPIC_API_KEY:0:10}..."</code>.</td></tr>
-      <tr><td><code class="inline">docker agent run</code> errors with <code class="inline">model claude-opus-4-6 not available</code> or similar</td><td>Your Anthropic plan doesn't include Opus, or the model identifier has changed</td><td>Open <code class="inline">team.yaml</code> and change the <code class="inline">deep:</code> block's <code class="inline">model:</code> field to a model your account has (e.g., <code class="inline">claude-sonnet-4-6</code>). The whole team can run on Sonnet only; Opus on the analyst is a quality boost, not a requirement.</td></tr>
-      <tr><td>Docker Agent freezes mid-run with <code class="inline">Tool 'sub_agents' is not available</code></td><td>The instruction text referenced <code class="inline">sub_agents</code> as if it were a callable tool</td><td>This is fixed in the workshop version of <code class="inline">team.yaml</code>. If you customized root's instruction, name the team members directly (e.g., "your team: wiki-researcher, paper-researcher, ...") instead of telling root to "look at your sub_agents list".</td></tr>
-      <tr><td>The paper-researcher returns no results or times out</td><td>One of the upstream academic sources is slow or rate-limiting</td><td>Re-run the team. Paper Search hits multiple sources; transient failures on one source rarely block the whole call. If it keeps failing, narrow the query in the prompt (e.g., focus on arXiv or PubMed specifically).</td></tr>
-      <tr><td>The wiki-researcher or paper-researcher returns no results</td><td>The MCP image isn't pulled yet, or Docker isn't running</td><td>Confirm Docker is up (<code class="inline">docker info</code>), then pull the image manually: <code class="inline">docker pull mcp/wikipedia-mcp</code> or <code class="inline">docker pull mcp/paper-search</code>. Re-run <code class="inline">docker agent run team.yaml</code>.</td></tr>
-      <tr><td><code class="inline">docker agent run</code> says <code class="inline">team.yaml: no such file</code></td><td>You're not in the directory that contains the yaml</td><td><code class="inline">cd ~/workshop/docker-agent</code>, then re-run.</td></tr>
-    </tbody>
-  </table>
-
-  <h3 class="substep">Command cheat sheet</h3>
-  <p>Every command referenced in the workshop, grouped by tool. SBX first, then Docker, then Docker Scout.</p>
-
-  <h4>SBX</h4>
-  <table class="teach">
-    <thead><tr><th>Task</th><th>Command</th></tr></thead>
-    <tbody>
-      <tr><td>Log in</td><td><code class="inline">sbx login</code></td></tr>
-      <tr><td>Log out</td><td><code class="inline">sbx logout</code></td></tr>
-      <tr><td>List sandboxes</td><td><code class="inline">sbx ls</code></td></tr>
-      <tr><td>Create a sandbox</td><td><code class="inline">sbx create --name &lt;name&gt; &lt;provider&gt; &lt;workspace-path&gt;</code></td></tr>
-      <tr><td>Create with CPU and memory caps</td><td><code class="inline">sbx create --name &lt;name&gt; --cpus=2 --memory=4g &lt;provider&gt; &lt;workspace-path&gt;</code></td></tr>
-      <tr><td>Create with an extra read-only mount</td><td><code class="inline">sbx create --name &lt;name&gt; &lt;provider&gt; &lt;workspace-path&gt; &lt;extra-path&gt;:ro</code></td></tr>
-      <tr><td>Connect to the agent inside a sandbox</td><td><code class="inline">sbx run --name &lt;name&gt;</code></td></tr>
-      <tr><td>Stop a sandbox</td><td><code class="inline">sbx stop &lt;name&gt;</code></td></tr>
-      <tr><td>Remove a sandbox</td><td><code class="inline">sbx rm &lt;name&gt;</code></td></tr>
-      <tr><td>List policy rules</td><td><code class="inline">sbx policy ls</code></td></tr>
-      <tr><td>Allow a domain</td><td><code class="inline">sbx policy allow network &lt;domain&gt;</code></td></tr>
-      <tr><td>Allow an IP or CIDR range</td><td><code class="inline">sbx policy allow network &lt;ip-or-cidr&gt;</code></td></tr>
-      <tr><td>Deny a domain</td><td><code class="inline">sbx policy deny network &lt;domain&gt;</code></td></tr>
-      <tr><td>Remove a rule by resource</td><td><code class="inline">sbx policy rm network --resource &lt;domain&gt;</code></td></tr>
-      <tr><td>Remove a rule by ID</td><td><code class="inline">sbx policy rm network --id &lt;UUID&gt;</code></td></tr>
-      <tr><td>View the audit log</td><td><code class="inline">sbx policy log &lt;sandbox-name&gt;</code></td></tr>
-      <tr><td>Store an API key secret</td><td><code class="inline">sbx secret set -g &lt;provider&gt;</code></td></tr>
-      <tr><td>List stored secrets</td><td><code class="inline">sbx secret ls</code></td></tr>
-      <tr><td>Remove a stored secret</td><td><code class="inline">sbx secret rm -g &lt;provider&gt;</code></td></tr>
-      <tr><td>Register an MCP server (local stdio)</td><td><code class="inline">sbx mcp add &lt;name&gt; --command docker --args "run,-i,--rm,&lt;image&gt;"</code></td></tr>
-      <tr><td>Inspect an MCP server</td><td><code class="inline">sbx mcp inspect &lt;name&gt;</code></td></tr>
-      <tr><td>List registered MCP servers</td><td><code class="inline">sbx mcp ls</code></td></tr>
-      <tr><td>Remove an MCP server registration</td><td><code class="inline">sbx mcp rm &lt;name&gt;</code></td></tr>
-      <tr><td>Attach an MCP server at create time</td><td><code class="inline">sbx create --name &lt;name&gt; --mcp &lt;mcp-server&gt; &lt;provider&gt; &lt;workspace&gt;</code></td></tr>
-      <tr><td>Validate a kit's spec</td><td><code class="inline">sbx kit validate &lt;kit-path&gt;</code></td></tr>
-      <tr><td>Attach a kit at create time</td><td><code class="inline">sbx create --name &lt;name&gt; --kit &lt;kit-path&gt; &lt;provider&gt; &lt;workspace&gt;</code></td></tr>
-      <tr><td>Stack multiple kits</td><td><code class="inline">sbx create --name &lt;name&gt; --kit &lt;kit-1&gt; --kit &lt;kit-2&gt; &lt;provider&gt; &lt;workspace&gt;</code></td></tr>
-      <tr><td>Attach multiple MCP servers</td><td><code class="inline">sbx create --name &lt;name&gt; --mcp &lt;mcp-1&gt; --mcp &lt;mcp-2&gt; &lt;provider&gt; &lt;workspace&gt;</code></td></tr>
-      <tr><td>Show sbx version</td><td><code class="inline">sbx --version</code></td></tr>
-      <tr><td>Show help for a subcommand</td><td><code class="inline">sbx &lt;command&gt; --help</code></td></tr>
-    </tbody>
-  </table>
-
-  <h4>Docker</h4>
-  <table class="teach">
-    <thead><tr><th>Task</th><th>Command</th></tr></thead>
-    <tbody>
-      <tr><td>Log in to Docker Hub</td><td><code class="inline">docker login</code></td></tr>
-      <tr><td>Log in to the Docker Hardened Images registry</td><td><code class="inline">docker login dhi.io</code></td></tr>
-      <tr><td>Log out (specific registry)</td><td><code class="inline">docker logout</code> or <code class="inline">docker logout dhi.io</code></td></tr>
-      <tr><td>Show Docker engine and CLI versions</td><td><code class="inline">docker version</code></td></tr>
-      <tr><td>Show daemon info (status, storage, network)</td><td><code class="inline">docker info</code></td></tr>
-      <tr><td>Pull an image without running it</td><td><code class="inline">docker pull &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Build an image from the local Dockerfile</td><td><code class="inline">docker build --provenance=true --sbom=true -t &lt;image&gt;:&lt;tag&gt; .</code></td></tr>
-      <tr><td>Run a container in the background with a port mapping</td><td><code class="inline">docker run -d --rm -p &lt;host-port&gt;:&lt;container-port&gt; --name &lt;container&gt; &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Run a container with a bind mount</td><td><code class="inline">docker run --rm -v &lt;host-path&gt;:&lt;container-path&gt; &lt;image&gt; &lt;cmd&gt;</code></td></tr>
-      <tr><td>Open a shell inside a running container</td><td><code class="inline">docker exec -it &lt;container&gt; sh</code></td></tr>
-      <tr><td>Stream a container's logs</td><td><code class="inline">docker logs -f &lt;container&gt;</code></td></tr>
-      <tr><td>List running containers</td><td><code class="inline">docker ps</code></td></tr>
-      <tr><td>List all containers (including stopped)</td><td><code class="inline">docker ps -a</code></td></tr>
-      <tr><td>List local images</td><td><code class="inline">docker image ls</code></td></tr>
-      <tr><td>Stop a running container</td><td><code class="inline">docker stop &lt;container&gt;</code></td></tr>
-      <tr><td>Remove a stopped container</td><td><code class="inline">docker rm &lt;container&gt;</code></td></tr>
-      <tr><td>Force-remove a container (running or stopped)</td><td><code class="inline">docker rm -f &lt;container&gt;</code></td></tr>
-      <tr><td>Remove an image</td><td><code class="inline">docker rmi &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Reclaim disk: remove dangling resources</td><td><code class="inline">docker system prune</code> (add <code class="inline">-a</code> for unused images too)</td></tr>
-    </tbody>
-  </table>
-
-  <h4>Docker Scout</h4>
-  <table class="teach">
-    <thead><tr><th>Task</th><th>Command</th></tr></thead>
-    <tbody>
-      <tr><td>Quick CVE summary of an image</td><td><code class="inline">docker scout quickview &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Full CVE listing for an image</td><td><code class="inline">docker scout cves &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Filter CVEs by severity</td><td><code class="inline">docker scout cves --only-severity critical,high &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Compare two images side by side</td><td><code class="inline">docker scout compare --to &lt;baseline-image&gt;:&lt;tag&gt; &lt;new-image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>Get fix recommendations</td><td><code class="inline">docker scout recommendations &lt;image&gt;:&lt;tag&gt;</code></td></tr>
-      <tr><td>View or change the Scout org configuration</td><td><code class="inline">docker scout config</code></td></tr>
-    </tbody>
-  </table>
-
-  <h4>Docker Agent</h4>
-  <table class="teach">
-    <thead><tr><th>Task</th><th>Command</th></tr></thead>
-    <tbody>
-      <tr><td>Install on Mac</td><td><code class="inline">brew install docker-agent</code></td></tr>
-      <tr><td>Check the version</td><td><code class="inline">docker agent version</code></td></tr>
-      <tr><td>Set the Anthropic API key</td><td><code class="inline">export ANTHROPIC_API_KEY=sk-ant-...</code></td></tr>
-      <tr><td>Set the OpenAI API key</td><td><code class="inline">export OPENAI_API_KEY=sk-...</code></td></tr>
-      <tr><td>Set the Google (Gemini) API key</td><td><code class="inline">export GOOGLE_API_KEY=...</code></td></tr>
-      <tr><td>Run a team interactively (you'll type the prompt)</td><td><code class="inline">docker agent run &lt;team.yaml&gt;</code></td></tr>
-      <tr><td>Run with a one-shot prompt (no chat)</td><td><code class="inline">docker agent run &lt;team.yaml&gt; "&lt;prompt&gt;"</code></td></tr>
-      <tr><td>Run in web mode (persistent browser sessions)</td><td><code class="inline">docker agent web -d &lt;configs-dir&gt; &lt;sessions.db&gt;</code></td></tr>
-      <tr><td>Run as an MCP server (expose the team to other tools)</td><td><code class="inline">docker agent mcp server --port 8080 --agents-dir &lt;configs-dir&gt;</code></td></tr>
-    </tbody>
-  </table>
-
-  <h4>Workshop MCP images</h4>
-  <p>Pre-pull these to skip the wait on first delegation.</p>
-  <table class="teach">
-    <thead><tr><th>Image</th><th>What it does</th><th>Used by</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">docker pull mcp/wikipedia-mcp</code></td><td>Search and read Wikipedia articles (22 tools, no API key)</td><td>Step 4, Step 7 (wiki-researcher)</td></tr>
-      <tr><td><code class="inline">docker pull mcp/paper-search</code></td><td>Search academic literature across arXiv, PubMed, Semantic Scholar, OpenAlex, and others (57 tools, no API key)</td><td>Step 7 (paper-researcher)</td></tr>
-    </tbody>
-  </table>
-
-  <h3 class="substep">Soft reset</h3>
-  <p>Use this if you already had <code class="inline">sbx</code> or other Docker work on your machine before the workshop and you only want to undo what the workshop created. It removes the workshop sandboxes (<code class="inline">sandbox-alpha</code> and, defensively, <code class="inline">sandbox-kits</code>), the custom <code class="inline">pypi.org</code> deny and <code class="inline">fifa.com</code> allow rules, the <code class="inline">local-wiki</code> MCP registration, the Docker Hub and <code class="inline">dhi.io</code> Docker logins, the two workshop-built images, the workshop-pulled MCP images (<code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/paper-search</code>), the <code class="inline">research-app</code> subdirectory, the <code class="inline">kits/</code> directory, the <code class="inline">docker-agent/</code> directory, and the test files. It leaves <code class="inline">sbx</code>, Docker Agent, your other sandboxes, your stored API key secrets, and the <code class="inline">~/workshop</code> umbrella directory alone.</p>
-  <p>Safe to re-run. <code class="inline">sbx</code> may ask you to confirm individual steps as they run.</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <button class="cmd-tab active" data-os="mac">MacOS</button>
-      <button class="cmd-tab" data-os="windows">Windows</button>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active" data-os="mac">for name in sandbox-alpha sandbox-bravo sandbox-charlie sandbox-kits; do
-  sbx stop "$name" 2&gt;/dev/null
-  sbx rm   "$name"
-done
-remaining=$(sbx ls 2&gt;/dev/null | awk 'NR&gt;1 { name=$1; gsub(/[^a-zA-Z0-9._-]/,"",name); if (name ~ /^sandbox-[a-zA-Z0-9._-]+$/) print name }')
-if [ -n "$remaining" ]; then
-  echo "Other sandboxes still on this machine (not touched by the soft reset):"
-  echo "$remaining" | sed 's/^/  - /'
-  echo "Remove any that are workshop leftovers with: sbx rm &lt;name&gt;"
-fi
-
-sbx mcp rm local-wiki 2&gt;/dev/null
-
-sbx policy rm network --resource pypi.org 2&gt;/dev/null
-sbx policy rm network --resource fifa.com 2&gt;/dev/null
-
-docker logout        2&gt;/dev/null || true
-docker logout dhi.io 2&gt;/dev/null || true
-
-docker rmi -f research-app:v1 research-app:v2 2&gt;/dev/null || true
-docker rmi -f mcp/wikipedia-mcp mcp/paper-search 2&gt;/dev/null || true
-
-rm -rf "$HOME/workshop/sbx/research-app" 2&gt;/dev/null || true
-rm -rf "$HOME/workshop/kits"         2&gt;/dev/null || true
-rm -rf "$HOME/workshop/docker-agent" 2&gt;/dev/null || true
-rm -f  "$HOME/workshop/sbx/host-to-agent.txt" \
-       "$HOME/workshop/sbx/agent-to-host.txt" \
-       "$HOME/workshop/host-marker.txt" 2&gt;/dev/null || true</pre>
-    <pre class="cmd" data-os="windows">foreach ($name in @('sandbox-alpha', 'sandbox-kits')) {
-  sbx stop $name 2&gt;$null
-  sbx rm   $name 2&gt;$null
-}
-
-sbx mcp rm local-wiki 2&gt;$null
-
-sbx policy rm network --resource pypi.org 2&gt;$null
-sbx policy rm network --resource fifa.com 2&gt;$null
-
-docker logout        2&gt;$null
-docker logout dhi.io 2&gt;$null
-
-docker rmi -f research-app:v1 research-app:v2 2&gt;$null
-docker rmi -f mcp/wikipedia-mcp mcp/paper-search 2&gt;$null
-
-Remove-Item -Recurse -Force "$env:USERPROFILE\workshop\sbx\research-app" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:USERPROFILE\workshop\kits"         -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:USERPROFILE\workshop\docker-agent" -ErrorAction SilentlyContinue
-Remove-Item -Force `
-  "$env:USERPROFILE\workshop\sbx\host-to-agent.txt", `
-  "$env:USERPROFILE\workshop\sbx\agent-to-host.txt", `
-  "$env:USERPROFILE\workshop\host-marker.txt" -ErrorAction SilentlyContinue</pre>
-  </div>
-
-  <h3 class="substep">Full uninstall</h3>
-  <p><strong>This is the nuclear option.</strong> It's designed for machines where Docker and sbx were installed specifically for this workshop, and you want the machine restored to roughly the state it was in before the workshop. It removes Docker Desktop and every Docker image, container, volume, credential, and config on the machine, not just the workshop ones. If you have Docker or sbx in use for any other purpose, <strong>don't run this</strong>. Use the Soft Reset above instead.</p>
-  <p>What it removes: the <code class="inline">sbx</code> binary and all sandboxes, the Docker Agent CLI plugin (<code class="inline">docker-agent</code>, installed in Step 7.1), the Anthropic / OpenAI / Google / OpenCode API key secrets, sbx Keychain credentials and config / data / cache directories, Docker Hub and <code class="inline">dhi.io</code> logins, any workshop containers, every workshop-built image (any tag, including legacy names), the <code class="inline">python:3.14-slim</code> and <code class="inline">dhi.io/python:3.14</code> base images, any <code class="inline">docker/sandbox-templates:*</code> agent images, every <code class="inline">mcp/*</code> image on the machine (including <code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/paper-search</code>), Docker Desktop (the app bundle, every Docker-named binary at <code class="inline">/usr/local/bin</code>, and all of Docker Desktop's user data under <code class="inline">~/Library</code>), the entire <code class="inline">~/.docker</code> config directory, and the entire <code class="inline">~/workshop</code> umbrella directory.</p>
-  <p>What it does <strong>not</strong> touch: Homebrew itself, Python or Node or other independently-installed runtimes, anything else on the system. Safe to re-run. <code class="inline">sbx</code> will ask you to confirm a few of the steps (removing each API key secret, logging out) as the block runs.</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <button class="cmd-tab active" data-os="mac">MacOS</button>
-      <button class="cmd-tab" data-os="windows">Windows</button>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active" data-os="mac">for name in sandbox-alpha sandbox-bravo sandbox-charlie sandbox-kits; do
-  sbx stop "$name" 2&gt;/dev/null
-  sbx rm   "$name"
-done
-sbx ls 2&gt;/dev/null | awk 'NR&gt;1 { name=$1; gsub(/[^a-zA-Z0-9._-]/,"",name); if (name ~ /^sandbox-[a-zA-Z0-9._-]+$/) print name }' | while read -r name; do
-  [ -n "$name" ] || continue
-  sbx stop "$name" 2&gt;/dev/null
-  sbx rm   "$name"
-done
-
-for s in anthropic openai google opencode; do
-  sbx secret rm -g "$s" 2&gt;/dev/null || sbx secret rm "$s" 2&gt;/dev/null || true
-done
-
-sbx logout 2&gt;/dev/null || true
-
-docker logout        2&gt;/dev/null || true
-docker logout dhi.io 2&gt;/dev/null || true
-
-docker rm -f research-app runtime-app runtime-info 2&gt;/dev/null || true
-
-docker container ls -a --format '{{.Names}}' 2&gt;/dev/null | grep -iE '^(sbx|sandbox-)' | while read -r c; do
-  docker rm -f "$c" 2&gt;/dev/null || true
-done
-docker volume ls --format '{{.Name}}' 2&gt;/dev/null | grep -iE 'sbx|sandbox-' | while read -r v; do
-  docker volume rm -f "$v" 2&gt;/dev/null || true
-done
-
-docker image ls --format '{{.Repository}}:{{.Tag}}' 2&gt;/dev/null \
-  | grep -E '^(research-app|runtime-app|runtime-info|demo):' \
-  | while read -r img; do docker rmi -f "$img" 2&gt;/dev/null || true; done
-docker rmi -f python:3.14-slim dhi.io/python:3.14 2&gt;/dev/null || true
-docker image ls --format '{{.Repository}}:{{.Tag}}' 2&gt;/dev/null \
-  | grep '^docker/sandbox-templates:' \
-  | while read -r img; do docker rmi -f "$img" 2&gt;/dev/null || true; done
-docker image ls --format '{{.Repository}}:{{.Tag}}' 2&gt;/dev/null \
-  | grep '^mcp/' \
-  | while read -r img; do docker rmi -f "$img" 2&gt;/dev/null || true; done
-
-brew uninstall --force docker-agent 2&gt;/dev/null || true
-rm -f "$HOME/.docker/cli-plugins/docker-agent" 2&gt;/dev/null || true
-sudo rm -f /usr/local/lib/docker/cli-plugins/docker-agent 2&gt;/dev/null || true
-
-brew uninstall --force docker/tap/sbx 2&gt;/dev/null || true
-brew uninstall --force sbx            2&gt;/dev/null || true
-brew uninstall --cask --force sbx     2&gt;/dev/null || true
-if command -v sbx &gt;/dev/null 2&gt;&amp;1; then
-  sudo rm -f /opt/homebrew/bin/sbx /usr/local/bin/sbx        2&gt;/dev/null || true
-  sudo rm -rf /opt/homebrew/Cellar/sbx /usr/local/Cellar/sbx 2&gt;/dev/null || true
-  brew uninstall --force docker/tap/sbx 2&gt;/dev/null || true
-  brew uninstall --force sbx            2&gt;/dev/null || true
-fi
-brew untap docker/tap 2&gt;/dev/null || true
-
-osascript -e 'quit app "Docker Desktop"' 2&gt;/dev/null || true
-sleep 2
-if [ -x /Applications/Docker.app/Contents/MacOS/uninstall ]; then
-  sudo /Applications/Docker.app/Contents/MacOS/uninstall 2&gt;/dev/null || true
-fi
-brew uninstall --cask --force docker 2&gt;/dev/null || true
-sudo find /usr/local/bin -maxdepth 1 \( -name '*docker*' -o -name 'hub-tool' \) -delete 2&gt;/dev/null || true
-sudo rm -rf /Applications/Docker.app 2&gt;/dev/null || true
-
-rm -rf \
-  "$HOME/Library/Containers/com.docker.docker" \
-  "$HOME/Library/Containers/com.docker.helper" \
-  "$HOME/Library/Containers/com.electron.docker-frontend" \
-  "$HOME/Library/Application Support/Docker Desktop" \
-  "$HOME/Library/Group Containers/group.com.docker" \
-  "$HOME/Library/Logs/Docker Desktop" \
-  "$HOME/Library/Preferences/com.docker.docker.plist" \
-  "$HOME/Library/Preferences/com.electron.docker-frontend.plist" \
-  "$HOME/Library/Saved Application State/com.electron.docker-frontend.savedState" \
-  2&gt;/dev/null || true
-
-for svc in sbx com.docker.sbx docker-sbx \
-           sbx-anthropic sbx-openai sbx-google \
-           anthropic.sbx openai.sbx google.sbx \
-           "Docker Sandboxes"; do
-  while security delete-generic-password -s "$svc" 2&gt;/dev/null; do :; done
-done
-for acct in anthropic openai google opencode sbx; do
-  while security delete-generic-password -a "$acct" 2&gt;/dev/null; do :; done
-done
-
-rm -rf "$HOME/.docker" 2&gt;/dev/null || true
-
-rm -rf "$HOME/.sbx" \
-       "$HOME/.config/sbx" \
-       "$HOME/.local/share/sbx" \
-       "$HOME/Library/Application Support/sbx" \
-       "$HOME/Library/Caches/sbx" \
-       "$HOME/Library/Preferences/sbx" \
-       "$HOME/Library/Preferences/com.docker.sbx.plist" 2&gt;/dev/null || true
-find "$HOME" -maxdepth 1 -iname '.sbx*' -exec rm -rf {} + 2&gt;/dev/null || true
-find "$HOME/Library/Group Containers" -maxdepth 1 -type d -name '*sbx*' -exec rm -rf {} + 2&gt;/dev/null || true
-find "$HOME/Library/Application Support" -maxdepth 1 -type d -iname '*sbx*' -exec rm -rf {} + 2&gt;/dev/null || true
-find "$HOME/Library/Caches" -maxdepth 1 -type d -iname '*sbx*' -exec rm -rf {} + 2&gt;/dev/null || true
-find "$HOME/Library/Preferences" -maxdepth 1 -iname '*sbx*' -exec rm -rf {} + 2&gt;/dev/null || true
-
-rm -rf "$HOME/workshop" 2&gt;/dev/null || true</pre>
-    <pre class="cmd" data-os="windows">sbx ls 2&gt;$null | Select-Object -Skip 1 | ForEach-Object {
-  $name = ($_ -split '\s+')[0]
-  if ($name) { sbx stop $name 2&gt;$null }
-}
-
-foreach ($s in 'anthropic','openai','google') {
-  sbx secret rm -g $s
-}
-
-sbx logout
-
-docker logout        2&gt;$null
-docker logout dhi.io 2&gt;$null
-
-docker rmi -f research-app:v1 research-app:v2 2&gt;$null
-docker rmi -f python:3.14-slim dhi.io/python:3.14     2&gt;$null
-docker image ls --format '{{.Repository}}:{{.Tag}}' 2&gt;$null `
-  | Where-Object { $_ -like 'docker/sandbox-templates:*' } `
-  | ForEach-Object { docker rmi -f $_ 2&gt;$null }
-
-winget uninstall -h Docker.sbx 2&gt;$null
-if (Get-Command sbx -ErrorAction SilentlyContinue) {
-  Remove-Item -Force (Get-Command sbx).Source -ErrorAction SilentlyContinue
-}
-
-Remove-Item -Recurse -Force `
-  "$env:USERPROFILE\.sbx", `
-  "$env:LOCALAPPDATA\sbx", `
-  "$env:APPDATA\sbx" -ErrorAction SilentlyContinue
-
-Remove-Item -Recurse -Force "$env:USERPROFILE\workshop" -ErrorAction SilentlyContinue</pre>
-  </div>
-
-  <h3 class="substep">Other workshops to consider</h3>
-  <ul>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://dockerworkshop.vercel.app/ai-governance/filesystem-demo/">AI Governance: Filesystem Enforcement Demo</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://dockerworkshop.vercel.app/lab8/projects/branch-mode/">SBX: Branch Mode (Git worktrees per agent)</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://dockerworkshop.vercel.app/lab8/projects/parallel-agents/">SBX: Parallel Agents on the same repo</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://dockerworkshop.vercel.app/lab8/projects/local-models/">SBX: Running Open-Source Models locally</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://dockerworkshop.vercel.app/ai-governance/whats-next/">AI Governance: What's Next</a></li>
-  </ul>
 </section>
 
 </main>
