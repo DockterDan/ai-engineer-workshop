@@ -31,8 +31,4 @@ Two add-on modules step outside the sbx story to show **Docker Agent**, a differ
 - **Reproducible setups scale.** A kit committed to git turns a personal sandbox configuration into something a team can stand up reliably with one command.
 - **Multi-agent and single-agent are different shapes.** sbx scopes one agent's environment; Docker Agent scopes each role within a team. They're complementary layers, not strictly stacked — pick the one that matches the shape of the work, or compose both when the architecture justifies it.
 
-## Open the workshop
-
 **[Open the workshop](https://dockterdan.github.io/ai-engineer-workshop/)**
-
-The page is served by GitHub Pages from this repo's `main` branch and runs entirely client-side. No installation is required to read the workshop; the hands-on steps inside install everything you need (sbx, Docker Desktop, Docker Agent) at the points where each one becomes relevant.
