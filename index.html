@@ -618,6 +618,7 @@
       <button class="provider-tab" data-provider="gemini" disabled aria-disabled="true" title="Google is transitioning Gemini CLI to Antigravity CLI; sbx does not yet support Antigravity">Gemini / Antigravity</button>
     </div>
     <p class="provider-note">Google is <a href="https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/" target="_blank" rel="noopener">transitioning Gemini CLI to Antigravity CLI</a>, and sbx doesn't have Antigravity support yet.</p>
+    <p class="provider-note">Codex may print a warning on its first prompt (<code class="inline">stream disconnected before completion</code>, or a flagged attack-attempt notice). That's expected: Codex's traffic to OpenAI is being routed through sbx's egress proxy, which trips Codex's own first-time connection checks. Acknowledge the warning, retry, and it'll go through. Counterintuitive as it looks, this is actually evidence the sandbox is working — the agent has no direct path to the internet. We're working on smoothing the warning out.</p>
   </div>
 </header>
 
@@ -1033,9 +1034,6 @@ sandbox-alpha   opencode   running          /Users/&lt;you&gt;/workshop/sbx</pre
   <p>To prove the agent is actually running inside the sandbox (not on your host), have it print three things: the kernel string, its user identity, and its current directory. Each tells us something about the environment it's in.</p>
   <div data-show-for="opencode">
     <p class="note-inline"><span class="label">OpenCode users</span> Your first prompt may fail with a network policy block: OpenCode tries to reach <code class="inline">opencode.ai</code>, which isn't on the default allow list. Open a second host shell and run <code class="inline">sbx policy allow network opencode.ai</code>, then retry the prompt. We dig into how this diagnose-and-allow loop works in Step 3.</p>
-  </div>
-  <div data-show-for="codex">
-    <p class="note-inline"><span class="label">Codex users</span> On your first prompt, Codex may print a warning like <code class="inline">stream disconnected before completion</code>, or flag the request as a possible attack attempt. That warning is expected: Codex's traffic to OpenAI is being routed through sbx's egress proxy, and the proxy's TLS interception trips Codex's own connection checks the first time through. Acknowledge the warning, retry the prompt, and it'll go through. Counterintuitive as it looks, this is evidence the sandbox is working as designed: the agent doesn't have a direct path to the public internet — every outbound call goes through sbx. We're working on smoothing the warning out; for now it's unavoidable.</p>
   </div>
   <div class="prompt-box">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
