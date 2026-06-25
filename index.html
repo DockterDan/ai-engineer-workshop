@@ -1193,7 +1193,7 @@ sbx rm sandbox-bravo</pre>
     <pre class="cmd" data-os="windows">"Written from the host" | Out-File ~/workshop/sbx/host-to-agent.txt</pre>
   </div>
   <p>Now inside the sandbox, ask the agent to read it:</p>
-  <div class="prompt-box">
+  <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     There should be a file called <code>host-to-agent.txt</code> in your workspace. Run <code>cat host-to-agent.txt</code> and tell me what you see.
   </div>
@@ -1203,7 +1203,7 @@ sbx rm sandbox-bravo</pre>
   </div>
 
   <p><strong>Agent to host.</strong> Now ask the agent to write a file:</p>
-  <div class="prompt-box">
+  <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Create a file called <code>agent-to-host.txt</code> in your workspace with the text "Written from the agent".
   </div>
@@ -1241,7 +1241,7 @@ Written from the agent</pre>
     <pre class="cmd active" data-os="mac">echo "This file lives in your home, not the workspace" &gt; ~/workshop/host-marker.txt</pre>
     <pre class="cmd" data-os="windows">"This file lives in your home, not the workspace" | Out-File ~/workshop/host-marker.txt</pre>
   </div>
-  <div class="prompt-box">
+  <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Try to read a file called <code>host-marker.txt</code>. Run <code>cat ~/workshop/host-marker.txt 2&gt;&amp;1; cat /Users/&lt;your-username&gt;/workshop/host-marker.txt 2&gt;&amp;1</code> and tell me what happens.
   </div>
@@ -2322,7 +2322,7 @@ When reviewing a Dockerfile, check:
     <pre class="cmd active">sbx run --name sandbox-kits</pre>
   </div>
   <p>Once the agent is up, ask it to review the Dockerfile from Step 5. The skill we just shipped tells it how:</p>
-  <div class="prompt-box">
+  <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Review the Dockerfile in <code>research-app/</code> against best practices and give me a structured assessment.
   </div>
