@@ -1667,9 +1667,21 @@ ERROR: No matching distribution found for requests</pre>
           <span class="cmd-label">host shell</span>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active">sbx policy log sandbox-alpha | grep -E 'Blocked|Denied'
-sbx policy log sandbox-alpha | grep github.com
-sbx policy log sandbox-alpha | grep '(default deny)'</pre>
+        <pre class="cmd active">sbx policy log sandbox-alpha | grep -E 'Blocked|Denied'</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx policy log sandbox-alpha | grep github.com</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx policy log sandbox-alpha | grep '(default deny)'</pre>
       </div>
       <p>The first filter catches every entry the policy stopped, whether the REASON column says "Blocked" (e.g., host-header mismatch, UDP not allowed) or "Denied" (an explicit rule matched). The second narrows to any line involving a specific domain. Useful for debugging one site's behavior in isolation. The third surfaces only the default-deny entries, separating them from explicit-rule denies. Helpful for spotting domains the agent reaches for that aren't on any of your rules yet, which is where the next allow rule probably belongs.</p>
     </div>
