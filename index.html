@@ -666,6 +666,7 @@
   </ul>
 
   <h3 class="substep">Install sbx</h3>
+  <p class="note-inline"><span class="label">MacOS users</span> The MacOS install commands in this workshop use <strong>Homebrew</strong>. If you don't already have it, install it from <a href="https://brew.sh" target="_blank" rel="noopener">brew.sh</a> first (one terminal command, takes a couple of minutes). Once <code class="inline">brew --version</code> prints a version, come back here.</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -1709,7 +1710,7 @@ ERROR: No matching distribution found for requests</pre>
 
 <section class="pre-step" id="prep-step-4">
   <h3>Before Step 4: get Docker Desktop running</h3>
-  <p>Heads up: until now you've worked entirely through sbx, which doesn't require Docker on the host. Step 4 introduces a new wrinkle. The MCP server we're about to register runs as a Docker container (sbx will literally spawn <code class="inline">docker run mcp/wikipedia-mcp</code> when an agent attaches to it), so to launch that container the Docker daemon needs to be up and the <code class="inline">docker</code> CLI needs to be on PATH. Step 5 will also need Docker on the host for building images and running Docker Scout. Docker Desktop bundles the <code class="inline">docker</code> CLI, the Docker engine, and Docker Scout in one install, so it's the fastest way to get everything Steps 4 and 5 need running together.</p>
+  <p class="note-inline"><span class="label">Heads up</span> Until now you've worked entirely through sbx, which doesn't require Docker on the host. Step 4 introduces a new wrinkle. The MCP server we're about to register runs as a Docker container (sbx will literally spawn <code class="inline">docker run mcp/wikipedia-mcp</code> when an agent attaches to it), so to launch that container the Docker daemon needs to be up and the <code class="inline">docker</code> CLI needs to be on PATH. Step 5 will also need Docker on the host for building images and running Docker Scout. Docker Desktop bundles the <code class="inline">docker</code> CLI, the Docker engine, and Docker Scout in one install, so it's the fastest way to get everything Steps 4 and 5 need running together.</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -2207,8 +2208,8 @@ CMD ["python", "app.py"]
   <p>Kits come in two flavors. <strong>Mixin kits</strong> (<code class="inline">kind: mixin</code>) add capability to one of the built-in agents: skills, network rules, config files, credentials. You can stack several on the same sandbox. <strong>Agent kits</strong> (<code class="inline">kind: agent</code>) replace the agent definition itself: container image, entrypoint, base policy, the lot. The built-in <code class="inline">claude</code> agent you've been using this whole workshop is itself an agent kit, and you can fork it to change one thing (a different model, stricter permissions, a custom system prompt) without rebuilding the rest. For this step we'll build a mixin kit called <strong>docker-review</strong>. It ships a Claude Code skill with a five-point Dockerfile checklist: base image, layer order, image size, security, and reproducibility. Without the kit, asking the agent to "review my Dockerfile" gets you whatever the model decides to look at on a given day. With the kit installed, every reviewer on your team applies the same checklist consistently.</p>
 
   <div class="callout">
-    <span class="label">Heads up: the rest of the workshop is optimized for Claude / Anthropic</span>
-    From Step 6 forward, the workshop defaults to the Claude / Anthropic path. Other providers can still follow along, and we'll note where the nuances matter. We default to Claude because most attendees have an Anthropic key from earlier setup and the demos run cleanest end-to-end on that path.
+    <span class="label">Heads up</span>
+    The rest of the workshop is optimized for Claude / Anthropic. From Step 6 forward, the workshop defaults to the Claude / Anthropic path. Other providers can still follow along, and we'll note where the nuances matter. We default to Claude because most attendees have an Anthropic key from earlier setup and the demos run cleanest end-to-end on that path.
     <br><br>
     For this step specifically, the kit drops a Claude Code skill at <code class="inline">.claude/skills/&lt;name&gt;/SKILL.md</code>. Claude Code auto-discovers it natively; in our testing OpenCode does too. Codex and Gemini may or may not honor that path; if your agent doesn't auto-load the skill, the destination under <code class="inline">files/workspace/</code> is what to adjust to match your harness's convention. Step 7 goes further: Docker Agent talks to Anthropic's API directly, so non-Claude attendees will need an Anthropic key for that one step.
   </div>
