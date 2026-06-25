@@ -309,14 +309,15 @@
   }
   .provider-tab:disabled,
   .provider-tab[disabled] {
-    color: var(--text-muted, #999);
-    background: var(--bg-soft, #f4f4f4);
-    border-color: var(--border, #ddd);
+    color: #9aa0a6;
+    background: #ececec;
+    border: 1px dashed #c4c4c4;
     cursor: not-allowed;
-    opacity: 0.55;
+    text-decoration: line-through;
+    text-decoration-color: rgba(0, 0, 0, 0.4);
   }
   .provider-tab:disabled:hover,
-  .provider-tab[disabled]:hover { background: var(--bg-soft, #f4f4f4); }
+  .provider-tab[disabled]:hover { background: #ececec; }
   .provider-note {
     margin-top: 8px;
     font-size: 12px;
@@ -614,9 +615,9 @@
       <button class="provider-tab" data-provider="claude">Claude (Anthropic)</button>
       <button class="provider-tab" data-provider="codex">Codex (OpenAI)</button>
       <button class="provider-tab active" data-provider="opencode">OpenCode (free)</button>
-      <button class="provider-tab" data-provider="gemini" disabled aria-disabled="true" title="Google sunset Gemini CLI for free/Pro/Ultra users on 2026-06-18 and replaced it with Antigravity CLI">Gemini (in transition)</button>
+      <button class="provider-tab" data-provider="gemini" disabled aria-disabled="true" title="Google is transitioning Gemini CLI to Antigravity CLI; sbx does not yet support Antigravity">Gemini / Antigravity</button>
     </div>
-    <p class="provider-note">Gemini is greyed out: Google is <a href="https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/" target="_blank" rel="noopener">transitioning Gemini CLI to Antigravity CLI</a>, and sbx doesn't yet have Antigravity support. We'll re-enable this once sbx ships it.</p>
+    <p class="provider-note">Google is <a href="https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/" target="_blank" rel="noopener">transitioning Gemini CLI to Antigravity CLI</a>, and sbx doesn't have Antigravity support yet.</p>
   </div>
 </header>
 
