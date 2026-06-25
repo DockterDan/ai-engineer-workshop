@@ -1845,8 +1845,15 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx stop sandbox-alpha
 sbx rm sandbox-alpha</pre>
   </div>
-  <p>Before the next command, <strong>restart Docker Desktop</strong>. The MCP gateway sbx uses to wire MCP servers into sandboxes can carry stale state from earlier in the session, and a fresh Docker daemon clears it. Click the Docker Desktop whale icon in the MacOS menu bar, choose <strong>Restart</strong>, and wait until it shows <em>Engine running</em> again (about 20 seconds). This step prevents a <code class="inline">WARN: mcp gateway setup failed</code> message on the create command below, which otherwise leaves the MCP unattached.</p>
-  <p>Now recreate it with the MCP attached. Run the command for the provider you picked at the top:</p>
+  <p>Restart Docker Desktop:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">osascript -e 'quit app "Docker Desktop"' &amp;&amp; sleep 3 &amp;&amp; open -a "Docker Desktop"</pre>
+  </div>
+  <p>Recreate the sandbox with the MCP attached. Run the command for the provider you picked at the top:</p>
   <div data-show-for="claude">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
