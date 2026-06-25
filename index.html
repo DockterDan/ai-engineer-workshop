@@ -1763,6 +1763,14 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active" data-os="mac">export SBX_MCP_URL=https://registry.modelcontextprotocol.io</pre>
     <pre class="cmd" data-os="windows">$env:SBX_MCP_URL = "https://registry.modelcontextprotocol.io"</pre>
   </div>
+  <p>Restart the sbx daemon so it picks up the new <code class="inline">SBX_MCP_URL</code>:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx daemon stop &amp;&amp; sbx daemon start -d</pre>
+  </div>
   <p>Confirm the subtree is now available:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -1772,21 +1780,6 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp --help</pre>
   </div>
   <p>You'll see subcommands like <code class="inline">add</code>, <code class="inline">ls</code>, <code class="inline">inspect</code>, <code class="inline">rm</code>, and <code class="inline">bundle</code>. <code class="inline">SBX_MCP_URL</code> is a per-shell variable, so if you open a new terminal you'll need to set it again or persist it in your shell's rc file (<code class="inline">~/.zshrc</code>, <code class="inline">~/.bashrc</code>, or <code class="inline">~/.config/fish/config.fish</code>).</p>
-  <p>Restart the sbx daemon so it picks up the new <code class="inline">SBX_MCP_URL</code>:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">sbx daemon stop</pre>
-  </div>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">sbx daemon start -d</pre>
-  </div>
   <p class="note-inline"><span class="label">If you hit "mcp gateway setup failed"</span> Sometimes the first <code class="inline">sbx create --mcp ...</code> on a fresh install emits a <code class="inline">WARN: mcp gateway setup failed</code> message. If your sandbox creates anyway and the MCP tool shows up when the agent lists its tools, the warning was benign. If the tool doesn't appear, try re-running the create command once; that's usually enough to clear the state. As a fallback you can also run a local <code class="inline">docker/mcp-gateway</code> Compose stack and point <code class="inline">SBX_MCP_URL</code> at <code class="inline">http://localhost:8811</code> instead.</p>
 
   <h3 class="substep">4.2 Register a local MCP server</h3>
@@ -2019,7 +2012,7 @@ CMD ["python", "app.py"]
     <br>
     This is also a chance to show off some real Python craft on the build side. Visualizations, animations, layout, copy. Lean in.<br>
     <br>
-    Research broadly. Pull from official sources, stats sites, GitHub's API, public APIs, install Python packages with <code>pip</code> if a library would help. Some sources will work, others won't. When something doesn't, find a different path and keep going.<br>
+    Research enough to make it interesting, not exhaustively. Cap your total external lookups at <strong>5 to 6 source or API attempts</strong> across both threads (a mix of allowed and blocked is fine and expected). Some sources will work, others won't. When one doesn't, pick a different path; don't loop on the same failing source. As soon as you have enough data to build something interesting, stop researching and start writing <code>app.py</code>. <strong>Target wall-clock time: 1 to 2 minutes total.</strong> If you're past that, ship what you have.<br>
     <br>
     <strong>Constraints:</strong><br>
     - Only write <code>app.py</code>. Don't modify the Dockerfile or create any other files. Embed all research data inline as Python literals (dict, list, etc.) at the top of the file. Don't read from external JSON, CSV, or any data file at runtime. The container only ships <code>app.py</code>, so anything not in that file won't exist inside the running image.<br>
@@ -2032,7 +2025,7 @@ CMD ["python", "app.py"]
     <br>
     Show me what you came up with when you're done.
   </div>
-  <p>The agent will work on this for a few minutes. Network calls, attempted package installs, code generation: all of it happens inside the sandbox. While it works, leave the agent running and head back to a host terminal for the next substep.</p>
+  <p>The agent will work on this for a minute or two. Network calls, attempted package installs, code generation: all of it happens inside the sandbox. While it works, leave the agent running and head back to a host terminal for the next substep.</p>
 
   <h3 class="substep">5.3 Watch the sandbox boundary in action</h3>
   <p>On a host terminal, print the policy log for the sandbox:</p>
@@ -2280,26 +2273,44 @@ name: docker-review
 description: Review a Dockerfile for best practices. Use when the user asks to review, audit, or improve a Dockerfile.
 ---
 
-When reviewing a Dockerfile, check:
+When reviewing a Dockerfile, output ONLY a Markdown table with exactly the columns and exactly the five rows below, in this exact order. Do not write any prose before or after the table.
 
-1. **Base image** - pinned tag or digest, minimal and appropriate for the workload
-2. **Layer order** - dependencies before application source to maximise cache reuse
-3. **Image size** - multi-stage builds, .dockerignore, package-manager cache flags (--no-cache, --no-install-recommends)
-4. **Security** - non-root USER, no secrets in ARG/ENV, no --privileged
-5. **Reproducibility** - pinned package versions, explicit COPY targets' &gt; ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
+| # | Aspect | Status | Findings | Recommendation |
+| --- | --- | --- | --- | --- |
+| 1 | Base image | Pass / Warn / Fix | What the Dockerfile does (pinned tag or digest? minimal? appropriate for the workload?) | What to change, or "None" |
+| 2 | Layer order | Pass / Warn / Fix | What the Dockerfile does (dependencies installed before application source? cache reuse?) | What to change, or "None" |
+| 3 | Image size | Pass / Warn / Fix | What the Dockerfile does (multi-stage build? .dockerignore present? package-manager cache flags like --no-cache, --no-install-recommends?) | What to change, or "None" |
+| 4 | Security | Pass / Warn / Fix | What the Dockerfile does (non-root USER? secrets kept out of ARG/ENV? no --privileged?) | What to change, or "None" |
+| 5 | Reproducibility | Pass / Warn / Fix | What the Dockerfile does (pinned package versions? explicit COPY targets?) | What to change, or "None" |
+
+Rules:
+- Use exactly one of Pass, Warn, or Fix in the Status column. Pass = meets best practice. Warn = works but could be tightened. Fix = real problem.
+- Always produce all five rows in the exact order shown. Never add a row, drop a row, or reorder.
+- Fill Findings with what you actually see in the Dockerfile under that aspect, not generic advice.
+- Fill Recommendation with the specific change to make. If Status is Pass, write "None".
+- No commentary outside the table.' &gt; ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
     <pre class="cmd" data-os="windows">@'
 ---
 name: docker-review
 description: Review a Dockerfile for best practices. Use when the user asks to review, audit, or improve a Dockerfile.
 ---
 
-When reviewing a Dockerfile, check:
+When reviewing a Dockerfile, output ONLY a Markdown table with exactly the columns and exactly the five rows below, in this exact order. Do not write any prose before or after the table.
 
-1. **Base image** - pinned tag or digest, minimal and appropriate for the workload
-2. **Layer order** - dependencies before application source to maximise cache reuse
-3. **Image size** - multi-stage builds, .dockerignore, package-manager cache flags (--no-cache, --no-install-recommends)
-4. **Security** - non-root USER, no secrets in ARG/ENV, no --privileged
-5. **Reproducibility** - pinned package versions, explicit COPY targets
+| # | Aspect | Status | Findings | Recommendation |
+| --- | --- | --- | --- | --- |
+| 1 | Base image | Pass / Warn / Fix | What the Dockerfile does (pinned tag or digest? minimal? appropriate for the workload?) | What to change, or "None" |
+| 2 | Layer order | Pass / Warn / Fix | What the Dockerfile does (dependencies installed before application source? cache reuse?) | What to change, or "None" |
+| 3 | Image size | Pass / Warn / Fix | What the Dockerfile does (multi-stage build? .dockerignore present? package-manager cache flags like --no-cache, --no-install-recommends?) | What to change, or "None" |
+| 4 | Security | Pass / Warn / Fix | What the Dockerfile does (non-root USER? secrets kept out of ARG/ENV? no --privileged?) | What to change, or "None" |
+| 5 | Reproducibility | Pass / Warn / Fix | What the Dockerfile does (pinned package versions? explicit COPY targets?) | What to change, or "None" |
+
+Rules:
+- Use exactly one of Pass, Warn, or Fix in the Status column. Pass = meets best practice. Warn = works but could be tightened. Fix = real problem.
+- Always produce all five rows in the exact order shown. Never add a row, drop a row, or reorder.
+- Fill Findings with what you actually see in the Dockerfile under that aspect, not generic advice.
+- Fill Recommendation with the specific change to make. If Status is Pass, write "None".
+- No commentary outside the table.
 '@ | Set-Content ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
   </div>
   <p>The frontmatter's <code class="inline">description</code> field is critical: Claude Code uses it to decide when to invoke the skill. When the user asks something matching the description ("review my Dockerfile", "audit this Docker setup"), Claude pulls the skill content into its context and follows the structured checklist. The user doesn't have to invoke the skill by name or load it manually.</p>
@@ -2354,7 +2365,7 @@ When reviewing a Dockerfile, check:
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Review the Dockerfile in <code>research-app/</code> against best practices and give me a structured assessment.
   </div>
-  <p>The agent loads the docker-review skill and applies its five-point checklist (base image, layer order, image size, security, reproducibility). You'll see the structured review come back. Note that what you'd get without the kit is whatever the model decides to look at; with the kit, every reviewer on your team gets the same structured checklist applied consistently.</p>
+  <p>The agent loads the docker-review skill and applies its five-row review table (base image, layer order, image size, security, reproducibility). You'll see a Markdown table come back with the same five rows in the same order, each with a Pass / Warn / Fix status, the specific finding, and a recommendation. The point: what you'd get without the kit is whatever the model decides to look at and however it decides to present it; with the kit, every reviewer on your team gets the same structured table back regardless of model or run.</p>
 
   <h3 class="substep">6.6 Wrap up</h3>
   <p>What you just did is the team-scale story: the skill traveled into the sandbox automatically. The user didn't run an install command, didn't read shared documentation, and didn't have to remember to enable anything. The kit is one directory, git-committable, copy-paste-shareable. The next person on your team clones the kit, runs the same sbx command, and gets the same skill loaded the same way.</p>
