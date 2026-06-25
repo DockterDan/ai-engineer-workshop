@@ -317,6 +317,13 @@
   }
   .provider-tab:disabled:hover,
   .provider-tab[disabled]:hover { background: var(--bg-soft, #f4f4f4); }
+  .provider-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-muted, #777);
+    line-height: 1.5;
+  }
+  .provider-note a { color: inherit; text-decoration: underline; }
 
   /* Hide all provider-tagged content by default; CSS rules below reveal
      only the variants matching the currently-selected provider. */
@@ -606,9 +613,10 @@
       <span class="provider-label">Your provider:</span>
       <button class="provider-tab" data-provider="claude">Claude (Anthropic)</button>
       <button class="provider-tab" data-provider="codex">Codex (OpenAI)</button>
-      <button class="provider-tab" data-provider="gemini" disabled aria-disabled="true" title="Gemini is not officially supported by sbx yet">Gemini (not supported)</button>
       <button class="provider-tab active" data-provider="opencode">OpenCode (free)</button>
+      <button class="provider-tab" data-provider="gemini" disabled aria-disabled="true" title="Google sunset Gemini CLI for free/Pro/Ultra users on 2026-06-18 and replaced it with Antigravity CLI">Gemini (not supported)</button>
     </div>
+    <p class="provider-note">Gemini CLI is no longer an option: Google <a href="https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/" target="_blank" rel="noopener">sunset it on 2026-06-18</a> in favor of Antigravity CLI, which sbx does not yet support.</p>
   </div>
 </header>
 
