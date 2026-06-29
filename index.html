@@ -334,6 +334,10 @@
   body.provider-codex     [data-show-for~="codex"]     { display: block; }
   body.provider-gemini    [data-show-for~="gemini"]    { display: block; }
   body.provider-opencode  [data-show-for~="opencode"]  { display: block; }
+  body.provider-claude    li[data-show-for~="claude"],
+  body.provider-codex     li[data-show-for~="codex"],
+  body.provider-gemini    li[data-show-for~="gemini"],
+  body.provider-opencode  li[data-show-for~="opencode"]  { display: list-item; }
   body.provider-claude    [data-show-for-inline~="claude"],
   body.provider-codex     [data-show-for-inline~="codex"],
   body.provider-gemini    [data-show-for-inline~="gemini"],
@@ -464,6 +468,39 @@
     font-weight: 400;
   }
   .callout.heavy { /* same plain prose, no special chrome */ }
+
+  /* Head start banner: a compact, visually distinct block at the top of the
+     workshop, aimed at in-person attendees who walk in while we're getting set
+     up and need to knock out four prereqs before Step 1. */
+  .head-start {
+    margin: 20px 0 28px;
+    padding: 18px 22px;
+    background: #fff8e1;
+    border: 1px solid #e6d28a;
+    border-left: 4px solid #c79c2b;
+    border-radius: 4px;
+  }
+  .head-start h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .head-start .head-start-lead {
+    margin: 0 0 12px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .head-start ol {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .head-start ol li {
+    margin: 8px 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .head-start code.inline { background: rgba(0,0,0,0.06); }
 
   /* Agent prompts : warm cream tint, "you say this to the agent" */
   .prompt-box {
@@ -621,6 +658,39 @@
     <p class="provider-note" data-show-for="codex">Codex may print a warning on its first prompt (<code class="inline">stream disconnected before completion</code>, or a flagged attack-attempt notice). That's expected: Codex's traffic to OpenAI is being routed through sbx's egress proxy, which trips Codex's own first-time connection checks.</p>
   </div>
 </header>
+
+<section class="head-start" id="head-start">
+  <h2>Head Start: do these four things while we get set up</h2>
+  <p class="head-start-lead">If you're attending in person, knock these out while we're getting started. Roughly 5 minutes. The full walkthrough is in <a href="#getting-started">Getting Started</a> below if you need it.</p>
+  <ol>
+    <li><strong>Sign in to Docker Hub.</strong> Create an account at <a href="https://hub.docker.com/" target="_blank" rel="noopener">hub.docker.com</a> if you don't already have one (30 seconds).</li>
+    <li data-show-for="claude"><strong>Have your Anthropic API key ready.</strong> Create one at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> under API Keys. Paste it somewhere you can copy from in a minute.</li>
+    <li data-show-for="codex"><strong>Have your OpenAI API key ready.</strong> Create one at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>. Paste it somewhere you can copy from in a minute.</li>
+    <li data-show-for="opencode"><strong>No API key needed.</strong> OpenCode includes a free model on Zen; we'll pick it from inside the agent in Step 1.</li>
+    <li><strong>Install sbx.</strong>
+      <div class="cmd-block" style="margin: 8px 0 0;">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">brew install docker/tap/sbx</pre>
+        <pre class="cmd" data-os="windows">winget install -h Docker.sbx</pre>
+      </div>
+      <span style="display:block; font-size:13px; color:var(--text-muted); margin-top:4px;">Need Homebrew first? Install from <a href="https://brew.sh" target="_blank" rel="noopener">brew.sh</a>.</span>
+    </li>
+    <li><strong>Log in to sbx.</strong>
+      <div class="cmd-block" style="margin: 8px 0 0;">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx login</pre>
+      </div>
+      <span style="display:block; font-size:13px; color:var(--text-muted); margin-top:4px;">Opens a browser flow. Use the Docker Hub account from step 1.</span>
+    </li>
+  </ol>
+</section>
 
 <section class="step" id="overview">
   <div class="step-header">
