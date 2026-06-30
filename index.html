@@ -961,8 +961,8 @@ global   service  opencode    ****...****</pre>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx &amp;&amp; cd ~/workshop/sbx</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx | Out-Null
-cd ~/workshop/sbx</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx | Out-Null
+cd $HOME/workshop/sbx</pre>
   </div>
 </section>
 
@@ -1273,7 +1273,7 @@ sbx rm sandbox-bravo</pre>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">echo "Written from the host" &gt; ~/workshop/sbx/host-to-agent.txt</pre>
-    <pre class="cmd" data-os="windows">"Written from the host" | Out-File ~/workshop/sbx/host-to-agent.txt</pre>
+    <pre class="cmd" data-os="windows">"Written from the host" | Out-File $HOME/workshop/sbx/host-to-agent.txt</pre>
   </div>
   <p>Now inside the sandbox, ask the agent to read it:</p>
   <div class="prompt-box" data-no-command-copy="">
@@ -1299,8 +1299,8 @@ sbx rm sandbox-bravo</pre>
     </div>
     <pre class="cmd active" data-os="mac">ls -la ~/workshop/sbx
 cat ~/workshop/sbx/agent-to-host.txt</pre>
-    <pre class="cmd" data-os="windows">Get-ChildItem ~/workshop/sbx
-Get-Content ~/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd" data-os="windows">Get-ChildItem $HOME/workshop/sbx
+Get-Content $HOME/workshop/sbx/agent-to-host.txt</pre>
   </div>
   <div class="expected">
     <div class="label">Expected (on host)</div>
@@ -1322,7 +1322,7 @@ Written from the agent</pre>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">echo "This file lives in your home, not the workspace" &gt; ~/workshop/host-marker.txt</pre>
-    <pre class="cmd" data-os="windows">"This file lives in your home, not the workspace" | Out-File ~/workshop/host-marker.txt</pre>
+    <pre class="cmd" data-os="windows">"This file lives in your home, not the workspace" | Out-File $HOME/workshop/host-marker.txt</pre>
   </div>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
@@ -1417,7 +1417,7 @@ global   service  opencode    ****...****</pre>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">rm ~/workshop/host-marker.txt ~/workshop/sbx/host-to-agent.txt ~/workshop/sbx/agent-to-host.txt</pre>
-    <pre class="cmd" data-os="windows">Remove-Item ~/workshop/host-marker.txt, ~/workshop/sbx/host-to-agent.txt, ~/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd" data-os="windows">Remove-Item $HOME/workshop/host-marker.txt, $HOME/workshop/sbx/host-to-agent.txt, $HOME/workshop/sbx/agent-to-host.txt</pre>
   </div>
 
   <details class="go-deeper">
@@ -1446,8 +1446,8 @@ global   service  opencode    ****...****</pre>
         </div>
         <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx-docs
 echo "Read only reference material" &gt; ~/workshop/sbx-docs/README.txt</pre>
-        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx-docs | Out-Null
-Set-Content ~/workshop/sbx-docs/README.txt "Read only reference material"</pre>
+        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx-docs | Out-Null
+Set-Content $HOME/workshop/sbx-docs/README.txt "Read only reference material"</pre>
       </div>
       <p>Now spin up a sandbox with the current directory as a writable workspace and <code class="inline">~/workshop/sbx-docs</code> mounted read-only:</p>
       <div data-show-for="claude">
@@ -1506,7 +1506,7 @@ sbx rm sandbox-bravo
 rm -rf ~/workshop/sbx-docs</pre>
         <pre class="cmd" data-os="windows">sbx stop sandbox-bravo
 sbx rm sandbox-bravo
-Remove-Item -Recurse -Force ~/workshop/sbx-docs</pre>
+Remove-Item -Recurse -Force $HOME/workshop/sbx-docs</pre>
       </div>
     </div>
   </details>
@@ -2068,8 +2068,8 @@ WORKDIR /app
 COPY app.py .
 EXPOSE 8000
 CMD ["python", "app.py"]' &gt; Dockerfile</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx/research-app | Out-Null
-cd ~/workshop/sbx/research-app
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx/research-app | Out-Null
+cd $HOME/workshop/sbx/research-app
 @'
 FROM python:3.14-slim
 WORKDIR /app
@@ -2314,7 +2314,7 @@ CMD ["python", "app.py"]
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review | Out-Null</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review | Out-Null</pre>
   </div>
   <p>Claude Code automatically discovers skills from <code class="inline">.claude/skills/</code> in the workspace. By dropping a <code class="inline">SKILL.md</code> there, the kit makes the skill available the moment the sandbox starts. There's no install command to run and no manual "load this skill" prompt to issue; the kit just drops files into the right place at create time.</p>
   <p class="note-inline"><span class="label">Other providers</span> The <code class="inline">.claude/skills/</code> path originated as Claude Code's convention and is also honored by OpenCode. Codex uses its own skill-loading path; if your agent doesn't auto-discover the skill, change the path under <code class="inline">files/workspace/</code> to match your harness. The kit machinery is identical either way.</p>
@@ -2338,7 +2338,7 @@ kind: mixin
 name: docker-review
 displayName: Dockerfile review skill
 description: Ships a Claude Code skill that reviews Dockerfiles for best practices
-'@ | Set-Content ~/workshop/kits/docker-review/spec.yaml</pre>
+'@ | Set-Content $HOME/workshop/kits/docker-review/spec.yaml</pre>
   </div>
   <p>The fields: <code class="inline">schemaVersion</code> is the spec format version. <code class="inline">kind</code> is either <code class="inline">mixin</code> (extends an existing agent) or <code class="inline">agent</code> (defines a new one from scratch). <code class="inline">name</code> is the kit identifier. <code class="inline">displayName</code> and <code class="inline">description</code> are human-readable. That's the whole spec for a file-only mixin kit. There are no network rules and no install commands, only the file injection handled by the <code class="inline">files/</code> tree we'll populate next.</p>
 
@@ -2393,7 +2393,7 @@ Rules:
 - Fill Findings with what you actually see in the Dockerfile under that aspect, not generic advice.
 - Fill Recommendation with the specific change to make. If Status is Pass, write "None".
 - No commentary outside the table.
-'@ | Set-Content ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
+'@ | Set-Content $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
   </div>
   <p>The frontmatter's <code class="inline">description</code> field is critical: Claude Code uses it to decide when to invoke the skill. When the user asks something matching the description ("review my Dockerfile", "audit this Docker setup"), Claude pulls the skill content into its context and follows the structured checklist. The user doesn't have to invoke the skill by name or load it manually.</p>
 
@@ -2568,8 +2568,8 @@ task link</pre>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/docker-agent &amp;&amp; cd ~/workshop/docker-agent</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/docker-agent | Out-Null
-Set-Location ~/workshop/docker-agent</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/docker-agent | Out-Null
+Set-Location $HOME/workshop/docker-agent</pre>
   </div>
   <p>Now write <code class="inline">team.yaml</code> with the five roles. Each role names its model, what it's for, and the toolsets it has access to:</p>
   <div class="cmd-block">
@@ -2861,7 +2861,7 @@ agents:
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">cat ~/workshop/docker-agent/report.md</pre>
-    <pre class="cmd" data-os="windows">Get-Content ~/workshop/docker-agent/report.md</pre>
+    <pre class="cmd" data-os="windows">Get-Content $HOME/workshop/docker-agent/report.md</pre>
   </div>
   <p>You should see a structured academic-style briefing on the 2026 FIFA World Cup with Abstract, Background, Recent Work, Key Insights, and References sections. The References enumerate every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered.</p>
   <p>Now open the HTML version in your browser:</p>
@@ -2872,7 +2872,7 @@ agents:
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">open ~/workshop/docker-agent/report.html</pre>
-    <pre class="cmd" data-os="windows">Start-Process ~/workshop/docker-agent/report.html</pre>
+    <pre class="cmd" data-os="windows">Start-Process $HOME/workshop/docker-agent/report.html</pre>
   </div>
   <p>The HTML page should look like an academic paper: serif body font, centered title, italic abstract block, small-caps section headings, justified body text, and a properly-formatted References list with hanging indent. Same content as the markdown, just typeset.</p>
   <p>The boundary held end to end: each researcher gathered through its own MCP and nowhere else; the analyst reasoned without searching; the writer wrote without searching; the publisher read and re-rendered without searching or analyzing. Each role stayed in its lane because the yaml said so.</p>
