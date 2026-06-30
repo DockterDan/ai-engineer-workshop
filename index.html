@@ -1854,10 +1854,12 @@ ERROR: No matching distribution found for requests</pre>
   <p>Restart the sbx daemon so it picks up the new <code class="inline">SBX_MCP_URL</code>:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx daemon stop &amp;&amp; sbx daemon start -d</pre>
+    <pre class="cmd active" data-os="mac">sbx daemon stop &amp;&amp; sbx daemon start -d</pre>
+    <pre class="cmd" data-os="windows">sbx daemon stop; sbx daemon start -d</pre>
   </div>
   <p>Confirm the subtree is now available:</p>
   <div class="cmd-block">
