@@ -1874,7 +1874,9 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active" data-os="mac">open -a Docker</pre>
     <pre class="cmd" data-os="windows">Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"</pre>
   </div>
-  <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid. Then confirm the daemon is up:</p>
+  <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid.</p>
+  <p class="note-inline"><span class="label">Sign in to Docker Hub from Docker Desktop</span> A fresh Docker Desktop install isn't signed in to Docker Hub yet, and you'll need to be signed in to pull the MCP image we'll use in a moment. Click the Docker Desktop icon, then <em>Sign in</em>, and use the same Docker Hub account from Quick Setup step 1.</p>
+  <p>Then confirm the daemon is up:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1931,7 +1933,7 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp --help</pre>
   </div>
   <p>You'll see subcommands like <code class="inline">add</code>, <code class="inline">ls</code>, <code class="inline">inspect</code>, <code class="inline">rm</code>, and <code class="inline">bundle</code>. <code class="inline">SBX_MCP_URL</code> is a per-shell variable, so if you open a new terminal you'll need to set it again or persist it in your shell's rc file (<code class="inline">~/.zshrc</code>, <code class="inline">~/.bashrc</code>, or <code class="inline">~/.config/fish/config.fish</code>).</p>
-  <p class="note-inline"><span class="label">If you hit "mcp gateway setup failed"</span> Sometimes the first <code class="inline">sbx create --mcp ...</code> on a fresh install emits a <code class="inline">WARN: mcp gateway setup failed</code> message. If your sandbox creates anyway and the MCP tool shows up when the agent lists its tools, the warning was benign. If the tool doesn't appear, try re-running the create command once; that's usually enough to clear the state. As a fallback you can also run a local <code class="inline">docker/mcp-gateway</code> Compose stack and point <code class="inline">SBX_MCP_URL</code> at <code class="inline">http://localhost:8811</code> instead.</p>
+  <p class="note-inline"><span class="label">If MCP commands later fail with a gateway error</span> Two common causes: (1) the sbx daemon doesn't know about <code class="inline">SBX_MCP_URL</code> because it was started before you exported the env var; the daemon restart we did in this step is what fixes that. (2) Docker Desktop isn't signed in to Docker Hub, so it can't pull the MCP image; open Docker Desktop and sign in. We'll touch on both again in Step 4's prep, before the first MCP load.</p>
 
   <h3 class="substep">4.2 Register a local MCP server</h3>
   <p><code class="inline">sbx mcp add</code> supports four registration modes: remote OAuth, community registry (managed), community registry (local), and local stdio. We'll use the fourth: a local stdio MCP server that runs as a Docker container on the host. It's the most reliable path and needs nothing beyond your machine.</p>
@@ -1994,61 +1996,21 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p>You'll see a fresh Blocked requests entry for <code class="inline">en.wikipedia.org</code> with the reason "No matching allow rule (default deny)." That's the network-policy-only baseline.</p>
 
-  <p><strong>Part 2: recreate sandbox-alpha with the MCP attached.</strong> <code class="inline">--mcp</code> is a create-time flag, not a run-time flag, so we can't add the Wikipedia MCP to the running sandbox-alpha. We have to stop and remove it, then recreate with <code class="inline">--mcp local-wiki</code>. The sandbox itself is stateless: all your workspace files live on the host at <code class="inline">~/workshop/sbx</code> and survive the recreate. Your policy rules, API key secrets, and Docker logins survive too. Only the sandbox VM is replaced.</p>
-  <p>Exit the agent (Ctrl+C twice). Then in Terminal B, stop and remove sandbox-alpha:</p>
+  <p><strong>Part 2: attach the MCP to the running sandbox.</strong> The agent in <code class="inline">sandbox-alpha</code> has no Wikipedia tool right now. We're going to give it one without restarting the sandbox or the agent. Switch to Terminal B (your host shell) and run:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
+      <span class="cmd-label">host shell (Terminal B)</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx stop sandbox-alpha</pre>
+    <pre class="cmd active">sbx mcp load local-wiki --sandbox sandbox-alpha</pre>
   </div>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">sbx rm sandbox-alpha</pre>
-  </div>
-  <p>Recreate it with the MCP attached. Run the command for the provider you picked at the top:</p>
-  <div data-show-for="claude">
-    <div class="cmd-block">
-      <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki claude ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki claude $HOME/workshop/sbx</pre>
-    </div>
-  </div>
-  <div data-show-for="codex">
-    <div class="cmd-block">
-      <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki codex ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki codex $HOME/workshop/sbx</pre>
-    </div>
-  </div>
-  <div data-show-for="gemini">
-    <div class="cmd-block">
-      <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki gemini ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki gemini $HOME/workshop/sbx</pre>
-    </div>
-  </div>
-  <div data-show-for="opencode">
-    <div class="cmd-block">
-      <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki opencode ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki opencode $HOME/workshop/sbx</pre>
-    </div>
-  </div>
-  <p>Attach to the new sandbox-alpha:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell (Terminal A)</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">sbx run --name sandbox-alpha</pre>
-  </div>
-  <p>Now ask essentially the same question, without telling the agent how to fetch the article:</p>
+  <p>This attaches the <code class="inline">local-wiki</code> MCP server you registered in 4.2 to the running sandbox's MCP gateway. The agent inside the sandbox sees the new server's tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification. No restart required.</p>
+  <p>Switch back to Terminal A (the agent prompt). Ask essentially the same question, without telling the agent how to fetch the article:</p>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Look up the 2026 FIFA World Cup on Wikipedia. Give me the article's summary and three key facts.
   </div>
-  <p>This time the agent has Wikipedia MCP tools available, sees them at session start, and reaches for them rather than the built-in fetch. The same query that failed a minute ago now returns the article summary and facts. Same task, same intent; what changed is the set of capabilities the agent has to work with.</p>
+  <p>This time the agent has Wikipedia MCP tools available (the gateway pushed a <code class="inline">tools/list_changed</code> notification when you ran <code class="inline">sbx mcp load</code>), and reaches for them rather than the built-in fetch. The same query that failed a minute ago now returns the article summary and facts. Same sandbox, same agent session, same task, same intent; what changed is the set of capabilities the agent has to work with.</p>
 
   <p><strong>Part 3: confirm the agent did not touch the network directly.</strong> Switch to Terminal B again and check the policy log:</p>
   <div class="cmd-block">
@@ -2059,6 +2021,21 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx policy log sandbox-alpha</pre>
   </div>
   <p>There's no new Blocked requests entry for Wikipedia from this second attempt, and no new Allowed requests entry for it either. The agent retrieved real Wikipedia content without the sandbox's network ever touching <code class="inline">wikipedia.org</code>. The tool call traveled from the agent, through the MCP protocol, to the host-side Wikipedia MCP server, out to Wikipedia's API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
+
+  <div class="callout">
+    <span class="label">One-step alternative</span>
+    We split this into "create the sandbox, then attach the MCP" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-Wikipedia to Wikipedia without a restart. If you'd rather declare the MCP at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> does the same end-state in one command (where supported by your sbx build):
+    <div class="cmd-block" style="margin-top: 10px;">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki claude ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki claude $HOME/workshop/sbx</pre>
+    </div>
+    Use whichever flow fits the situation: <code class="inline">--mcp</code> at create when the MCP is part of the sandbox's identity from the start, <code class="inline">sbx mcp load</code> when you want to add (or swap) tools on a sandbox that's already running.
+  </div>
 
   <h3 class="substep">4.4 Wrap up</h3>
   <p>Exit the agent (Ctrl+C twice) to free your terminal for Step 5's host commands. <strong>Don't tear down sandbox-alpha or the local-wiki MCP registration.</strong> Step 5 will keep using sandbox-alpha for its research demo, and the agent will have the Wikipedia MCP available there if it decides to use it. We'll do the full cleanup of the MCP registration in the wrap-up section at the end of the workshop.</p>
