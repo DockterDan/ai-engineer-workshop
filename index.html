@@ -2169,7 +2169,7 @@ CMD ["python", "app.py"]
     <br>
     This is also a chance to show off some real Python craft on the build side. Visualizations, animations, layout, copy. Lean in.<br>
     <br>
-    Research enough to make it interesting, not exhaustively. Cap your total external lookups at <strong>5 to 6 source or API attempts</strong> across both threads (a mix of allowed and blocked is fine and expected). Some sources will work, others won't. When one doesn't, pick a different path; don't loop on the same failing source. As soon as you have enough data to build something interesting, stop researching and start writing <code>app.py</code>. <strong>Target wall-clock time: 1 to 2 minutes total.</strong> If you're past that, ship what you have.<br>
+    Research with real football sources. Try fifa.com for tournament info, sports outlets (ESPN, BBC Sport, theathletic.com, skysports.com), and transfermarkt.com or similar for player and match data. Mix in GitHub for repos and recent open-source activity. Cap your total external requests at around 5 to 6 attempts; if a source doesn't respond, move on to a different one rather than retrying. <strong>Target wall-clock time: 1 to 2 minutes total.</strong> Once you have enough material, stop researching and start writing <code>app.py</code>.<br>
     <br>
     <strong>Constraints:</strong><br>
     - Only write <code>app.py</code>. Don't modify the Dockerfile or create any other files. Embed all research data inline as Python literals (dict, list, etc.) at the top of the file. Don't read from external JSON, CSV, or any data file at runtime. The container only ships <code>app.py</code>, so anything not in that file won't exist inside the running image.<br>
@@ -2200,10 +2200,12 @@ CMD ["python", "app.py"]
   <p>Once the agent says it's done, move into the project directory on the host:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">cd ~/workshop/sbx/research-app</pre>
+    <pre class="cmd active" data-os="mac">cd ~/workshop/sbx/research-app</pre>
+    <pre class="cmd" data-os="windows">cd $HOME/workshop/sbx/research-app</pre>
   </div>
   <p>Build the image. The <code class="inline">--provenance=true</code> and <code class="inline">--sbom=true</code> flags tell Docker to attach a build provenance attestation and a software bill of materials to the resulting image. Scout uses both for a more accurate scan in 5.5.</p>
   <div class="cmd-block">
@@ -2476,10 +2478,12 @@ Rules:
   <p>Before spinning up a sandbox with the kit attached, validate the spec to catch any errors early:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx kit validate ~/workshop/kits/docker-review/</pre>
+    <pre class="cmd active" data-os="mac">sbx kit validate ~/workshop/kits/docker-review/</pre>
+    <pre class="cmd" data-os="windows">sbx kit validate $HOME/workshop/kits/docker-review/</pre>
   </div>
   <p>If anything's wrong (malformed spec, missing required fields, broken file references), validate surfaces it before sandbox creation. A clean validation prints "kit valid" or similar and exits 0.</p>
 
