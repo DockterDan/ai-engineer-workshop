@@ -750,15 +750,6 @@
 # https://github.com/docker/sbx-releases/releases</pre>
   </div>
   <p class="note-inline"><span class="label">Windows users</span> Close and reopen your terminal after the install so <code class="inline">sbx</code> picks up on PATH. Otherwise the next command will report "sbx not found".</p>
-  <p class="note-inline"><span class="label">If <code class="inline">sbx create</code> fails with "Windows Hypervisor Platform is not enabled"</span> sbx boots each sandbox as a Linux microVM, and on Windows that requires the Hypervisor Platform feature to be turned on. To turn it on, open <strong>PowerShell as Administrator</strong> (right-click PowerShell in the Start menu, choose <em>Run as administrator</em>) and run:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">PowerShell (as Administrator)</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">dism /Online /Enable-Feature /FeatureName:HypervisorPlatform /All</pre>
-  </div>
-  <p>You'll likely need to restart your computer afterward for the change to take effect.</p>
 
 
   <h3 class="substep">Verify the install</h3>
@@ -1044,6 +1035,16 @@ cd ~/workshop/sbx</pre>
     </div>
   </div>
   <p>First run pulls the agent's template image from Docker Hub if it isn't already cached locally (1-2 minutes).</p>
+
+  <p class="note-inline"><span class="label">Windows users: if this fails with "Windows Hypervisor Platform is not enabled"</span> sbx boots each sandbox as a Linux microVM, and on Windows that requires the Hypervisor Platform feature to be turned on. To turn it on, open <strong>PowerShell as Administrator</strong> (right-click PowerShell in the Start menu, choose <em>Run as administrator</em>) and run:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">PowerShell (as Administrator)</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">dism /Online /Enable-Feature /FeatureName:HypervisorPlatform /All</pre>
+  </div>
+  <p>You'll likely need to restart your computer afterward for the change to take effect, then re-run <code class="inline">sbx create</code>.</p>
 
   <h3 class="substep">1.2 (Optional) Verify the sandbox is running</h3>
   <p><code class="inline">sbx ls</code> lists every sandbox the sbx daemon knows about along with its agent type, status, exposed ports, and workspace path. Right after <code class="inline">sbx create</code> the sandbox should show <code class="inline">running</code> immediately. Useful sanity check before you connect to it.</p>
