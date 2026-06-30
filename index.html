@@ -668,6 +668,16 @@
     <li data-show-for="codex"><strong>Have an OpenAI API key ready to go.</strong> Generate one at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>.</li>
     <li data-show-for="opencode"><strong>Have an OpenCode API key ready to go.</strong> Generate one at <a href="https://opencode.ai/" target="_blank" rel="noopener">opencode.ai</a>.</li>
     <li><strong>Install Homebrew (Mac users, if you don't have it).</strong> Get it from <a href="https://brew.sh" target="_blank" rel="noopener">brew.sh</a>. We use it for every install in this workshop.</li>
+    <li><strong>Windows users: enable Windows Hypervisor Platform.</strong> Open <em>Turn Windows features on or off</em> and check <strong>Windows Hypervisor Platform</strong>, or run this in an elevated PowerShell, then reboot:
+      <div class="cmd-block" style="margin: 8px 0 0;">
+        <div class="cmd-bar">
+          <span class="cmd-label">elevated PowerShell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">dism /Online /Enable-Feature /FeatureName:HypervisorPlatform /All</pre>
+      </div>
+      <span style="display:block; font-size:13px; color:var(--text-muted); margin-top:4px;">sbx boots each sandbox as a Linux microVM, and on Windows that needs Hypervisor Platform turned on. Skip this step on Mac.</span>
+    </li>
     <li><strong>Install sbx.</strong>
       <div class="cmd-block" style="margin: 8px 0 0;">
         <div class="cmd-bar">
@@ -737,6 +747,17 @@
 
   <h3 class="substep">Install sbx</h3>
   <p class="note-inline"><span class="label">MacOS users</span> The MacOS install commands in this workshop use <strong>Homebrew</strong>. If you don't already have it, install it from <a href="https://brew.sh" target="_blank" rel="noopener">brew.sh</a> first (one terminal command, takes a couple of minutes). Once <code class="inline">brew --version</code> prints a version, come back here.</p>
+  <p class="note-inline"><span class="label">Windows users</span> sbx boots each sandbox as a Linux microVM, which requires <strong>Windows Hypervisor Platform</strong> to be enabled. Open <em>Turn Windows features on or off</em> and check <strong>Windows Hypervisor Platform</strong>, or run this in an elevated PowerShell, then reboot before continuing:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">elevated PowerShell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">dism /Online /Enable-Feature /FeatureName:HypervisorPlatform /All</pre>
+  </div>
+  <p>Without this enabled, <code class="inline">sbx create</code> fails on the VM-creation step with a "Windows Hypervisor Platform is not enabled" error.</p>
+
+  <p>Install sbx itself:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
