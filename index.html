@@ -960,9 +960,17 @@ global   service  opencode    ****...****</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx &amp;&amp; cd ~/workshop/sbx</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx | Out-Null
-cd $HOME/workshop/sbx</pre>
+    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx | Out-Null</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active" data-os="mac">cd ~/workshop/sbx</pre>
+    <pre class="cmd" data-os="windows">cd $HOME/workshop/sbx</pre>
   </div>
 </section>
 
@@ -1196,8 +1204,14 @@ agent
           <span class="cmd-label">host shell</span>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active">sbx stop sandbox-bravo
-sbx rm sandbox-bravo</pre>
+        <pre class="cmd active">sbx stop sandbox-bravo</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx rm sandbox-bravo</pre>
       </div>
       <p>Now recreate it with hard CPU and memory caps:</p>
       <div data-show-for="claude">
@@ -1239,8 +1253,14 @@ sbx rm sandbox-bravo</pre>
           <span class="cmd-label">host shell</span>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active">sbx stop sandbox-bravo
-sbx rm sandbox-bravo</pre>
+        <pre class="cmd active">sbx stop sandbox-bravo</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx rm sandbox-bravo</pre>
       </div>
     </div>
   </details>
@@ -1297,10 +1317,17 @@ sbx rm sandbox-bravo</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">ls -la ~/workshop/sbx
-cat ~/workshop/sbx/agent-to-host.txt</pre>
-    <pre class="cmd" data-os="windows">Get-ChildItem $HOME/workshop/sbx
-Get-Content $HOME/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd active" data-os="mac">ls -la ~/workshop/sbx</pre>
+    <pre class="cmd" data-os="windows">Get-ChildItem $HOME/workshop/sbx</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active" data-os="mac">cat ~/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd" data-os="windows">Get-Content $HOME/workshop/sbx/agent-to-host.txt</pre>
   </div>
   <div class="expected">
     <div class="label">Expected (on host)</div>
@@ -1444,10 +1471,17 @@ global   service  opencode    ****...****</pre>
           <button class="cmd-tab" data-os="windows">Windows</button>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx-docs
-echo "Read only reference material" &gt; ~/workshop/sbx-docs/README.txt</pre>
-        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx-docs | Out-Null
-Set-Content $HOME/workshop/sbx-docs/README.txt "Read only reference material"</pre>
+        <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx-docs</pre>
+        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx-docs | Out-Null</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">echo "Read only reference material" &gt; ~/workshop/sbx-docs/README.txt</pre>
+        <pre class="cmd" data-os="windows">Set-Content $HOME/workshop/sbx-docs/README.txt "Read only reference material"</pre>
       </div>
       <p>Now spin up a sandbox with the current directory as a writable workspace and <code class="inline">~/workshop/sbx-docs</code> mounted read-only:</p>
       <div data-show-for="claude">
@@ -1497,16 +1531,26 @@ bash: ../sbx-docs/agent-wrote.txt: Read-only file system</pre>
       <p>Clean up before moving on so everyone's starting Step 3 with just <code class="inline">sandbox-alpha</code>:</p>
       <div class="cmd-block">
         <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx stop sandbox-bravo</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx rm sandbox-bravo</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
           <button class="cmd-tab active" data-os="mac">MacOS</button>
           <button class="cmd-tab" data-os="windows">Windows</button>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active" data-os="mac">sbx stop sandbox-bravo
-sbx rm sandbox-bravo
-rm -rf ~/workshop/sbx-docs</pre>
-        <pre class="cmd" data-os="windows">sbx stop sandbox-bravo
-sbx rm sandbox-bravo
-Remove-Item -Recurse -Force $HOME/workshop/sbx-docs</pre>
+        <pre class="cmd active" data-os="mac">rm -rf ~/workshop/sbx-docs</pre>
+        <pre class="cmd" data-os="windows">Remove-Item -Recurse -Force $HOME/workshop/sbx-docs</pre>
       </div>
     </div>
   </details>
@@ -1662,8 +1706,14 @@ pypi.org:443      domain-allowed   1</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx policy deny network pypi.org
-sbx policy ls</pre>
+    <pre class="cmd active">sbx policy deny network pypi.org</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx policy ls</pre>
   </div>
   <div class="expected">
     <div class="label">Expected. Last line of sbx policy ls</div>
@@ -1678,8 +1728,14 @@ sbx policy ls</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx stop sandbox-alpha
-sbx run --name sandbox-alpha</pre>
+    <pre class="cmd active">sbx stop sandbox-alpha</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx run --name sandbox-alpha</pre>
   </div>
 
   <h3 class="substep">3.6 Verify the deny rule is enforced</h3>
@@ -1854,12 +1910,17 @@ ERROR: No matching distribution found for requests</pre>
   <p>Restart the sbx daemon so it picks up the new <code class="inline">SBX_MCP_URL</code>:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <button class="cmd-tab active" data-os="mac">MacOS</button>
-      <button class="cmd-tab" data-os="windows">Windows</button>
+      <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">sbx daemon stop &amp;&amp; sbx daemon start -d</pre>
-    <pre class="cmd" data-os="windows">sbx daemon stop; sbx daemon start -d</pre>
+    <pre class="cmd active">sbx daemon stop</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx daemon start -d</pre>
   </div>
   <p>Confirm the subtree is now available:</p>
   <div class="cmd-block">
@@ -1940,8 +2001,14 @@ ERROR: No matching distribution found for requests</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx stop sandbox-alpha
-sbx rm sandbox-alpha</pre>
+    <pre class="cmd active">sbx stop sandbox-alpha</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx rm sandbox-alpha</pre>
   </div>
   <p>Recreate it with the MCP attached. Run the command for the provider you picked at the top:</p>
   <div data-show-for="claude">
@@ -2070,15 +2137,31 @@ sbx rm sandbox-alpha</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx/research-app &amp;&amp; cd ~/workshop/sbx/research-app
-echo 'FROM python:3.14-slim
+    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx/research-app</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx/research-app | Out-Null</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active" data-os="mac">cd ~/workshop/sbx/research-app</pre>
+    <pre class="cmd" data-os="windows">cd $HOME/workshop/sbx/research-app</pre>
+  </div>
+  <p>Write the starter Dockerfile (the agent will fill in <code class="inline">app.py</code> later):</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active" data-os="mac">echo 'FROM python:3.14-slim
 WORKDIR /app
 COPY app.py .
 EXPOSE 8000
 CMD ["python", "app.py"]' &gt; Dockerfile</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx/research-app | Out-Null
-cd $HOME/workshop/sbx/research-app
-@'
+    <pre class="cmd" data-os="windows">@'
 FROM python:3.14-slim
 WORKDIR /app
 COPY app.py .
@@ -2465,8 +2548,14 @@ Rules:
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx stop sandbox-kits
-sbx rm sandbox-kits</pre>
+    <pre class="cmd active">sbx stop sandbox-kits</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx rm sandbox-kits</pre>
   </div>
   <p>Leave <code class="inline">~/workshop/kits/docker-review/</code> in place; it's the artifact you'd commit to your team's repo. The full cleanup of the kit directory is in the wrap-up section at the end of the workshop.</p>
 
@@ -2575,9 +2664,17 @@ task link</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/docker-agent &amp;&amp; cd ~/workshop/docker-agent</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/docker-agent | Out-Null
-Set-Location $HOME/workshop/docker-agent</pre>
+    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/docker-agent</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/docker-agent | Out-Null</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <button class="cmd-tab active" data-os="mac">MacOS</button>
+      <button class="cmd-tab" data-os="windows">Windows</button>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active" data-os="mac">cd ~/workshop/docker-agent</pre>
+    <pre class="cmd" data-os="windows">cd $HOME/workshop/docker-agent</pre>
   </div>
   <p>Now write <code class="inline">team.yaml</code> with the five roles. Each role names its model, what it's for, and the toolsets it has access to:</p>
   <div class="cmd-block">
