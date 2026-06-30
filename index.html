@@ -750,10 +750,10 @@
 # https://github.com/docker/sbx-releases/releases</pre>
   </div>
   <p class="note-inline"><span class="label">Windows users</span> Close and reopen your terminal after the install so <code class="inline">sbx</code> picks up on PATH. Otherwise the next command will report "sbx not found".</p>
-  <p class="note-inline"><span class="label">If <code class="inline">sbx create</code> fails with "Windows Hypervisor Platform is not enabled"</span> sbx boots each sandbox as a Linux microVM, which on Windows requires Hypervisor Platform. Most Windows 11 machines have it on already. If you hit the error, open <em>Turn Windows features on or off</em> and check <strong>Windows Hypervisor Platform</strong>, or run this in an elevated PowerShell, then reboot:</p>
+  <p class="note-inline"><span class="label">If <code class="inline">sbx create</code> fails with "Windows Hypervisor Platform is not enabled"</span> You need to turn that Windows feature on. Open <em>Turn Windows features on or off</em> and check <strong>Windows Hypervisor Platform</strong>, or run the command below in <strong>PowerShell launched as Administrator</strong> (right-click PowerShell in the Start menu, choose <em>Run as administrator</em>), then reboot. Running this in a regular PowerShell window will fail with "Error: 740 — Elevated permissions are required to run DISM."</p>
   <div class="cmd-block">
     <div class="cmd-bar">
-      <span class="cmd-label">elevated PowerShell</span>
+      <span class="cmd-label">PowerShell (as Administrator)</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active">dism /Online /Enable-Feature /FeatureName:HypervisorPlatform /All</pre>
