@@ -1883,7 +1883,8 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">docker info</pre>
   </div>
   <p>If it prints engine details (server version, OS, kernel), you're good. If it prints <code class="inline">Cannot connect to the Docker daemon</code>, Docker Desktop hasn't finished starting yet. Wait a few seconds and try again. If you just installed Docker for the first time, open a fresh terminal so your shell picks up the updated PATH.</p>
-  <p>Now sign in to Docker Hub from the CLI. A fresh Docker install isn't signed in, and you'll need to be to pull the MCP image we'll use in a moment (and Docker Scout in Step 5):</p>
+  <p>Now sign in to Docker Hub. You need to be signed in to pull the MCP image we'll use in a moment (and Docker Scout in Step 5).</p>
+  <p>On a fresh install, Docker Desktop often pops a sign-in dialog the first time you launch it. If you see it, sign in there with your Docker Hub account (same one from Quick Setup step 1) and you're done. If you don't see the dialog, or you dismissed it, sign in from the terminal instead:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1891,7 +1892,7 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">docker login</pre>
   </div>
-  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop). Once it confirms you're signed in, you're ready for Step 4.</p>
+  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop). Once you're signed in (via either path), you're ready for Step 4.</p>
 </section>
 
 <section class="step" id="step-4">
