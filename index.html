@@ -1874,9 +1874,7 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active" data-os="mac">open -a Docker</pre>
     <pre class="cmd" data-os="windows">Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"</pre>
   </div>
-  <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid.</p>
-  <p class="note-inline"><span class="label">Sign in to Docker Hub from Docker Desktop</span> A fresh Docker Desktop install isn't signed in to Docker Hub yet, and you'll need to be signed in to pull the MCP image we'll use in a moment. Click the Docker Desktop icon, then <em>Sign in</em>, and use the same Docker Hub account from Quick Setup step 1.</p>
-  <p>Then confirm the daemon is up:</p>
+  <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid. Then confirm the daemon is up:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1885,6 +1883,15 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">docker info</pre>
   </div>
   <p>If it prints engine details (server version, OS, kernel), you're good. If it prints <code class="inline">Cannot connect to the Docker daemon</code>, Docker Desktop hasn't finished starting yet. Wait a few seconds and try again. If you just installed Docker for the first time, open a fresh terminal so your shell picks up the updated PATH.</p>
+  <p>Now sign in to Docker Hub from the CLI. A fresh Docker install isn't signed in, and you'll need to be to pull the MCP image we'll use in a moment (and Docker Scout in Step 5):</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker login</pre>
+  </div>
+  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop). Once it confirms you're signed in, you're ready for Step 4.</p>
 </section>
 
 <section class="step" id="step-4">
@@ -2005,7 +2012,15 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp load local-wiki --sandbox sandbox-alpha</pre>
   </div>
   <p>This attaches the <code class="inline">local-wiki</code> MCP server you registered in 4.2 to the running sandbox's MCP gateway. The agent inside the sandbox sees the new server's tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification. No restart required.</p>
-  <p>Switch back to Terminal A (the agent prompt). Ask essentially the same question, without telling the agent how to fetch the article:</p>
+  <p>Switch back to Terminal A. If you exited the agent at any point during Part 1 (Ctrl+C twice), reconnect now:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell (Terminal A)</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx run --name sandbox-alpha</pre>
+  </div>
+  <p>If you're already at the agent prompt, skip the command above. Either way, ask essentially the same question as before, without telling the agent how to fetch the article:</p>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Look up the 2026 FIFA World Cup on Wikipedia. Give me the article's summary and three key facts.
@@ -2087,16 +2102,7 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p>Confirm it's gone with <code class="inline">sbx policy ls</code>. The sandbox is now back to default network behavior for <code class="inline">pypi.org</code>. The <code class="inline">fifa.com</code> allow from 3.3 stays in place since the agent may want it during Step 5's research.</p>
 
-  <h4>Sign in to Docker Hub for Scout</h4>
-  <p>Docker Scout (the vulnerability scanner we'll use in Step 5) requires you to be signed in to Docker Hub. Run:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">docker login</pre>
-  </div>
-  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop). Once it confirms you're signed in, you're ready for Step 5.</p>
+  <p>You signed in to Docker Hub before Step 4, so Docker Scout (Step 5's vulnerability scanner) is already authorized to fetch policy data. Nothing more to do here — you're ready for Step 5.</p>
 </section>
 
 <section class="step" id="step-5">
