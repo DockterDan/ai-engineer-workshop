@@ -2589,8 +2589,17 @@ Rules:
     Docker Agent and sbx are complementary layers of Docker's agent platform, not stacked. sbx scopes a single agent inside an isolated VM; Docker Agent runs on your host and composes multiple roles in one yaml. Steps 7 and 8 don't build on the sandbox you've been running, so think of them as a glimpse of multi-agent orchestration on its own track. The boundary in Step 8 comes from Docker Agent's per-role toolset assignments, not from sbx, but the underlying idea is the same: enforce capability scope at the runtime, never in the prompt.
   </div>
 
-  <h3 class="substep">7.1 Install Docker Agent and set your API key</h3>
-  <p>Docker Agent ships as the <code class="inline">docker-agent</code> Homebrew package on Mac. It installs as a Docker CLI plugin, so the runtime is invoked as <code class="inline">docker agent &lt;command&gt;</code> (the same shape as <code class="inline">docker scout</code> earlier in the workshop). Install it once and the subcommand is available wherever Docker is.</p>
+  <h3 class="substep">7.1 Confirm Docker Agent is available, then set your API key</h3>
+  <p>Docker Agent is a Docker CLI plugin, invoked as <code class="inline">docker agent &lt;command&gt;</code> (the same shape as <code class="inline">docker scout</code> earlier in the workshop). If you're on Docker Desktop 4.63 or newer (which you should be, since you installed it before Step 4), the <code class="inline">docker-agent</code> plugin is already bundled. Verify it:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker agent version</pre>
+  </div>
+  <p>If it prints a version line, you're done with install. Skip to the API key block below.</p>
+  <p class="note-inline"><span class="label">If <code class="inline">docker agent</code> isn't recognized</span> Your Docker Desktop is older than 4.63, or the plugin wasn't installed for some reason. On Mac, install via Homebrew. On Windows, download the <code class="inline">docker-agent-windows-*.exe</code> binary from the <a href="https://github.com/docker/docker-agent/releases" target="_blank" rel="noopener">GitHub releases page</a> and drop it in <code class="inline">%USERPROFILE%\.docker\cli-plugins\</code> (create that folder if it doesn't exist).</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -2598,20 +2607,8 @@ Rules:
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
     <pre class="cmd active" data-os="mac">brew install docker-agent</pre>
-    <pre class="cmd" data-os="windows"># On Windows, clone and build from source:
-git clone https://github.com/docker/docker-agent.git
-cd docker-agent
-task build-web
-task build
-task link</pre>
-  </div>
-  <p>Verify the install:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">docker agent version</pre>
+    <pre class="cmd" data-os="windows"># See the GitHub releases link above for the binary download.
+# Or, if Docker Desktop has just updated, restart it and try docker agent version again.</pre>
   </div>
   <p>Docker Agent reads its API key from <code class="inline">ANTHROPIC_API_KEY</code> in the shell environment. sbx stored your key in its own secret store for sandbox-internal use, but Docker Agent runs on the host, so the key needs to be exported as a shell env var here. Paste the Anthropic key you saved during prereq setup, or grab a fresh one from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> if you don't have it handy (the free credit for new accounts covers what this step uses).</p>
   <div class="cmd-block">
