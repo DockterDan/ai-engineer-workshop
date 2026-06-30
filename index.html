@@ -750,7 +750,7 @@
 # https://github.com/docker/sbx-releases/releases</pre>
   </div>
   <p class="note-inline"><span class="label">Windows users</span> Close and reopen your terminal after the install so <code class="inline">sbx</code> picks up on PATH. Otherwise the next command will report "sbx not found".</p>
-  <p class="note-inline"><span class="label">If <code class="inline">sbx create</code> fails with "Windows Hypervisor Platform is not enabled"</span> Open <strong>PowerShell as Administrator</strong> (right-click PowerShell in the Start menu, choose <em>Run as administrator</em>) and run:</p>
+  <p class="note-inline"><span class="label">If <code class="inline">sbx create</code> fails with "Windows Hypervisor Platform is not enabled"</span> sbx boots each sandbox as a Linux microVM, and on Windows that requires the Hypervisor Platform feature to be turned on. To turn it on, open <strong>PowerShell as Administrator</strong> (right-click PowerShell in the Start menu, choose <em>Run as administrator</em>) and run:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">PowerShell (as Administrator)</span>
