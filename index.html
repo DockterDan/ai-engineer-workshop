@@ -953,16 +953,16 @@ global   service  opencode    ****...****</pre>
   </div>
 
   <h3 class="substep">Create your workshop directory</h3>
-  <p>We'll keep everything we create today inside a single umbrella folder, <code class="inline">~/workshop</code>, with the sbx workspace at <code class="inline">~/workshop/sbx</code>. That way nothing sprays into your home directory and cleanup at the end is one command.</p>
+  <p>We'll keep everything we create today inside a single umbrella folder, <code class="inline">$HOME/workshop</code>, with the sbx workspace at <code class="inline">$HOME/workshop/sbx</code>. That way nothing sprays into your home directory and cleanup at the end is one command.</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx &amp;&amp; cd ~/workshop/sbx</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx | Out-Null
-cd ~/workshop/sbx</pre>
+    <pre class="cmd active" data-os="mac">mkdir -p $HOME/workshop/sbx &amp;&amp; cd $HOME/workshop/sbx</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx | Out-Null
+cd $HOME/workshop/sbx</pre>
   </div>
 </section>
 
@@ -996,7 +996,7 @@ cd ~/workshop/sbx</pre>
 
   <h3 class="substep">1.1 Create your sandbox</h3>
   <p><code class="inline">sbx create</code> registers a new sandbox with the local sbx daemon and starts it. By the time the command returns, the microVM is up and the agent is running inside it. Your terminal isn't connected to the agent yet; that's the next step. The <code class="inline">--name</code> flag gives the sandbox a label you'll use to refer to it later (in <code class="inline">sbx run</code>, <code class="inline">sbx stop</code>, <code class="inline">sbx rm</code>, and the policy / log commands in Step 3). The final argument is the directory to mount as the sandbox's workspace; whatever lives in that directory is what the agent will see, and the only host directory it will have access to.</p>
-  <p>You can write that argument two ways. <code class="inline">.</code> is shorthand for "the current directory" and works if you're already <code class="inline">cd</code>'d into the folder you want mounted. An explicit path like <code class="inline">~/workshop/sbx</code> works from any terminal, regardless of where you've <code class="inline">cd</code>'d. We'll use the explicit form throughout this workshop so the commands are reliable across terminals.</p>
+  <p>You can write that argument two ways. <code class="inline">.</code> is shorthand for "the current directory" and works if you're already <code class="inline">cd</code>'d into the folder you want mounted. An explicit path like <code class="inline">$HOME/workshop/sbx</code> works from any terminal, regardless of where you've <code class="inline">cd</code>'d. We'll use the explicit form throughout this workshop so the commands are reliable across terminals.</p>
   <p>Run the command for the provider you picked at the top:</p>
   <div data-show-for="claude">
     <div class="cmd-block">
@@ -1004,7 +1004,7 @@ cd ~/workshop/sbx</pre>
         <span class="cmd-label">host shell</span>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active">sbx create --name sandbox-alpha claude ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha claude $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="codex">
@@ -1013,7 +1013,7 @@ cd ~/workshop/sbx</pre>
         <span class="cmd-label">host shell</span>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active">sbx create --name sandbox-alpha codex ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha codex $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="gemini">
@@ -1022,7 +1022,7 @@ cd ~/workshop/sbx</pre>
         <span class="cmd-label">host shell</span>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active">sbx create --name sandbox-alpha gemini ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha gemini $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="opencode">
@@ -1031,7 +1031,7 @@ cd ~/workshop/sbx</pre>
         <span class="cmd-label">host shell</span>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active">sbx create --name sandbox-alpha opencode ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha opencode $HOME/workshop/sbx</pre>
     </div>
   </div>
   <p>First run pulls the agent's template image from Docker Hub if it isn't already cached locally (1-2 minutes).</p>
@@ -1149,25 +1149,25 @@ agent
       <div data-show-for="claude">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo claude ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo claude $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="codex">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo codex ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo codex $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="gemini">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo gemini ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo gemini $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="opencode">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo opencode ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo opencode $HOME/workshop/sbx</pre>
         </div>
       </div>
       <p>Then list them both:</p>
@@ -1203,25 +1203,25 @@ sbx rm sandbox-bravo</pre>
       <div data-show-for="claude">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g claude ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g claude $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="codex">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g codex ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g codex $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="gemini">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g gemini ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g gemini $HOME/workshop/sbx</pre>
         </div>
       </div>
       <div data-show-for="opencode">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g opencode ~/workshop/sbx</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo --cpus=2 --memory=4g opencode $HOME/workshop/sbx</pre>
         </div>
       </div>
       <p>The new sandbox boots with exactly 2 CPUs and 4 GiB of memory, no matter how much the host has. Useful when you want a hard cap on what a single agent can consume. Verify it took:</p>
@@ -1272,8 +1272,8 @@ sbx rm sandbox-bravo</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">echo "Written from the host" &gt; ~/workshop/sbx/host-to-agent.txt</pre>
-    <pre class="cmd" data-os="windows">"Written from the host" | Out-File ~/workshop/sbx/host-to-agent.txt</pre>
+    <pre class="cmd active" data-os="mac">echo "Written from the host" &gt; $HOME/workshop/sbx/host-to-agent.txt</pre>
+    <pre class="cmd" data-os="windows">"Written from the host" | Out-File $HOME/workshop/sbx/host-to-agent.txt</pre>
   </div>
   <p>Now inside the sandbox, ask the agent to read it:</p>
   <div class="prompt-box" data-no-command-copy="">
@@ -1297,10 +1297,10 @@ sbx rm sandbox-bravo</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">ls -la ~/workshop/sbx
-cat ~/workshop/sbx/agent-to-host.txt</pre>
-    <pre class="cmd" data-os="windows">Get-ChildItem ~/workshop/sbx
-Get-Content ~/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd active" data-os="mac">ls -la $HOME/workshop/sbx
+cat $HOME/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd" data-os="windows">Get-ChildItem $HOME/workshop/sbx
+Get-Content $HOME/workshop/sbx/agent-to-host.txt</pre>
   </div>
   <div class="expected">
     <div class="label">Expected (on host)</div>
@@ -1321,19 +1321,19 @@ Written from the agent</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">echo "This file lives in your home, not the workspace" &gt; ~/workshop/host-marker.txt</pre>
-    <pre class="cmd" data-os="windows">"This file lives in your home, not the workspace" | Out-File ~/workshop/host-marker.txt</pre>
+    <pre class="cmd active" data-os="mac">echo "This file lives in your home, not the workspace" &gt; $HOME/workshop/host-marker.txt</pre>
+    <pre class="cmd" data-os="windows">"This file lives in your home, not the workspace" | Out-File $HOME/workshop/host-marker.txt</pre>
   </div>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
-    Try to read a file called <code>host-marker.txt</code>. Run <code>cat ~/workshop/host-marker.txt 2&gt;&amp;1; cat /Users/&lt;your-username&gt;/workshop/host-marker.txt 2&gt;&amp;1</code> and tell me what happens.
+    Try to read a file called <code>host-marker.txt</code>. Run <code>cat $HOME/workshop/host-marker.txt 2&gt;&amp;1; cat /Users/&lt;your-username&gt;/workshop/host-marker.txt 2&gt;&amp;1</code> and tell me what happens.
   </div>
   <div class="expected">
     <div class="label">Expected (inside sandbox)</div>
     <pre>cat: /home/agent/workshop/host-marker.txt: No such file or directory
 cat: /Users/&lt;your-username&gt;/workshop/host-marker.txt: No such file or directory</pre>
   </div>
-  <p>The file is right there on your host. The sandbox can't see it. Only <code class="inline">~/workshop/sbx</code> is mounted in.</p>
+  <p>The file is right there on your host. The sandbox can't see it. Only <code class="inline">$HOME/workshop/sbx</code> is mounted in.</p>
 
   <h3 class="substep">2.3 Secrets exist on host, agent can't read them</h3>
   <div class="cmd-block">
@@ -1416,8 +1416,8 @@ global   service  opencode    ****...****</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">rm ~/workshop/host-marker.txt ~/workshop/sbx/host-to-agent.txt ~/workshop/sbx/agent-to-host.txt</pre>
-    <pre class="cmd" data-os="windows">Remove-Item ~/workshop/host-marker.txt, ~/workshop/sbx/host-to-agent.txt, ~/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd active" data-os="mac">rm $HOME/workshop/host-marker.txt $HOME/workshop/sbx/host-to-agent.txt $HOME/workshop/sbx/agent-to-host.txt</pre>
+    <pre class="cmd" data-os="windows">Remove-Item $HOME/workshop/host-marker.txt, $HOME/workshop/sbx/host-to-agent.txt, $HOME/workshop/sbx/agent-to-host.txt</pre>
   </div>
 
   <details class="go-deeper">
@@ -1444,34 +1444,34 @@ global   service  opencode    ****...****</pre>
           <button class="cmd-tab" data-os="windows">Windows</button>
           <button class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
-        <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx-docs
-echo "Read only reference material" &gt; ~/workshop/sbx-docs/README.txt</pre>
-        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx-docs | Out-Null
-Set-Content ~/workshop/sbx-docs/README.txt "Read only reference material"</pre>
+        <pre class="cmd active" data-os="mac">mkdir -p $HOME/workshop/sbx-docs
+echo "Read only reference material" &gt; $HOME/workshop/sbx-docs/README.txt</pre>
+        <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx-docs | Out-Null
+Set-Content $HOME/workshop/sbx-docs/README.txt "Read only reference material"</pre>
       </div>
-      <p>Now spin up a sandbox with the current directory as a writable workspace and <code class="inline">~/workshop/sbx-docs</code> mounted read-only:</p>
+      <p>Now spin up a sandbox with the current directory as a writable workspace and <code class="inline">$HOME/workshop/sbx-docs</code> mounted read-only:</p>
       <div data-show-for="claude">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo claude ~/workshop/sbx ~/workshop/sbx-docs:ro</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo claude $HOME/workshop/sbx $HOME/workshop/sbx-docs:ro</pre>
         </div>
       </div>
       <div data-show-for="codex">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo codex ~/workshop/sbx ~/workshop/sbx-docs:ro</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo codex $HOME/workshop/sbx $HOME/workshop/sbx-docs:ro</pre>
         </div>
       </div>
       <div data-show-for="gemini">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo gemini ~/workshop/sbx ~/workshop/sbx-docs:ro</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo gemini $HOME/workshop/sbx $HOME/workshop/sbx-docs:ro</pre>
         </div>
       </div>
       <div data-show-for="opencode">
         <div class="cmd-block">
           <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active">sbx create --name sandbox-bravo opencode ~/workshop/sbx ~/workshop/sbx-docs:ro</pre>
+          <pre class="cmd active">sbx create --name sandbox-bravo opencode $HOME/workshop/sbx $HOME/workshop/sbx-docs:ro</pre>
         </div>
       </div>
       <p>Now attach to bravo and ask the agent to try both reading from and writing to the mounted folder:</p>
@@ -1503,10 +1503,10 @@ bash: ../sbx-docs/agent-wrote.txt: Read-only file system</pre>
         </div>
         <pre class="cmd active" data-os="mac">sbx stop sandbox-bravo
 sbx rm sandbox-bravo
-rm -rf ~/workshop/sbx-docs</pre>
+rm -rf $HOME/workshop/sbx-docs</pre>
         <pre class="cmd" data-os="windows">sbx stop sandbox-bravo
 sbx rm sandbox-bravo
-Remove-Item -Recurse -Force ~/workshop/sbx-docs</pre>
+Remove-Item -Recurse -Force $HOME/workshop/sbx-docs</pre>
       </div>
     </div>
   </details>
@@ -1925,7 +1925,7 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p>You'll see a fresh Blocked requests entry for <code class="inline">en.wikipedia.org</code> with the reason "No matching allow rule (default deny)." That's the network-policy-only baseline.</p>
 
-  <p><strong>Part 2: recreate sandbox-alpha with the MCP attached.</strong> <code class="inline">--mcp</code> is a create-time flag, not a run-time flag, so we can't add the Wikipedia MCP to the running sandbox-alpha. We have to stop and remove it, then recreate with <code class="inline">--mcp local-wiki</code>. The sandbox itself is stateless: all your workspace files live on the host at <code class="inline">~/workshop/sbx</code> and survive the recreate. Your policy rules, API key secrets, and Docker logins survive too. Only the sandbox VM is replaced.</p>
+  <p><strong>Part 2: recreate sandbox-alpha with the MCP attached.</strong> <code class="inline">--mcp</code> is a create-time flag, not a run-time flag, so we can't add the Wikipedia MCP to the running sandbox-alpha. We have to stop and remove it, then recreate with <code class="inline">--mcp local-wiki</code>. The sandbox itself is stateless: all your workspace files live on the host at <code class="inline">$HOME/workshop/sbx</code> and survive the recreate. Your policy rules, API key secrets, and Docker logins survive too. Only the sandbox VM is replaced.</p>
   <p>Exit the agent (Ctrl+C twice). Then in Terminal B, stop and remove sandbox-alpha:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -1939,25 +1939,25 @@ sbx rm sandbox-alpha</pre>
   <div data-show-for="claude">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki claude ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki claude $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="codex">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki codex ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki codex $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="gemini">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki gemini ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki gemini $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="opencode">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki opencode ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-alpha --mcp local-wiki opencode $HOME/workshop/sbx</pre>
     </div>
   </div>
   <p>Attach to the new sandbox-alpha:</p>
@@ -2062,14 +2062,14 @@ sbx rm sandbox-alpha</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/sbx/research-app &amp;&amp; cd ~/workshop/sbx/research-app
+    <pre class="cmd active" data-os="mac">mkdir -p $HOME/workshop/sbx/research-app &amp;&amp; cd $HOME/workshop/sbx/research-app
 echo 'FROM python:3.14-slim
 WORKDIR /app
 COPY app.py .
 EXPOSE 8000
 CMD ["python", "app.py"]' &gt; Dockerfile</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/sbx/research-app | Out-Null
-cd ~/workshop/sbx/research-app
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/sbx/research-app | Out-Null
+cd $HOME/workshop/sbx/research-app
 @'
 FROM python:3.14-slim
 WORKDIR /app
@@ -2128,7 +2128,7 @@ CMD ["python", "app.py"]
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">cd ~/workshop/sbx/research-app</pre>
+    <pre class="cmd active">cd $HOME/workshop/sbx/research-app</pre>
   </div>
   <p>Build the image. The <code class="inline">--provenance=true</code> and <code class="inline">--sbom=true</code> flags tell Docker to attach a build provenance attestation and a software bill of materials to the resulting image. Scout uses both for a more accurate scan in 5.5.</p>
   <div class="cmd-block">
@@ -2305,7 +2305,7 @@ CMD ["python", "app.py"]
   </div>
 
   <h3 class="substep">6.1 Create the kit directory structure</h3>
-  <p>Kits live in their own directory, separate from the sandbox workspace. We'll put ours at <code class="inline">~/workshop/kits/docker-review</code>. The structure is two pieces: a <code class="inline">spec.yaml</code> (the kit metadata) and a <code class="inline">files/workspace/</code> tree that maps directly to the sandbox workspace. Anything you put under <code class="inline">files/workspace/</code> gets injected into the workspace at sandbox creation.</p>
+  <p>Kits live in their own directory, separate from the sandbox workspace. We'll put ours at <code class="inline">$HOME/workshop/kits/docker-review</code>. The structure is two pieces: a <code class="inline">spec.yaml</code> (the kit metadata) and a <code class="inline">files/workspace/</code> tree that maps directly to the sandbox workspace. Anything you put under <code class="inline">files/workspace/</code> gets injected into the workspace at sandbox creation.</p>
   <p>Create the directory tree:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2313,14 +2313,14 @@ CMD ["python", "app.py"]
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review | Out-Null</pre>
+    <pre class="cmd active" data-os="mac">mkdir -p $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review | Out-Null</pre>
   </div>
   <p>Claude Code automatically discovers skills from <code class="inline">.claude/skills/</code> in the workspace. By dropping a <code class="inline">SKILL.md</code> there, the kit makes the skill available the moment the sandbox starts. There's no install command to run and no manual "load this skill" prompt to issue; the kit just drops files into the right place at create time.</p>
   <p class="note-inline"><span class="label">Other providers</span> The <code class="inline">.claude/skills/</code> path originated as Claude Code's convention and is also honored by OpenCode. Codex uses its own skill-loading path; if your agent doesn't auto-discover the skill, change the path under <code class="inline">files/workspace/</code> to match your harness. The kit machinery is identical either way.</p>
 
   <h3 class="substep">6.2 Write the kit spec</h3>
-  <p>Create the <code class="inline">spec.yaml</code> at <code class="inline">~/workshop/kits/docker-review/spec.yaml</code>:</p>
+  <p>Create the <code class="inline">spec.yaml</code> at <code class="inline">$HOME/workshop/kits/docker-review/spec.yaml</code>:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -2331,19 +2331,19 @@ CMD ["python", "app.py"]
 kind: mixin
 name: docker-review
 displayName: Dockerfile review skill
-description: Ships a Claude Code skill that reviews Dockerfiles for best practices' &gt; ~/workshop/kits/docker-review/spec.yaml</pre>
+description: Ships a Claude Code skill that reviews Dockerfiles for best practices' &gt; $HOME/workshop/kits/docker-review/spec.yaml</pre>
     <pre class="cmd" data-os="windows">@'
 schemaVersion: "1"
 kind: mixin
 name: docker-review
 displayName: Dockerfile review skill
 description: Ships a Claude Code skill that reviews Dockerfiles for best practices
-'@ | Set-Content ~/workshop/kits/docker-review/spec.yaml</pre>
+'@ | Set-Content $HOME/workshop/kits/docker-review/spec.yaml</pre>
   </div>
   <p>The fields: <code class="inline">schemaVersion</code> is the spec format version. <code class="inline">kind</code> is either <code class="inline">mixin</code> (extends an existing agent) or <code class="inline">agent</code> (defines a new one from scratch). <code class="inline">name</code> is the kit identifier. <code class="inline">displayName</code> and <code class="inline">description</code> are human-readable. That's the whole spec for a file-only mixin kit. There are no network rules and no install commands, only the file injection handled by the <code class="inline">files/</code> tree we'll populate next.</p>
 
   <h3 class="substep">6.3 Write the skill</h3>
-  <p>Create <code class="inline">SKILL.md</code> at <code class="inline">~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</code>. The file has YAML frontmatter (the skill's name and when to use it) followed by the instructions Claude Code follows when the skill loads:</p>
+  <p>Create <code class="inline">SKILL.md</code> at <code class="inline">$HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</code>. The file has YAML frontmatter (the skill's name and when to use it) followed by the instructions Claude Code follows when the skill loads:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -2370,7 +2370,7 @@ Rules:
 - Always produce all five rows in the exact order shown. Never add a row, drop a row, or reorder.
 - Fill Findings with what you actually see in the Dockerfile under that aspect, not generic advice.
 - Fill Recommendation with the specific change to make. If Status is Pass, write "None".
-- No commentary outside the table.' &gt; ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
+- No commentary outside the table.' &gt; $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
     <pre class="cmd" data-os="windows">@'
 ---
 name: docker-review
@@ -2393,7 +2393,7 @@ Rules:
 - Fill Findings with what you actually see in the Dockerfile under that aspect, not generic advice.
 - Fill Recommendation with the specific change to make. If Status is Pass, write "None".
 - No commentary outside the table.
-'@ | Set-Content ~/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
+'@ | Set-Content $HOME/workshop/kits/docker-review/files/workspace/.claude/skills/docker-review/SKILL.md</pre>
   </div>
   <p>The frontmatter's <code class="inline">description</code> field is critical: Claude Code uses it to decide when to invoke the skill. When the user asks something matching the description ("review my Dockerfile", "audit this Docker setup"), Claude pulls the skill content into its context and follows the structured checklist. The user doesn't have to invoke the skill by name or load it manually.</p>
 
@@ -2404,7 +2404,7 @@ Rules:
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx kit validate ~/workshop/kits/docker-review/</pre>
+    <pre class="cmd active">sbx kit validate $HOME/workshop/kits/docker-review/</pre>
   </div>
   <p>If anything's wrong (malformed spec, missing required fields, broken file references), validate surfaces it before sandbox creation. A clean validation prints "kit valid" or similar and exits 0.</p>
 
@@ -2413,25 +2413,25 @@ Rules:
   <div data-show-for="claude">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-kits --kit ~/workshop/kits/docker-review/ claude ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-kits --kit $HOME/workshop/kits/docker-review/ claude $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="codex">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-kits --kit ~/workshop/kits/docker-review/ codex ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-kits --kit $HOME/workshop/kits/docker-review/ codex $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="gemini">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-kits --kit ~/workshop/kits/docker-review/ gemini ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-kits --kit $HOME/workshop/kits/docker-review/ gemini $HOME/workshop/sbx</pre>
     </div>
   </div>
   <div data-show-for="opencode">
     <div class="cmd-block">
       <div class="cmd-bar"><span class="cmd-label">host shell</span><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-      <pre class="cmd active">sbx create --name sandbox-kits --kit ~/workshop/kits/docker-review/ opencode ~/workshop/sbx</pre>
+      <pre class="cmd active">sbx create --name sandbox-kits --kit $HOME/workshop/kits/docker-review/ opencode $HOME/workshop/sbx</pre>
     </div>
   </div>
   <p>Attach to the new sandbox:</p>
@@ -2460,7 +2460,7 @@ Rules:
     <pre class="cmd active">sbx stop sandbox-kits
 sbx rm sandbox-kits</pre>
   </div>
-  <p>Leave <code class="inline">~/workshop/kits/docker-review/</code> in place; it's the artifact you'd commit to your team's repo. The full cleanup of the kit directory is in the wrap-up section at the end of the workshop.</p>
+  <p>Leave <code class="inline">$HOME/workshop/kits/docker-review/</code> in place; it's the artifact you'd commit to your team's repo. The full cleanup of the kit directory is in the wrap-up section at the end of the workshop.</p>
 
   <div class="learnings-block">
     <h3>Key learnings</h3>
@@ -2567,9 +2567,9 @@ task link</pre>
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">mkdir -p ~/workshop/docker-agent &amp;&amp; cd ~/workshop/docker-agent</pre>
-    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path ~/workshop/docker-agent | Out-Null
-Set-Location ~/workshop/docker-agent</pre>
+    <pre class="cmd active" data-os="mac">mkdir -p $HOME/workshop/docker-agent &amp;&amp; cd $HOME/workshop/docker-agent</pre>
+    <pre class="cmd" data-os="windows">New-Item -ItemType Directory -Force -Path $HOME/workshop/docker-agent | Out-Null
+Set-Location $HOME/workshop/docker-agent</pre>
   </div>
   <p>Now write <code class="inline">team.yaml</code> with the five roles. Each role names its model, what it's for, and the toolsets it has access to:</p>
   <div class="cmd-block">
@@ -2818,7 +2818,7 @@ agents:
   <p>Three things to notice in this yaml. The <code class="inline">models</code> block declares two model profiles, <code class="inline">fast</code> (Sonnet) and <code class="inline">deep</code> (Opus), so each role can pick the right one. The <code class="inline">agents</code> block lists the team: <code class="inline">root</code> is the coordinator, and its <code class="inline">sub_agents</code> field names the five roles it can delegate to. The <code class="inline">toolsets</code> field on each role is the per-role capability scoping: <code class="inline">wiki-researcher</code> gets only the Wikipedia MCP, <code class="inline">paper-researcher</code> gets only the Paper Search MCP, <code class="inline">analyst</code> gets only <code class="inline">think</code>, <code class="inline">writer</code> and <code class="inline">publisher</code> each get only <code class="inline">filesystem</code> (writer to produce the markdown, publisher to read it and write the HTML), and the coordinator gets only <code class="inline">think</code>. That scoping is the boundary Step 8 will test.</p>
 
   <h3 class="substep">7.3 Run the team</h3>
-  <p>Make sure you are in <code class="inline">~/workshop/docker-agent</code> and your <code class="inline">ANTHROPIC_API_KEY</code> is set in the current shell. Here's the prompt the team will work from:</p>
+  <p>Make sure you are in <code class="inline">$HOME/workshop/docker-agent</code> and your <code class="inline">ANTHROPIC_API_KEY</code> is set in the current shell. Here's the prompt the team will work from:</p>
   <div class="prompt-box">
     <div class="label">Prompt to the team <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Write me a short academic-style briefing on the 2026 FIFA World Cup. Use Wikipedia for background, and the academic literature for findings on World Cup economic impact, infrastructure, and host-country outcomes. Keep it tight. Save as report.md.
@@ -2860,8 +2860,8 @@ agents:
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">cat ~/workshop/docker-agent/report.md</pre>
-    <pre class="cmd" data-os="windows">Get-Content ~/workshop/docker-agent/report.md</pre>
+    <pre class="cmd active" data-os="mac">cat $HOME/workshop/docker-agent/report.md</pre>
+    <pre class="cmd" data-os="windows">Get-Content $HOME/workshop/docker-agent/report.md</pre>
   </div>
   <p>You should see a structured academic-style briefing on the 2026 FIFA World Cup with Abstract, Background, Recent Work, Key Insights, and References sections. The References enumerate every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered.</p>
   <p>Now open the HTML version in your browser:</p>
@@ -2871,8 +2871,8 @@ agents:
       <button class="cmd-tab" data-os="windows">Windows</button>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active" data-os="mac">open ~/workshop/docker-agent/report.html</pre>
-    <pre class="cmd" data-os="windows">Start-Process ~/workshop/docker-agent/report.html</pre>
+    <pre class="cmd active" data-os="mac">open $HOME/workshop/docker-agent/report.html</pre>
+    <pre class="cmd" data-os="windows">Start-Process $HOME/workshop/docker-agent/report.html</pre>
   </div>
   <p>The HTML page should look like an academic paper: serif body font, centered title, italic abstract block, small-caps section headings, justified body text, and a properly-formatted References list with hanging indent. Same content as the markdown, just typeset.</p>
   <p>The boundary held end to end: each researcher gathered through its own MCP and nowhere else; the analyst reasoned without searching; the writer wrote without searching; the publisher read and re-rendered without searching or analyzing. Each role stayed in its lane because the yaml said so.</p>
@@ -2897,7 +2897,7 @@ agents:
   <p>In Step 3 you saw sbx refuse a network request because no allow rule covered the destination. In Step 4 you saw the same sandbox reach Wikipedia successfully once an MCP tool was attached. In both cases, the boundary was enforced by the runtime; the agent could not talk its way past it. Step 8 makes the same argument for Docker Agent's per-role toolset scoping. The wiki-researcher's <code class="inline">toolsets</code> list does not include filesystem. If we ask it to save a file, the model can want to, but it has no tool to call. Same shape of constraint for paper-researcher, analyst, writer, publisher, and the coordinator: each role is bounded by what its yaml allows.</p>
 
   <h3 class="substep">8.1 Read the toolset map</h3>
-  <p>Open <code class="inline">~/workshop/docker-agent/team.yaml</code> and look at the <code class="inline">toolsets</code> field on each role. The whole capability story for this team is six short lists:</p>
+  <p>Open <code class="inline">$HOME/workshop/docker-agent/team.yaml</code> and look at the <code class="inline">toolsets</code> field on each role. The whole capability story for this team is six short lists:</p>
   <table class="teach">
     <thead><tr><th>Role</th><th>Toolsets</th><th>What it can do</th><th>What it cannot do</th></tr></thead>
     <tbody>
