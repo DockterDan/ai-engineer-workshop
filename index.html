@@ -1892,7 +1892,32 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">docker login</pre>
   </div>
-  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop). Once you're signed in (via either path), you're ready for Step 4.</p>
+  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop).</p>
+
+  <h4>Pre-pull the workshop's images</h4>
+  <p>Steps 4, 5, and 7 all pull Docker images or models mid-flow. Pulling them now, while the workshop is still in setup, keeps the live steps snappy and works around fussy conference Wi-Fi:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker pull mcp/wikipedia-mcp</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker pull mcp/duckduckgo</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker model pull ai/smollm2</pre>
+  </div>
+  <p><code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/duckduckgo</code> are the two MCP servers we'll register in Step 4. <code class="inline">ai/smollm2</code> is a small local language model that a role in Step 7 will use through Docker Model Runner. Pulls run in parallel; if any one fails, re-run just that command. Once all three complete, you're ready for Step 4.</p>
 </section>
 
 <section class="step" id="step-4">
@@ -1976,6 +2001,41 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p><code class="inline">local-wiki</code> should appear in the output.</p>
   <p class="note-inline"><span class="label">Heads up</span> Local stdio MCP servers run on the HOST, not inside the sandbox. They execute with your full user permissions: filesystem, network, secrets, everything. The sandbox boundary you built in Steps 1-3 still holds for the agent's own actions; the MCP server is just a tool the agent can call through that boundary. Use local stdio MCP servers for development and code you trust, not for arbitrary third-party code.</p>
+
+  <h3 class="substep">4.2.1 Zoom out: the Docker MCP Gateway</h3>
+  <p>Everything you just did with <code class="inline">sbx mcp add</code> registered a server with sbx's own MCP layer, scoped to sandboxes managed by this daemon. That's the right shape for a single developer running one or two sandboxes at a time. As soon as you scale past that (a team using the same MCP servers, or one client wanting to see a curated subset of tools), you want a broader primitive. Docker ships one: the <strong>Docker MCP Gateway</strong>.</p>
+  <p>The Gateway is a local proxy that sits between MCP <em>clients</em> (agents, IDEs, Docker Agent, LM Studio, Cursor) and MCP <em>servers</em>. You register servers against the Gateway, group them into <em>profiles</em>, and connect each client to the profile that fits its role. Command surface, bundled with Docker Desktop 4.62+ (also installable via a CLI plugin):</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker mcp --help</pre>
+  </div>
+  <p>A minimal profile-based workflow looks like:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker mcp profile create --name workshop</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker mcp profile server add workshop --server catalog://docker-mcp/wikipedia-mcp</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker mcp gateway run --profile workshop</pre>
+  </div>
+  <p>Then a client (an IDE, a Docker Agent yaml, or a custom MCP client) binds to that profile with <code class="inline">docker mcp client connect &lt;client&gt; --profile workshop</code>, and it sees exactly the tools in that profile — no more, no less. Different clients bind different profiles; that's how a team gets per-client tool scoping without duplicating registrations.</p>
+  <p>We're keeping the rest of the workshop on the per-sandbox <code class="inline">sbx mcp</code> path because it makes the sandbox-as-trust-boundary story cleaner. But if you're planning an MCP setup that a team is going to share, the Gateway is the primitive to know about. Full docs at <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a>.</p>
 
   <h3 class="substep">4.3 Try without MCP, then with MCP attached</h3>
   <p>Before we recreate sandbox-alpha with the MCP wired in, let's prove the agent really can't reach Wikipedia through normal channels. The contrast is the whole point of this step.</p>
@@ -2632,7 +2692,7 @@ Rules:
     <li><strong>writer</strong>: produces the markdown report and saves it to <code class="inline">./report.md</code>.</li>
     <li><strong>publisher</strong>: reads the markdown and renders it as a self-contained academic-paper-styled HTML page, saved to <code class="inline">./report.html</code>. The publisher's job is presentation, not content.</li>
   </ul>
-  <p>Two notes on the model mix. Five of the six roles run on Claude Sonnet (fast, cheap, plenty smart for delegation, search, prose assembly, and HTML rendering). The analyst runs on Claude Opus because synthesis across two disparate research streams is where a heavier model earns its keep. Docker Agent lets you set the model per role; you can mix providers too, but here we stay on Anthropic for both.</p>
+  <p>Three notes on the model mix. Four of the six roles run on Claude Sonnet (fast, cheap, plenty smart for delegation, search, and HTML rendering). The analyst runs on Claude Opus because synthesis across two disparate research streams is where a heavier model earns its keep. The writer runs on a small local model via Docker Model Runner: prose assembly from an already-synthesized analysis is one of the lightest tasks in the team, and running it locally proves the point that model choice is a per-role architectural knob, not a per-team decision. Docker Agent lets you mix providers freely; if you'd rather run the writer on Sonnet too, change the writer's <code class="inline">model:</code> from <code class="inline">local</code> to <code class="inline">fast</code> before saving the yaml.</p>
   <p>Before we wire it into the team, a quick word on what the Paper Search MCP actually is. <code class="inline">mcp/paper-search</code> is a Verified Publisher image in Docker's MCP catalog. It wraps roughly seventeen scholarly databases (arXiv, PubMed, bioRxiv, medRxiv, Semantic Scholar, OpenAlex, CrossRef, Google Scholar, Europe PMC, DOAJ, Zenodo, and others) behind the MCP protocol and exposes 57 tools: per-source search (<code class="inline">search_arxiv</code>, <code class="inline">search_pubmed</code>, <code class="inline">search_semantic</code>, etc.) plus a unified <code class="inline">search_papers</code> that hits multiple sources at once, plus download tools that fetch PDFs by ID and read tools that extract text from those PDFs. The paper-researcher role in this workshop primarily uses the search tools and returns structured lists of papers with titles, authors, DOIs, and abstracts. No API key is required; the image talks to public academic APIs directly.</p>
   <p>Optionally, pre-pull the image now so the first delegation to the paper-researcher doesn't pause for a Docker pull:</p>
   <div class="cmd-block">
@@ -2682,6 +2742,11 @@ models:
     model: claude-opus-4-6
     max_tokens: 8192
 
+  local:  # small model running on host via Docker Model Runner; no cloud API call
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
+
 agents:
   root:
     model: fast
@@ -2716,7 +2781,7 @@ agents:
       You gather encyclopedic background from Wikipedia. Use the Wikipedia tools to search
       and retrieve relevant articles. Return a tight bulleted list of AT MOST 8 key facts,
       one short line each, with the source article title in parens. Be terse; the writer
-      downstream has a 600-word cap and you should not crowd them out. Do not write prose.
+      downstream has a compact ~800-word cap and you should not crowd them out. Do not write prose.
       Do not save files.
     toolsets:
       - type: mcp  # Wikipedia search and article retrieval (22 tools, no API key needed)
@@ -2731,7 +2796,7 @@ agents:
       arXiv, PubMed, Semantic Scholar, OpenAlex, and similar sources. Return AT MOST 6
       papers, each on one line: title, first author, year, source, and a one-sentence
       finding. Do not download or read full PDFs. Be terse; the writer downstream has
-      a 600-word cap. Do not write prose. Do not save files.
+      a compact ~800-word cap. Do not write prose. Do not save files.
     toolsets:
       - type: mcp  # academic literature search across arXiv, PubMed, Semantic Scholar, OpenAlex, and others (57 tools, no API key needed)
         command: docker
@@ -2745,22 +2810,22 @@ agents:
       paper-researcher (peer-reviewed literature). Distill them into AT MOST 5 key
       insights, one short paragraph each. Surface tensions or contradictions between
       the two streams when they exist. Be ruthlessly concise; the writer downstream has
-      a 1200-word cap and your analysis must fit inside that envelope. Use the think
+      a compact ~800-word cap and your analysis must fit inside that envelope. Use the think
       tool to reason. Do not search anything yourself. Do not write the final report.
     toolsets:
       - type: think  # internal scratchpad for synthesis, no external side effects
 
   writer:
-    model: fast
-    description: Academic-style briefing writer
+    model: local  # runs on host via Docker Model Runner; flip to 'fast' for higher-quality prose
+    description: Briefing writer (running locally)
     instruction: |
-      You receive an analysis and write a short academic-style briefing as ./report.md.
-      HARD CAP: 1200 words total. Structure it like a short paper: Abstract (3 to 4
-      sentences), Background, Recent Work, Key Insights, References. The References
-      section MUST list every paper the paper-researcher returned, with title, authors,
-      year, and source. Be ruthlessly concise; do not pad to reach the cap. Every
-      sentence carries weight. Do not invent facts beyond what the analyst provided.
-      Do not search anything.
+      You receive an analysis and write a short briefing as ./report.md.
+      Target 500 to 800 words. Structure it in three parts: a short Abstract
+      (2 to 3 sentences), a Findings section (bulleted list of the analyst's
+      key insights, one line each), and a Sources section (the papers the
+      paper-researcher returned, one per line with title, authors, year, source).
+      Keep sentences short and direct. Do not invent facts beyond what the analyst
+      provided. Do not search anything.
     toolsets:
       - type: filesystem  # read and write files in the working directory (writes report.md)
 
@@ -2799,6 +2864,11 @@ models:
     provider: anthropic
     model: claude-opus-4-6
     max_tokens: 8192
+
+  local:  # small model running on host via Docker Model Runner; no cloud API call
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
 
 agents:
   root:
@@ -2863,22 +2933,22 @@ agents:
       paper-researcher (peer-reviewed literature). Distill them into AT MOST 5 key
       insights, one short paragraph each. Surface tensions or contradictions between
       the two streams when they exist. Be ruthlessly concise; the writer downstream has
-      a 1200-word cap and your analysis must fit inside that envelope. Use the think
+      a compact ~800-word cap and your analysis must fit inside that envelope. Use the think
       tool to reason. Do not search anything yourself. Do not write the final report.
     toolsets:
       - type: think  # internal scratchpad for synthesis, no external side effects
 
   writer:
-    model: fast
-    description: Academic-style briefing writer
+    model: local  # runs on host via Docker Model Runner; flip to 'fast' for higher-quality prose
+    description: Briefing writer (running locally)
     instruction: |
-      You receive an analysis and write a short academic-style briefing as ./report.md.
-      HARD CAP: 1200 words total. Structure it like a short paper: Abstract (3 to 4
-      sentences), Background, Recent Work, Key Insights, References. The References
-      section MUST list every paper the paper-researcher returned, with title, authors,
-      year, and source. Be ruthlessly concise; do not pad to reach the cap. Every
-      sentence carries weight. Do not invent facts beyond what the analyst provided.
-      Do not search anything.
+      You receive an analysis and write a short briefing as ./report.md.
+      Target 500 to 800 words. Structure it in three parts: a short Abstract
+      (2 to 3 sentences), a Findings section (bulleted list of the analyst's
+      key insights, one line each), and a Sources section (the papers the
+      paper-researcher returned, one per line with title, authors, year, source).
+      Keep sentences short and direct. Do not invent facts beyond what the analyst
+      provided. Do not search anything.
     toolsets:
       - type: filesystem  # read and write files in the working directory (writes report.md)
 
@@ -2942,7 +3012,7 @@ agents:
     </ul>
     <p>Neither is required for the workshop. The CLI modes are enough for everything we'll do in Steps 7 and 8.</p>
   </details>
-  <p>Watch the output. The coordinator narrates each step as it goes ("I'm about to delegate to wiki-researcher because..."), so its reasoning is visible in plain language. The coordinator picks who to call and in what order based on the request, so the exact sequence is its decision and may vary slightly between runs. A typical run looks like this: <code class="inline">wiki-researcher</code> invokes Wikipedia tools and returns encyclopedic background on the tournament, <code class="inline">paper-researcher</code> queries arXiv, PubMed, Semantic Scholar, and the other academic sources and returns a list of papers on World Cup economics and hosting impact (real titles, authors, DOIs), <code class="inline">analyst</code> (running on Opus) synthesizes the two streams into the most important insights, <code class="inline">writer</code> assembles a short academic-style briefing (the yaml caps it at 1200 words with Abstract, Background, Recent Work, Key Insights, References) and saves <code class="inline">report.md</code>, and <code class="inline">publisher</code> reads the markdown and produces a self-contained <code class="inline">report.html</code> styled to look like a real academic paper. The coordinator's narration between each step shows you why it chose to call that role next.</p>
+  <p>Watch the output. The coordinator narrates each step as it goes ("I'm about to delegate to wiki-researcher because..."), so its reasoning is visible in plain language. The coordinator picks who to call and in what order based on the request, so the exact sequence is its decision and may vary slightly between runs. A typical run looks like this: <code class="inline">wiki-researcher</code> invokes Wikipedia tools and returns encyclopedic background on the tournament, <code class="inline">paper-researcher</code> queries arXiv, PubMed, Semantic Scholar, and the other academic sources and returns a list of papers on World Cup economics and hosting impact (real titles, authors, DOIs), <code class="inline">analyst</code> (running on Opus) synthesizes the two streams into the most important insights, <code class="inline">writer</code> (running on the local <code class="inline">ai/smollm2</code> model via Docker Model Runner) assembles a short briefing with Abstract, Findings, and Sources sections and saves <code class="inline">report.md</code>, and <code class="inline">publisher</code> reads the markdown and produces a self-contained <code class="inline">report.html</code> styled to look like a real academic paper. The coordinator's narration between each step shows you why it chose to call that role next. You'll notice the writer step feels a beat slower than the others (local inference is single-machine, no distant datacenter), which is the tell that this role is running on your laptop.</p>
   <p>Verify both files landed. Read the markdown first:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2953,7 +3023,7 @@ agents:
     <pre class="cmd active" data-os="mac">cat ~/workshop/docker-agent/report.md</pre>
     <pre class="cmd" data-os="windows">Get-Content $HOME/workshop/docker-agent/report.md</pre>
   </div>
-  <p>You should see a structured academic-style briefing on the 2026 FIFA World Cup with Abstract, Background, Recent Work, Key Insights, and References sections. The References enumerate every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered.</p>
+  <p>You should see a short briefing on the 2026 FIFA World Cup with Abstract, Findings, and Sources sections. Sources enumerates every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered. If the writer's prose reads a little basic or the structure looks off, that's the local model showing its limits — flip the writer's <code class="inline">model:</code> from <code class="inline">local</code> back to <code class="inline">fast</code> in the yaml and re-run to see the same team on Sonnet.</p>
   <p>Now open the HTML version in your browser:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
