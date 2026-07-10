@@ -1190,81 +1190,6 @@ agent
     </div>
   </details>
 
-  <details class="go-deeper">
-    <summary>Go deeper: see (and configure) resource limits</summary>
-    <div class="go-deeper-body">
-      <p>Each sandbox is a VM with its own CPU and memory allocation. To see what the running sandbox has, ask the agent:</p>
-      <div class="prompt-box">
-        <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
-        Run <code>nproc; free -h</code> and tell me what you see.
-      </div>
-      <p>By default sbx picks reasonable values (roughly N-1 host CPUs and ~50% of host memory, capped at 32 GiB). Override them at create time with <code class="inline">--cpus</code> and <code class="inline">--memory</code>. If you spun up <code class="inline">sandbox-bravo</code> in the previous Go deeper, stop and remove it first so we can recreate it with explicit limits:</p>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <span class="cmd-label">host shell</span>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active">sbx stop sandbox-bravo</pre>
-      </div>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <span class="cmd-label">host shell</span>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active">sbx rm sandbox-bravo</pre>
-      </div>
-      <p>Now recreate it with hard CPU and memory caps:</p>
-      <div data-show-for="claude">
-        <div class="cmd-block">
-          <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active" data-os="mac">sbx create --name sandbox-bravo --cpus=2 --memory=4g claude ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-bravo --cpus=2 --memory=4g claude $HOME/workshop/sbx</pre>
-        </div>
-      </div>
-      <div data-show-for="codex">
-        <div class="cmd-block">
-          <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active" data-os="mac">sbx create --name sandbox-bravo --cpus=2 --memory=4g codex ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-bravo --cpus=2 --memory=4g codex $HOME/workshop/sbx</pre>
-        </div>
-      </div>
-      <div data-show-for="gemini">
-        <div class="cmd-block">
-          <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active" data-os="mac">sbx create --name sandbox-bravo --cpus=2 --memory=4g gemini ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-bravo --cpus=2 --memory=4g gemini $HOME/workshop/sbx</pre>
-        </div>
-      </div>
-      <div data-show-for="opencode">
-        <div class="cmd-block">
-          <div class="cmd-bar"><button class="cmd-tab active" data-os="mac">MacOS</button><button class="cmd-tab" data-os="windows">Windows</button><button class="cmd-copy" aria-label="Copy command">Copy</button></div>
-          <pre class="cmd active" data-os="mac">sbx create --name sandbox-bravo --cpus=2 --memory=4g opencode ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-bravo --cpus=2 --memory=4g opencode $HOME/workshop/sbx</pre>
-        </div>
-      </div>
-      <p>The new sandbox boots with exactly 2 CPUs and 4 GiB of memory, no matter how much the host has. Useful when you want a hard cap on what a single agent can consume. Verify it took:</p>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <span class="cmd-label">host shell</span>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active">sbx ls</pre>
-      </div>
-      <p>You'll see <code class="inline">sandbox-bravo</code> listed next to <code class="inline">sandbox-alpha</code>. To see the actual CPU and memory readout, reconnect with <code class="inline">sbx run --name sandbox-bravo</code> and ask the agent to run <code class="inline">nproc; free -h</code> again. It should report 2 cores and ~4 GiB instead of alpha's defaults.</p>
-      <p>When you're done, clean up so everyone's starting Step 3 with just <code class="inline">sandbox-alpha</code>:</p>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <span class="cmd-label">host shell</span>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active">sbx stop sandbox-bravo</pre>
-      </div>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <span class="cmd-label">host shell</span>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active">sbx rm sandbox-bravo</pre>
-      </div>
-    </div>
-  </details>
-
   <div class="learnings-block">
     <h3>Key learnings</h3>
     <p>You started an agent inside a microVM with its own Linux kernel. Only the directory you passed to <code class="inline">sbx create</code> is shared into the sandbox; everything else stays on your host. Your API key lives in the OS keychain and never enters the VM, because the credential proxy injects auth headers at the network layer rather than passing the raw key through. The same setup works for Claude Code, Codex, Gemini CLI, or OpenCode: the agent is interchangeable, the boundary is not.</p>
@@ -2327,9 +2252,7 @@ CMD ["python", "app.py"]
 
   <div class="callout">
     <span class="label">In production</span>
-    Before you pull a DHI image, a note on how DHI is typically used in real Dockerfiles. DHI ships each base image in two variants. A <strong>dev variant</strong> includes a shell and a package manager (used in the build stage of a multi-stage Dockerfile, where you compile dependencies and run setup scripts). A <strong>prod variant</strong> is the minimal hardened image, no shell, no extras (used for the final runtime stage). A real production Dockerfile uses both: build with the dev variant, then copy the compiled artifacts into a final stage based on the prod variant. Only the prod stage ships. The dev stage never makes it into the image you push.
-    <br><br>
-    For this workshop we keep the Dockerfile single-stage and swap only the <code class="inline">FROM</code> line. The reason: it lets us compare the standard base image (<code class="inline">python:3.14-slim</code>) against the prod variant of DHI (<code class="inline">dhi.io/python:3.14</code>) one-to-one. What we scan with Docker Scout matches what would actually ship in production, and the CVE-count delta stays unobscured by build-stage tooling differences. When you adopt this pattern in your own Dockerfiles, check the <a target="_blank" rel="noopener noreferrer" href="https://dhi.io/">dhi.io</a> catalog for the exact dev and prod variant tags for your base image.
+    DHI ships each base image in two variants: a <strong>dev variant</strong> (shell, package manager, used in build stages) and a <strong>prod variant</strong> (minimal, no shell, used for the final runtime stage). Real production Dockerfiles use both in a multi-stage build; only the prod stage ships. We're keeping this workshop's Dockerfile single-stage and swapping only the <code class="inline">FROM</code> line so the CVE-count comparison stays clean. When you adopt this in your own Dockerfiles, check the <a target="_blank" rel="noopener noreferrer" href="https://dhi.io/">dhi.io</a> catalog for the exact dev and prod variant tags.
   </div>
 
   <p>DHI images live under the <code class="inline">dhi.io</code> namespace, which requires a one-time login with your Docker Hub credentials before the pull works:</p>
