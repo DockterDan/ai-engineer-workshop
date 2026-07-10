@@ -3001,6 +3001,252 @@ agents:
   <h3 class="substep">7.4 Wrap up</h3>
   <p>One-shot mode exits cleanly after the team finishes. Leave <code class="inline">team.yaml</code> in place; Step 8 uses the same yaml to demonstrate the per-role boundary. <code class="inline">report.md</code> and <code class="inline">report.html</code> can stay or be deleted; they're byproducts and Step 8 doesn't depend on them.</p>
 
+  <details class="go-deeper">
+    <summary>Bonus: federate the team through the Docker MCP Gateway</summary>
+    <div class="go-deeper-body">
+      <p>Right now each role in <code class="inline">team.yaml</code> declares its own MCP toolset inline, running its own <code class="inline">docker run mcp/&lt;image&gt;</code>. That's the simplest wiring, but it's not how a team with more than one Docker Agent user will actually set this up. In real use, you want one <strong>Docker MCP Gateway</strong> (introduced in Step 4.2.1) running against your team's catalog, and every client (Docker Agent, IDEs, other MCP clients) pointing at that Gateway. One registration point, one place to audit, one place to update a server version, many clients.</p>
+      <p>This bonus rewires the same team through a Gateway you run locally. Same six roles, same behavior, different MCP plumbing.</p>
+
+      <h4>Step A: start the Gateway in a second terminal</h4>
+      <p>Open a fresh host terminal and run the Gateway against the three MCPs we care about — the two researchers and the DuckDuckGo one we registered in Step 4.2.2:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell (Gateway terminal)</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">docker mcp gateway run --port 8811 --transport streaming --catalog docker-mcp --servers wikipedia-mcp,duckduckgo,paper-search</pre>
+      </div>
+      <p>The Gateway prints its startup output and stays running. The last two lines matter:</p>
+      <div class="expected">
+        <pre>&gt; Gateway URL: http://localhost:8811/mcp
+&gt; Use Bearer token: Authorization: Bearer w8qqy63ydof7h9o0469jd0wy5g98lpqfm9guz5my7tj3gsnpbz</pre>
+      </div>
+      <p><strong>Copy the Bearer token</strong> (the long string after <code class="inline">Bearer</code>) into your clipboard. You'll paste it into the yaml in the next step. The token regenerates every time the Gateway starts, so if you restart the Gateway later, you'll need to update the yaml with the new token. Leave this Gateway terminal running for the rest of this bonus section.</p>
+
+      <h4>Step B: write a Gateway-flavored team.yaml</h4>
+      <p>Back in your original terminal (the one where you ran the team earlier), write a new yaml alongside <code class="inline">team.yaml</code>. Same team, but the two researcher roles pull their tools from the Gateway instead of running docker containers themselves. Note the two important structural differences from the original: <code class="inline">version: "9"</code> at the top (required for the <code class="inline">allow_private_ips</code> field), and the researcher <code class="inline">toolsets</code> use a <code class="inline">remote:</code> block instead of <code class="inline">command:</code>/<code class="inline">args:</code>.</p>
+      <p>Paste the Bearer token from Step A into the two spots marked <code class="inline">PASTE_BEARER_TOKEN_HERE</code> before running the command:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">cat &gt; team-gateway.yaml &lt;&lt;'EOF'
+version: "9"
+
+models:
+  fast:
+    provider: anthropic
+    model: claude-sonnet-4-6
+    max_tokens: 8192
+
+  deep:
+    provider: anthropic
+    model: claude-opus-4-6
+    max_tokens: 8192
+
+  local:
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
+
+agents:
+  root:
+    model: fast
+    description: Coordinator of a research and report-writing team
+    instruction: |
+      You coordinate a research-and-report team. Team members: wiki-researcher,
+      paper-researcher, analyst, writer, publisher. Delegate work, narrate what
+      you are doing between delegations, and return report.md and report.html
+      when done. Do not research, analyze, write, or publish yourself.
+    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
+    toolsets:
+      - type: think
+
+  wiki-researcher:
+    model: fast
+    description: Wikipedia background researcher (via Gateway)
+    instruction: |
+      Use the Wikipedia tools from the MCP Gateway. Return AT MOST 8 key
+      facts, one short line each. Be terse. Do not write prose. Do not save files.
+    toolsets:
+      - type: mcp
+        remote:
+          url: http://localhost:8811/mcp
+          transport_type: streamable
+          headers:
+            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+        allow_private_ips: true
+
+  paper-researcher:
+    model: fast
+    description: Academic literature researcher (via Gateway)
+    instruction: |
+      Use the Paper Search tools from the MCP Gateway (arXiv, PubMed, Semantic
+      Scholar, OpenAlex). Return AT MOST 6 papers, one line each. Do not
+      download PDFs. Be terse. Do not write prose. Do not save files.
+    toolsets:
+      - type: mcp
+        remote:
+          url: http://localhost:8811/mcp
+          transport_type: streamable
+          headers:
+            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+        allow_private_ips: true
+
+  analyst:
+    model: deep
+    description: Synthesis specialist
+    instruction: |
+      Receive findings from both researchers. Distill into AT MOST 5 key
+      insights, one short paragraph each. Surface tensions between the two
+      streams when they exist. Use the think tool. Do not search anything.
+    toolsets:
+      - type: think
+
+  writer:
+    model: local
+    description: Briefing writer (running locally)
+    instruction: |
+      Write a short briefing as ./report.md. Target 500 to 800 words:
+      Abstract (2 to 3 sentences), Findings (bulleted key insights), Sources
+      (papers the paper-researcher returned). Do not invent facts.
+    toolsets:
+      - type: filesystem
+
+  publisher:
+    model: fast
+    description: Academic-paper publisher
+    instruction: |
+      Read ./report.md and produce a self-contained ./report.html styled as
+      an academic paper. Serif body font, centered title, italic abstract,
+      justified body, hanging-indent references. No emoji, no branding.
+    toolsets:
+      - type: filesystem
+EOF</pre>
+        <pre class="cmd" data-os="windows">@'
+version: "9"
+
+models:
+  fast:
+    provider: anthropic
+    model: claude-sonnet-4-6
+    max_tokens: 8192
+
+  deep:
+    provider: anthropic
+    model: claude-opus-4-6
+    max_tokens: 8192
+
+  local:
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
+
+agents:
+  root:
+    model: fast
+    description: Coordinator of a research and report-writing team
+    instruction: |
+      You coordinate a research-and-report team. Team members: wiki-researcher,
+      paper-researcher, analyst, writer, publisher. Delegate work, narrate what
+      you are doing between delegations, and return report.md and report.html
+      when done. Do not research, analyze, write, or publish yourself.
+    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
+    toolsets:
+      - type: think
+
+  wiki-researcher:
+    model: fast
+    description: Wikipedia background researcher (via Gateway)
+    instruction: |
+      Use the Wikipedia tools from the MCP Gateway. Return AT MOST 8 key
+      facts, one short line each. Be terse. Do not write prose. Do not save files.
+    toolsets:
+      - type: mcp
+        remote:
+          url: http://localhost:8811/mcp
+          transport_type: streamable
+          headers:
+            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+        allow_private_ips: true
+
+  paper-researcher:
+    model: fast
+    description: Academic literature researcher (via Gateway)
+    instruction: |
+      Use the Paper Search tools from the MCP Gateway (arXiv, PubMed, Semantic
+      Scholar, OpenAlex). Return AT MOST 6 papers, one line each. Do not
+      download PDFs. Be terse. Do not write prose. Do not save files.
+    toolsets:
+      - type: mcp
+        remote:
+          url: http://localhost:8811/mcp
+          transport_type: streamable
+          headers:
+            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+        allow_private_ips: true
+
+  analyst:
+    model: deep
+    description: Synthesis specialist
+    instruction: |
+      Receive findings from both researchers. Distill into AT MOST 5 key
+      insights, one short paragraph each. Surface tensions between the two
+      streams when they exist. Use the think tool. Do not search anything.
+    toolsets:
+      - type: think
+
+  writer:
+    model: local
+    description: Briefing writer (running locally)
+    instruction: |
+      Write a short briefing as ./report.md. Target 500 to 800 words:
+      Abstract (2 to 3 sentences), Findings (bulleted key insights), Sources
+      (papers the paper-researcher returned). Do not invent facts.
+    toolsets:
+      - type: filesystem
+
+  publisher:
+    model: fast
+    description: Academic-paper publisher
+    instruction: |
+      Read ./report.md and produce a self-contained ./report.html styled as
+      an academic paper. Serif body font, centered title, italic abstract,
+      justified body, hanging-indent references. No emoji, no branding.
+    toolsets:
+      - type: filesystem
+'@ | Set-Content team-gateway.yaml</pre>
+      </div>
+      <p>Now replace the two <code class="inline">PASTE_BEARER_TOKEN_HERE</code> placeholders in <code class="inline">team-gateway.yaml</code> with the Bearer token you copied from the Gateway terminal. Any text editor works; on the command line, a quick sed substitution:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">sed -i '' "s/PASTE_BEARER_TOKEN_HERE/&lt;paste-your-token&gt;/g" team-gateway.yaml</pre>
+        <pre class="cmd" data-os="windows">(Get-Content team-gateway.yaml) -replace 'PASTE_BEARER_TOKEN_HERE', '&lt;paste-your-token&gt;' | Set-Content team-gateway.yaml</pre>
+      </div>
+
+      <h4>Step C: run the team through the Gateway</h4>
+      <p>Run the Gateway-flavored team.yaml against the same research prompt from Step 7.3:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">docker agent run team-gateway.yaml "Write me a short academic-style briefing on the 2026 FIFA World Cup. Use Wikipedia for background, and the academic literature for findings on World Cup economic impact, infrastructure, and host-country outcomes. Keep it tight. Save as report.md."</pre>
+      </div>
+      <p>Watch two things at once. In your agent terminal, the coordinator narrates as before and the team produces the same shape of report. In your Gateway terminal (Step A), you'll see log lines every time a role hits the Gateway to invoke a tool — that's the confirmation the researchers are federating through <code class="inline">localhost:8811</code> instead of spawning their own containers. The tool names in the agent's trace are also different: they carry the <code class="inline">mcp_docker_mcp-gateway_&lt;server&gt;_&lt;tool&gt;</code> prefix that Docker Agent uses for Gateway-routed tools.</p>
+
+      <p class="note-inline"><span class="label">On per-role tool scoping</span> When two roles point at the same Gateway URL, they both see the full set of federated tools (Wikipedia + DuckDuckGo + Paper Search here). The <code class="inline">wiki-researcher</code> role's instruction still says "use the Wikipedia tools," which usually gets the model to pick correctly, but the yaml no longer strictly gates it. Per-role scoping in this pattern moves to either (a) narrower Gateway processes per role, (b) Docker MCP Gateway's <code class="inline">--tools</code> filter at startup, or (c) profile-based Gateway config where different profiles expose different tools. Step 8's "yaml is the boundary" story still holds for the original <code class="inline">team.yaml</code>; when you switch to Gateway federation, the boundary moves down a layer.</p>
+
+      <p>When you're done, stop the Gateway (Ctrl+C in the Gateway terminal). <code class="inline">team-gateway.yaml</code> stays in place — it's an artifact you could commit to a repo as your team's Docker Agent starting point.</p>
+    </div>
+  </details>
+
   <div class="learnings-block">
     <h3>Key learnings</h3>
     <p>Docker Agent is a multi-agent harness. The yaml declares roles, their models, their instructions, and their toolsets. Each role is its own agent with its own scoped capability set, and the coordinator orchestrates handoffs declaratively rather than through prompt chaining inside one model context.</p>
