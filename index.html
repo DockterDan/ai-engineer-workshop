@@ -2,7 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Docker AI Agents Workshop</title>
+<title>SBX 101: Hands-on with Docker Sandboxes</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -1773,7 +1773,7 @@ ERROR: No matching distribution found for requests</pre>
 
   <h3>Next: what tools the agent can use</h3>
   <p>Network policy controls which hostnames the sandbox can connect to directly. <strong>MCP</strong> (Model Context Protocol) controls which specific tools the agent can call. They solve different problems and they compose: a production-shape agent typically has restrictive network policy AND a curated set of MCP tools, so the agent reaches the outside world only through channels you've explicitly approved.</p>
-  <p>An MCP server exposes one or more tools, and the agent invokes them through the protocol. In <strong>Step 4</strong> we'll register a Wikipedia MCP server with sbx, attach it to <code class="inline">sandbox-alpha</code>, and watch the agent retrieve information through that tool, including from domains the sandbox's network policy doesn't allow directly. By the end you'll have a clean mental model for when to add domains to the network allow list versus when to add MCP tools that wrap them.</p>
+  <p>An MCP server exposes one or more tools, and the agent invokes them through the protocol. In <strong>Step 4</strong> we'll register two MCP servers with sbx (Wikipedia and DuckDuckGo web search, using two different registration modes), attach them to <code class="inline">sandbox-alpha</code>, and watch the agent retrieve information through those tools — including from domains the sandbox's network policy doesn't allow directly. By the end you'll have a clean mental model for when to add domains to the network allow list versus when to add MCP tools that wrap them.</p>
   <p>After <strong>Step 4</strong> the workshop turns to what the agent <em>builds</em>. We'll have the agent produce a small app and look at the security posture of what it ships. That's <strong>Step 5</strong>, where Docker Hardened Images come in.</p>
 </aside>
 
@@ -3345,7 +3345,7 @@ agents:
 </div>
 
 <footer>
-  Workshop draft for AI Engineer's World's Fair. Commands verified against the published Docker documentation at dockerworkshop.vercel.app.
+  Workshop authored by Dan Ndombe. Commands verified against Docker documentation at docs.docker.com.
 </footer>
 
 <script>
