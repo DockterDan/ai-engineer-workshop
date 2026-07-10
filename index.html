@@ -3021,11 +3021,20 @@ agents:
         <pre>&gt; Gateway URL: http://localhost:8811/mcp
 &gt; Use Bearer token: Authorization: Bearer w8qqy63ydof7h9o0469jd0wy5g98lpqfm9guz5my7tj3gsnpbz</pre>
       </div>
-      <p><strong>Copy the Bearer token</strong> (the long string after <code class="inline">Bearer</code>) into your clipboard. You'll paste it into the yaml in the next step. The token regenerates every time the Gateway starts, so if you restart the Gateway later, you'll need to update the yaml with the new token. Leave this Gateway terminal running for the rest of this bonus section.</p>
+      <p>The Bearer token is a per-session guard the Gateway prints for its own local TCP port; it's <em>not</em> an API key from Anthropic or any other provider, and it regenerates every time you start <code class="inline">docker mcp gateway run</code>. Store it in an environment variable so it stays out of any file. In your <em>original</em> terminal (the one where you'll run <code class="inline">docker agent</code>, not the Gateway terminal), copy the token from the Gateway output and export it:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">export GATEWAY_TOKEN=&lt;paste-your-token-here&gt;</pre>
+        <pre class="cmd" data-os="windows">$env:GATEWAY_TOKEN = "&lt;paste-your-token-here&gt;"</pre>
+      </div>
+      <p>The yaml in the next step will reference the token by name (<code class="inline">$GATEWAY_TOKEN</code>), so the actual value never lands in a file. Leave the Gateway terminal running for the rest of this bonus section.</p>
 
       <h4>Step B: write a Gateway-flavored team.yaml</h4>
-      <p>Back in your original terminal (the one where you ran the team earlier), write a new yaml alongside <code class="inline">team.yaml</code>. Same team, but the two researcher roles pull their tools from the Gateway instead of running docker containers themselves. Note the two important structural differences from the original: <code class="inline">version: "9"</code> at the top (required for the <code class="inline">allow_private_ips</code> field), and the researcher <code class="inline">toolsets</code> use a <code class="inline">remote:</code> block instead of <code class="inline">command:</code>/<code class="inline">args:</code>.</p>
-      <p>Paste the Bearer token from Step A into the two spots marked <code class="inline">PASTE_BEARER_TOKEN_HERE</code> before running the command:</p>
+      <p>Back in your original terminal (the one where you set <code class="inline">GATEWAY_TOKEN</code>), write a new yaml alongside <code class="inline">team.yaml</code>. Same team, but the two researcher roles pull their tools from the Gateway instead of running docker containers themselves. Two important structural differences from the original: <code class="inline">version: "9"</code> at the top (required for the <code class="inline">allow_private_ips</code> field), and the researcher <code class="inline">toolsets</code> use a <code class="inline">remote:</code> block instead of <code class="inline">command:</code>/<code class="inline">args:</code>. The header references <code class="inline">$GATEWAY_TOKEN</code>; Docker Agent expands the variable from your shell environment at run time, so the actual token never lives in this file:</p>
       <div class="cmd-block">
         <div class="cmd-bar">
           <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -3076,7 +3085,7 @@ agents:
           url: http://localhost:8811/mcp
           transport_type: streamable
           headers:
-            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+            Authorization: Bearer $GATEWAY_TOKEN
         allow_private_ips: true
 
   paper-researcher:
@@ -3092,7 +3101,7 @@ agents:
           url: http://localhost:8811/mcp
           transport_type: streamable
           headers:
-            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+            Authorization: Bearer $GATEWAY_TOKEN
         allow_private_ips: true
 
   analyst:
@@ -3169,7 +3178,7 @@ agents:
           url: http://localhost:8811/mcp
           transport_type: streamable
           headers:
-            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+            Authorization: Bearer $GATEWAY_TOKEN
         allow_private_ips: true
 
   paper-researcher:
@@ -3185,7 +3194,7 @@ agents:
           url: http://localhost:8811/mcp
           transport_type: streamable
           headers:
-            Authorization: Bearer PASTE_BEARER_TOKEN_HERE
+            Authorization: Bearer $GATEWAY_TOKEN
         allow_private_ips: true
 
   analyst:
@@ -3219,17 +3228,6 @@ agents:
       - type: filesystem
 '@ | Set-Content team-gateway.yaml</pre>
       </div>
-      <p>Now replace the two <code class="inline">PASTE_BEARER_TOKEN_HERE</code> placeholders in <code class="inline">team-gateway.yaml</code> with the Bearer token you copied from the Gateway terminal. Any text editor works; on the command line, a quick sed substitution:</p>
-      <div class="cmd-block">
-        <div class="cmd-bar">
-          <button class="cmd-tab active" data-os="mac">MacOS</button>
-          <button class="cmd-tab" data-os="windows">Windows</button>
-          <button class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <pre class="cmd active" data-os="mac">sed -i '' "s/PASTE_BEARER_TOKEN_HERE/&lt;paste-your-token&gt;/g" team-gateway.yaml</pre>
-        <pre class="cmd" data-os="windows">(Get-Content team-gateway.yaml) -replace 'PASTE_BEARER_TOKEN_HERE', '&lt;paste-your-token&gt;' | Set-Content team-gateway.yaml</pre>
-      </div>
-
       <h4>Step C: run the team through the Gateway</h4>
       <p>Run the Gateway-flavored team.yaml against the same research prompt from Step 7.3:</p>
       <div class="cmd-block">
