@@ -1854,7 +1854,7 @@ ERROR: No matching distribution found for requests</pre>
 
   <p>In Step 3 you saw what happens when the agent reaches for something outside the default allow list: blocked at the proxy, audit log records it, you decide whether to open a targeted hole. That's a network-level lever. MCP gives you a different one: instead of unblocking a domain, register a specific <em>tool</em> (web search, GitHub access, file operations, an internal API) and let the agent invoke that tool through a controlled channel. The agent can do what the tool exposes and nothing more.</p>
 
-  <p>MCP (Model Context Protocol) is an open standard for how agents call tools. An MCP <em>server</em> exposes one or more tools, and the agent invokes them through the protocol. <code class="inline">sbx mcp</code> is how we register servers so that agents running inside a sandbox can use them. For this step we'll register a Wikipedia MCP server running as a host-side Docker container, attach it to <code class="inline">sandbox-alpha</code>, and have the agent retrieve information through it.</p>
+  <p>MCP (Model Context Protocol) is an open standard for how agents call tools. An MCP <em>server</em> exposes one or more tools, and the agent invokes them through the protocol. <code class="inline">sbx mcp</code> is how we register servers so that agents running inside a sandbox can use them. For this step we'll register two MCP servers using two different <code class="inline">sbx mcp add</code> modes (local stdio for Wikipedia, OCI image reference for DuckDuckGo), attach both to <code class="inline">sandbox-alpha</code>, and have the agent retrieve information through them.</p>
 
   <h3 class="substep">4.1 Enable the sbx mcp subtree</h3>
   <p>The <code class="inline">sbx mcp</code> subtree is hidden by default. It only appears when the <code class="inline">SBX_MCP_URL</code> environment variable is set to an absolute http/https URL. The simplest path is to point it at the public MCP community registry, which unlocks the subcommands without requiring any additional infrastructure:</p>
@@ -1962,10 +1962,41 @@ ERROR: No matching distribution found for requests</pre>
   <p>Then a client (an IDE, a Docker Agent yaml, or a custom MCP client) binds to that profile with <code class="inline">docker mcp client connect &lt;client&gt; --profile workshop</code>, and it sees exactly the tools in that profile — no more, no less. Different clients bind different profiles; that's how a team gets per-client tool scoping without duplicating registrations.</p>
   <p>We're keeping the rest of the workshop on the per-sandbox <code class="inline">sbx mcp</code> path because it makes the sandbox-as-trust-boundary story cleaner. But if you're planning an MCP setup that a team is going to share, the Gateway is the primitive to know about. Full docs at <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a>.</p>
 
-  <h3 class="substep">4.3 Try without MCP, then with MCP attached</h3>
-  <p>Before we recreate sandbox-alpha with the MCP wired in, let's prove the agent really can't reach Wikipedia through normal channels. The contrast is the whole point of this step.</p>
+  <h3 class="substep">4.2.2 Register a second MCP via OCI image reference</h3>
+  <p>The wiki registration you just did used <code class="inline">--command</code> + <code class="inline">--args</code>. It works, but <code class="inline">sbx mcp add</code>'s help explicitly flags that mode as "for ad-hoc development only" — local stdio servers run as subprocesses on your host with no identity, no supply chain verification, and no sandboxing. It's a fine choice for a lab, but not the recommended path for production.</p>
+  <p>The recommended path is <code class="inline">--url</code> with an OCI image reference. sbx pulls the image, inspects its OCI labels for the MCP transport / port / path, and stores the registration against those. Same runtime shape (a container speaking MCP), better supply-chain story (an OCI image on docker.io, verifiable, signed by the publisher). Let's use it for a second server: DuckDuckGo web search.</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx mcp add local-duck --url docker.io/mcp/duckduckgo:latest</pre>
+  </div>
+  <p>Walking through the differences from the wiki command: no <code class="inline">--command</code>, no <code class="inline">--args</code>, no <code class="inline">docker run</code> incantation. <code class="inline">--url docker.io/mcp/duckduckgo:latest</code> tells sbx "here's the OCI image, figure out how to talk to it." sbx pulls the image (or uses the local cache from prep), reads the <code class="inline">io.modelcontextprotocol.transport</code> / <code class="inline">.port</code> / <code class="inline">.path</code> labels off the image config, and auto-detects the transport. For v1, sbx accepts image refs only from docker.io — other registries (gcr.io, ghcr.io, ECR) are rejected.</p>
+  <p>Confirm it registered and inspect what it exposes:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx mcp inspect local-duck</pre>
+  </div>
+  <p>You'll see the detected transport (stdio for this image), the OCI image reference, and the tools DuckDuckGo exposes: web search, image search, news search, and content fetching. Different tool surface from Wikipedia — that's the point. The agent now has two distinct capabilities to reach for, and it'll pick the one that fits the sub-question.</p>
+  <p>List all your registrations to confirm both are there:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx mcp ls</pre>
+  </div>
+  <p><code class="inline">local-wiki</code> and <code class="inline">local-duck</code> should both appear.</p>
+  <p class="note-inline"><span class="label">Other registration modes</span> <code class="inline">sbx mcp add</code> also accepts a remote MCP endpoint (<code class="inline">--url https://mcp.notion.com/mcp</code>, OAuth handled automatically) and a community registry URL (<code class="inline">--url https://registry.modelcontextprotocol.io/v0/servers/&lt;name&gt;/versions/latest</code>, optionally with <code class="inline">--local</code> to run the image on your host). Run <code class="inline">sbx mcp add --help</code> to see them all.</p>
 
-  <p><strong>Part 1: confirm Wikipedia is blocked.</strong> Attach to the existing sandbox-alpha (still running from Step 3):</p>
+  <h3 class="substep">4.3 Try without MCPs, then with both attached</h3>
+  <p>Two MCPs are registered but neither is attached to a sandbox yet. Before we attach them, let's prove the agent really can't reach Wikipedia or web search through normal channels. The contrast is the whole point of this step.</p>
+
+  <p><strong>Part 1: confirm both destinations are blocked.</strong> Attach to the existing sandbox-alpha (still running from Step 3):</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal A)</span>
@@ -1978,7 +2009,7 @@ ERROR: No matching distribution found for requests</pre>
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Fetch <code>https://en.wikipedia.org/api/rest_v1/page/summary/2026_FIFA_World_Cup</code> and tell me the HTTP status and any body you got back.
   </div>
-  <p>The agent picks a tool, makes the request, and the proxy refuses it with a 403 (or the connection fails outright) because <code class="inline">wikipedia.org</code> isn't on any default allow list. The agent reports the failure. That confirms the baseline: with no MCP attached, the sandbox can't reach Wikipedia, regardless of which tool the agent reaches for.</p>
+  <p>The agent picks a tool, makes the request, and the proxy refuses it with a 403 (or the connection fails outright) because <code class="inline">wikipedia.org</code> isn't on any default allow list. The agent reports the failure. Same story for a general web search: <code class="inline">duckduckgo.com</code> isn't on any allow list either. That confirms the baseline: with no MCP attached, the sandbox can't reach either source, regardless of which tool the agent reaches for.</p>
   <p>Switch to Terminal B (your host shell) and confirm the block in the audit log:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -1989,7 +2020,7 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p>You'll see a fresh Blocked requests entry for <code class="inline">en.wikipedia.org</code> with the reason "No matching allow rule (default deny)." That's the network-policy-only baseline.</p>
 
-  <p><strong>Part 2: attach the MCP to the running sandbox.</strong> The agent in <code class="inline">sandbox-alpha</code> has no Wikipedia tool right now. We're going to give it one without restarting the sandbox or the agent. Switch to Terminal B (your host shell) and run:</p>
+  <p><strong>Part 2: attach both MCPs to the running sandbox.</strong> The agent in <code class="inline">sandbox-alpha</code> has no Wikipedia or web-search tool right now. We're going to give it both without restarting the sandbox or the agent. Switch to Terminal B and run:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal B)</span>
@@ -1997,7 +2028,14 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx mcp load local-wiki --sandbox sandbox-alpha</pre>
   </div>
-  <p>This attaches the <code class="inline">local-wiki</code> MCP server you registered in 4.2 to the running sandbox's MCP gateway. The agent inside the sandbox sees the new server's tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification. No restart required.</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell (Terminal B)</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx mcp load local-duck --sandbox sandbox-alpha</pre>
+  </div>
+  <p>Each <code class="inline">load</code> attaches its MCP server to the running sandbox's MCP gateway. The agent inside the sandbox sees the new servers' tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification, once per load call. No restart required.</p>
   <p>Switch back to Terminal A. If you exited the agent at any point during Part 1 (Ctrl+C twice), reconnect now:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2006,12 +2044,12 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx run --name sandbox-alpha</pre>
   </div>
-  <p>If you're already at the agent prompt, skip the command above. Either way, ask essentially the same question as before, without telling the agent how to fetch the article:</p>
+  <p>If you're already at the agent prompt, skip the command above. Either way, ask a question that needs both tools — an article summary and some fresh news the article won't cover:</p>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
-    Look up the 2026 FIFA World Cup on Wikipedia. Give me the article's summary and three key facts.
+    Look up the 2026 FIFA World Cup on Wikipedia and give me the article's summary and three key facts. Then use DuckDuckGo to search for recent news about the tournament and add two or three of the freshest items you can find. Cite each item's source.
   </div>
-  <p>This time the agent has Wikipedia MCP tools available (the gateway pushed a <code class="inline">tools/list_changed</code> notification when you ran <code class="inline">sbx mcp load</code>), and reaches for them rather than the built-in fetch. The same query that failed a minute ago now returns the article summary and facts. Same sandbox, same agent session, same task, same intent; what changed is the set of capabilities the agent has to work with.</p>
+  <p>This time the agent has both Wikipedia and DuckDuckGo MCP tools available. It should reach for the Wikipedia tools for the encyclopedia lookup and the DuckDuckGo tools for the news search, picking each based on the sub-question. The same intent that failed a minute ago now returns a mix of encyclopedia content and current news. Same sandbox, same agent session; what changed is the set of capabilities the agent has to work with.</p>
 
   <p><strong>Part 3: confirm the agent did not touch the network directly.</strong> Switch to Terminal B again and check the policy log:</p>
   <div class="cmd-block">
@@ -2021,30 +2059,30 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx policy log sandbox-alpha</pre>
   </div>
-  <p>There's no new Blocked requests entry for Wikipedia from this second attempt, and no new Allowed requests entry for it either. The agent retrieved real Wikipedia content without the sandbox's network ever touching <code class="inline">wikipedia.org</code>. The tool call traveled from the agent, through the MCP protocol, to the host-side Wikipedia MCP server, out to Wikipedia's API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
+  <p>There's no new Blocked requests entry for <code class="inline">wikipedia.org</code> or <code class="inline">duckduckgo.com</code> from this second attempt, and no new Allowed requests entries for them either. The agent retrieved real Wikipedia content and real search results without the sandbox's network ever touching either domain. Every tool call traveled from the agent, through the MCP protocol, to the host-side MCP server, out to the underlying API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
 
   <div class="callout">
     <span class="label">One-step alternative</span>
-    We split this into "create the sandbox, then attach the MCP" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-Wikipedia to Wikipedia without a restart. If you'd rather declare the MCP at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> does the same end-state in one command (where supported by your sbx build):
+    We split this into "create the sandbox, then attach the MCPs" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-tools to two-tools without a restart. If you'd rather declare MCPs at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> (or <code class="inline">--static-mcp</code> on newer builds) does the same end-state in one command:
     <div class="cmd-block" style="margin-top: 10px;">
       <div class="cmd-bar">
         <button class="cmd-tab active" data-os="mac">MacOS</button>
         <button class="cmd-tab" data-os="windows">Windows</button>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki claude ~/workshop/sbx</pre>
-      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki claude $HOME/workshop/sbx</pre>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki --mcp local-duck claude ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki --mcp local-duck claude $HOME/workshop/sbx</pre>
     </div>
-    Use whichever flow fits the situation: <code class="inline">--mcp</code> at create when the MCP is part of the sandbox's identity from the start, <code class="inline">sbx mcp load</code> when you want to add (or swap) tools on a sandbox that's already running.
+    Use whichever flow fits the situation: <code class="inline">--mcp</code> at create when the MCPs are part of the sandbox's identity from the start, <code class="inline">sbx mcp load</code> when you want to add (or swap) tools on a sandbox that's already running.
   </div>
 
   <h3 class="substep">4.4 Wrap up</h3>
-  <p>Exit the agent (Ctrl+C twice) to free your terminal for Step 5's host commands. <strong>Don't tear down sandbox-alpha or the local-wiki MCP registration.</strong> Step 5 will keep using sandbox-alpha for its research demo, and the agent will have the Wikipedia MCP available there if it decides to use it. We'll do the full cleanup of the MCP registration in the wrap-up section at the end of the workshop.</p>
+  <p>Exit the agent (Ctrl+C twice) to free your terminal for Step 5's host commands. <strong>Don't tear down sandbox-alpha or either MCP registration.</strong> Step 5 will keep using sandbox-alpha for its research demo, and the agent will have both Wikipedia and DuckDuckGo available there if it decides to use them. We'll do the full cleanup of the MCP registrations in the wrap-up section at the end of the workshop.</p>
 
   <div class="learnings-block">
     <h3>Key learnings</h3>
     <p>Network policy (Step 3) and tool access via MCP (Step 4) solve different problems. Network policy controls which hostnames the sandbox can connect to directly. MCP controls which specific tools the agent can invoke. They compose: a production-shape agent typically has restrictive network policy AND a curated set of MCP tools, so the agent reaches the outside world only through channels you've explicitly approved.</p>
-    <p>The four registration modes (remote OAuth, community registry managed, community registry local, local stdio) trade convenience for control. Local stdio servers run with your full host permissions, which is fine for development and trusted code. Catalog-backed and OAuth-mediated servers (with a hosted control plane) are how the same machinery scales to enterprise governance: today a developer registers what they need; tomorrow an org admin controls what's even registerable.</p>
+    <p>The registration modes trade convenience for control. Local stdio (<code class="inline">--command</code> + <code class="inline">--args</code>) runs a subprocess on the host with your full user permissions — fine for ad-hoc development, not for anything you don't trust. OCI image references (<code class="inline">--url docker.io/&lt;org&gt;/&lt;image&gt;:&lt;tag&gt;</code>) give you a signed, verifiable image and let sbx auto-detect the transport. Remote MCP endpoints (<code class="inline">--url https://mcp.&lt;service&gt;.com/mcp</code>) let you plug into hosted MCP services with OAuth handled automatically. Community registry URLs let you pull registrations by name from a catalog. Same runtime shape; different supply-chain and identity properties. Beyond the per-sandbox <code class="inline">sbx mcp</code> path, the Docker MCP Gateway (4.2.1) is the team-scale primitive: profiles, catalogs, per-client scoping.</p>
   </div>
 </section>
 
@@ -2192,13 +2230,13 @@ CMD ["python", "app.py"]
     <pre class="cmd active" data-os="mac">cd ~/workshop/sbx/research-app</pre>
     <pre class="cmd" data-os="windows">cd $HOME/workshop/sbx/research-app</pre>
   </div>
-  <p>Build the image. The <code class="inline">--provenance=true</code> and <code class="inline">--sbom=true</code> flags tell Docker to attach a build provenance attestation and a software bill of materials to the resulting image. Scout uses both for a more accurate scan in 5.5.</p>
+  <p>Build the image:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">docker build --provenance=true --sbom=true -t research-app:v1 .</pre>
+    <pre class="cmd active">docker build -t research-app:v1 .</pre>
   </div>
   <p>Run the container in the background, mapping port 8000 from the container to your host:</p>
   <div class="cmd-block">
@@ -2280,7 +2318,7 @@ CMD ["python", "app.py"]
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">docker build --provenance=true --sbom=true -t research-app:v2 .</pre>
+    <pre class="cmd active">docker build -t research-app:v2 .</pre>
   </div>
   <p>Run it the same way as before to confirm it still serves the page:</p>
   <div class="cmd-block">
