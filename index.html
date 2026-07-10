@@ -699,7 +699,7 @@
     <h2>What this workshop is</h2>
   </div>
   <p class="subtitle">A working multi-agent system on Docker.</p>
-  <p>This 90-minute hands-on workshop walks through the Docker primitives that let you hand AI agents meaningful autonomy without losing control over what they do. Over eight steps you'll start a sandbox, prove its isolation guarantees, govern its network, harden the containers it ships, attach tools via MCP, standardize the setup as a kit, compose multiple agents with Docker Agent, and observe how per-role tool scoping holds as a runtime boundary.</p>
+  <p>This 2-hour hands-on workshop walks through the Docker primitives that let you hand AI agents meaningful autonomy without losing control over what they do. Over eight steps you'll start a sandbox, prove its isolation guarantees, govern its network, harden the containers it ships, attach tools via MCP, standardize the setup as a kit, compose multiple agents with Docker Agent, and observe how per-role tool scoping holds as a runtime boundary.</p>
 
   <h3 class="substep">Before you start, you'll need:</h3>
   <ul>
@@ -983,7 +983,7 @@ global   service  opencode    ****...****</pre>
     <li><strong>Step 1: What the agent is.</strong> We'll create a sandbox and connect to it. The agent will report back on its environment, the kernel it has access to, the user it runs as, and the directory it can see.</li>
     <li><strong>Step 2: How the boundary holds.</strong> We'll prove the isolation with hands-on tests from inside and outside the sandbox.</li>
     <li><strong>Step 3: What it can reach.</strong> Govern the sandbox's outbound network with a declarative policy. Default deny, with allow rules you write explicitly. Audit log shows every request the proxy enforced.</li>
-    <li><strong>Step 4: What tools it has.</strong> Attach MCP servers to give the agent specific capabilities, like a Wikipedia search tool. The tools are explicit; the agent can't invent new ones.</li>
+    <li><strong>Step 4: What tools it has.</strong> Attach MCP servers to give the agent specific capabilities: Wikipedia article lookup and DuckDuckGo web search. The tools are explicit; the agent can't invent new ones.</li>
     <li><strong>Step 5: What it ships.</strong> Have the agent build a real container, scan it with Docker Scout, swap the base image to a Docker Hardened Image. Same code, dramatically lower CVE count.</li>
     <li><strong>Step 6: How to share the setup.</strong> Package the whole configuration as a kit. One directory, committable to git, re-runnable by anyone on your team with a single sbx command.</li>
   </ul>
@@ -1840,9 +1840,16 @@ ERROR: No matching distribution found for requests</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
+    <pre class="cmd active">docker pull mcp/paper-search</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
     <pre class="cmd active">docker model pull ai/smollm2</pre>
   </div>
-  <p><code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/duckduckgo</code> are the two MCP servers we'll register in Step 4. <code class="inline">ai/smollm2</code> is a small local language model that a role in Step 7 will use through Docker Model Runner. Pulls run in parallel; if any one fails, re-run just that command. Once all three complete, you're ready for Step 4.</p>
+  <p><code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/duckduckgo</code> are the two MCP servers we'll register in Step 4. <code class="inline">mcp/paper-search</code> is a third MCP server that Step 7's Docker Agent team uses for academic literature. <code class="inline">ai/smollm2</code> is a small local language model that a role in Step 7 will use through Docker Model Runner. Pulls run in parallel; if any one fails, re-run just that command. Once all four complete, you're ready for Step 4.</p>
 </section>
 
 <section class="step" id="step-4">
@@ -2093,7 +2100,7 @@ ERROR: No matching distribution found for requests</pre>
     <li><strong>Step 1: What it is.</strong> The sandbox is a Linux microVM with its own kernel, its own user, and access only to the directory you mounted in.</li>
     <li><strong>Step 2: What it is, structurally.</strong> The boundary is proven by the isolation tests. The workspace shares both ways, anything outside it is unreachable, and the credential proxy keeps API keys outside the VM entirely.</li>
     <li><strong>Step 3: What it can reach.</strong> A governable network policy controls outbound traffic, with five default allow groups plus any custom rules you add, all enforced at the proxy.</li>
-    <li><strong>Step 4: What tools it has.</strong> The agent now has a curated Wikipedia capability registered through MCP and attached to sandbox-alpha, and it reaches outside the sandbox only through tools you explicitly added.</li>
+    <li><strong>Step 4: What tools it has.</strong> The agent now has two curated capabilities (Wikipedia and DuckDuckGo web search) registered through MCP and attached to sandbox-alpha, and it reaches outside the sandbox only through tools you explicitly added.</li>
   </ul>
 
   <h3>Next: what the agent builds</h3>
@@ -2582,14 +2589,14 @@ Rules:
     <li><strong>Step 1: What it is.</strong> The sandbox is a Linux microVM with its own kernel, its own user, and access only to the directory you mounted in.</li>
     <li><strong>Step 2: What it is, structurally.</strong> The boundary is proven by the isolation tests. The workspace shares both ways, anything outside it is unreachable, and the credential proxy keeps API keys outside the VM entirely.</li>
     <li><strong>Step 3: What it can reach.</strong> A governable network policy controls outbound traffic, with five default allow groups plus any custom rules you add, all enforced at the proxy.</li>
-    <li><strong>Step 4: What tools it has.</strong> The agent has a curated Wikipedia capability registered through MCP and attached to sandbox-alpha, and it reaches outside the sandbox only through tools you explicitly added.</li>
+    <li><strong>Step 4: What tools it has.</strong> The agent has two curated capabilities (Wikipedia and DuckDuckGo web search) registered through MCP and attached to sandbox-alpha, and it reaches outside the sandbox only through tools you explicitly added.</li>
     <li><strong>Step 5: What it ships.</strong> The artifact the agent produces is a Docker image. Swapping the base for a Docker Hardened Image drops the CVE count by replacing the base, not changing the code.</li>
     <li><strong>Step 6: How to ship the setup itself.</strong> The whole configuration (skills, files, rules) is packaged as a kit. One directory, committable to git, re-runnable by anyone on the team with a single sbx command.</li>
   </ul>
 
   <h3>Next: a glimpse of Docker Agent (extra layer)</h3>
   <p>Steps 1 through 6 cover sbx end-to-end: foundational isolation for a single agent at a time. The next two steps step outside sbx to show <strong>Docker Agent</strong>, a different piece of Docker's agent platform aimed at multi-agent orchestration. We're including them as an extra layer beyond the core workshop. Where sbx scopes one agent inside an isolated VM, Docker Agent runs on your host and composes multiple roles in one declarative yaml. Today, this is a quick demo of how easily you can stand up that pattern on your laptop, and a preview of where the platform is heading.</p>
-  <p>In <strong>Step 7</strong> we'll write a small team yaml with three roles (a coordinator, a Wikipedia researcher, a writer) and watch them hand off work. In <strong>Step 8</strong> we'll test that each role's tools stay scoped: capability isolation at a different layer than the network policy you saw in Step 3, but the same load-bearing idea.</p>
+  <p>In <strong>Step 7</strong> we'll write a small team yaml with six roles (a coordinator, two researchers, an analyst, a writer, and a publisher) and watch them hand off work. The writer runs on a local model via Docker Model Runner while the rest run on cloud models, so you'll see a hybrid team where model choice is a per-role architectural knob. An optional bonus at the end federates the whole team's tool access through the Docker MCP Gateway. In <strong>Step 8</strong> we'll test that each role's tools stay scoped: capability isolation at a different layer than the network policy you saw in Step 3, but the same load-bearing idea.</p>
 </aside>
 
 <section class="step" id="step-7">
@@ -2682,7 +2689,7 @@ Rules:
     <pre class="cmd active" data-os="mac">cd ~/workshop/docker-agent</pre>
     <pre class="cmd" data-os="windows">cd $HOME/workshop/docker-agent</pre>
   </div>
-  <p>Now write <code class="inline">team.yaml</code> with the five roles. Each role names its model, what it's for, and the toolsets it has access to:</p>
+  <p>Now write <code class="inline">team.yaml</code> with the six roles. Each role names its model, what it's for, and the toolsets it has access to:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <button class="cmd-tab active" data-os="mac">MacOS</button>
@@ -2865,7 +2872,7 @@ agents:
       You gather encyclopedic background from Wikipedia. Use the Wikipedia tools to search
       and retrieve relevant articles. Return a tight bulleted list of AT MOST 8 key facts,
       one short line each, with the source article title in parens. Be terse; the writer
-      downstream has a 1200-word cap and you should not crowd them out. Do not write prose.
+      downstream has a compact ~800-word cap and you should not crowd them out. Do not write prose.
       Do not save files.
     toolsets:
       - type: mcp  # Wikipedia search and article retrieval (22 tools, no API key needed)
@@ -2880,7 +2887,7 @@ agents:
       arXiv, PubMed, Semantic Scholar, OpenAlex, and similar sources. Return AT MOST 6
       papers, each on one line: title, first author, year, source, and a one-sentence
       finding. Do not download or read full PDFs. Be terse; the writer downstream has
-      a 1200-word cap. Do not write prose. Do not save files.
+      a compact ~800-word cap. Do not write prose. Do not save files.
     toolsets:
       - type: mcp  # academic literature search across arXiv, PubMed, Semantic Scholar, OpenAlex, and others (57 tools, no API key needed)
         command: docker
@@ -2936,7 +2943,7 @@ agents:
       - type: filesystem  # read and write files in the working directory (reads report.md, writes report.html)
 '@ | Set-Content team.yaml</pre>
   </div>
-  <p>Three things to notice in this yaml. The <code class="inline">models</code> block declares two model profiles, <code class="inline">fast</code> (Sonnet) and <code class="inline">deep</code> (Opus), so each role can pick the right one. The <code class="inline">agents</code> block lists the team: <code class="inline">root</code> is the coordinator, and its <code class="inline">sub_agents</code> field names the five roles it can delegate to. The <code class="inline">toolsets</code> field on each role is the per-role capability scoping: <code class="inline">wiki-researcher</code> gets only the Wikipedia MCP, <code class="inline">paper-researcher</code> gets only the Paper Search MCP, <code class="inline">analyst</code> gets only <code class="inline">think</code>, <code class="inline">writer</code> and <code class="inline">publisher</code> each get only <code class="inline">filesystem</code> (writer to produce the markdown, publisher to read it and write the HTML), and the coordinator gets only <code class="inline">think</code>. That scoping is the boundary Step 8 will test.</p>
+  <p>Three things to notice in this yaml. The <code class="inline">models</code> block declares three model profiles: <code class="inline">fast</code> (Sonnet, cloud), <code class="inline">deep</code> (Opus, cloud), and <code class="inline">local</code> (smollm2 running on your host via Docker Model Runner). Each role picks the profile that fits. The <code class="inline">agents</code> block lists the team: <code class="inline">root</code> is the coordinator, and its <code class="inline">sub_agents</code> field names the five roles it can delegate to. The <code class="inline">toolsets</code> field on each role is the per-role capability scoping: <code class="inline">wiki-researcher</code> gets only the Wikipedia MCP, <code class="inline">paper-researcher</code> gets only the Paper Search MCP, <code class="inline">analyst</code> gets only <code class="inline">think</code>, <code class="inline">writer</code> and <code class="inline">publisher</code> each get only <code class="inline">filesystem</code> (writer to produce the markdown, publisher to read it and write the HTML), and the coordinator gets only <code class="inline">think</code>. That scoping is the boundary Step 8 will test.</p>
 
   <h3 class="substep">7.3 Run the team</h3>
   <p>Make sure you are in <code class="inline">~/workshop/docker-agent</code> and your <code class="inline">ANTHROPIC_API_KEY</code> is set in the current shell. Here's the prompt the team will work from:</p>
