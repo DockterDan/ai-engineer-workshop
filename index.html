@@ -326,10 +326,75 @@
   }
   .provider-note a { color: inherit; text-decoration: underline; }
 
+  /* Track selector: pick which workshop track (SBX 101 developer intro,
+     or LP2 Docker AI Governance). Same show/hide pattern as the provider
+     selector, but at the workshop level. Selection persists in localStorage
+     and can be deep-linked via ?track=<name>. */
+  .track-selector {
+    margin: 0 0 20px;
+    padding: 16px 18px;
+    background: #f8f4ee;
+    border: 1px solid #d9c8a8;
+    border-left: 4px solid #c79c2b;
+    border-radius: 4px;
+  }
+  .track-selector .track-intro {
+    margin: 0 0 12px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .track-selector .track-tabs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .track-selector .track-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .track-tab {
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .track-tab:hover { background: var(--bg-soft); }
+  .track-tab.active {
+    background: #c79c2b;
+    color: #fff;
+    border-color: #a37f1e;
+  }
+  .track-tab .track-tab-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.08);
+    margin-right: 6px;
+  }
+  .track-tab.active .track-tab-badge {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
   /* Hide all provider-tagged content by default; CSS rules below reveal
      only the variants matching the currently-selected provider. */
   [data-show-for] { display: none; }
   [data-show-for-inline] { display: none; }
+  [data-show-for-track] { display: none; }
   body.provider-claude    [data-show-for~="claude"]    { display: block; }
   body.provider-codex     [data-show-for~="codex"]     { display: block; }
   body.provider-gemini    [data-show-for~="gemini"]    { display: block; }
@@ -338,6 +403,13 @@
   body.provider-codex     li[data-show-for~="codex"],
   body.provider-gemini    li[data-show-for~="gemini"],
   body.provider-opencode  li[data-show-for~="opencode"]  { display: list-item; }
+
+  /* Track visibility. Content without data-show-for-track is shared across
+     both tracks. */
+  body.track-sbx-101       [data-show-for-track~="sbx-101"]       { display: block; }
+  body.track-ai-governance [data-show-for-track~="ai-governance"] { display: block; }
+  body.track-sbx-101       li[data-show-for-track~="sbx-101"],
+  body.track-ai-governance li[data-show-for-track~="ai-governance"] { display: list-item; }
   body.provider-claude    [data-show-for-inline~="claude"],
   body.provider-codex     [data-show-for-inline~="codex"],
   body.provider-gemini    [data-show-for-inline~="gemini"],
@@ -618,7 +690,7 @@
   }
 </style>
 </head>
-<body class="provider-opencode">
+<body class="provider-opencode track-sbx-101">
 
 <div class="layout">
 
@@ -643,8 +715,18 @@
 <main>
 
 <header class="workshop-header">
-  <h1>From Approval Loops to Autonomous Agents with Docker</h1>
-  <p class="meta">A hands-on workshop on SBX, DHI, MCP, Kits, and multi-agent orchestration.</p>
+  <div class="track-selector">
+    <p class="track-intro"><strong>Which workshop are you doing?</strong> Two tracks share this page. Pick the one that matches the audience you're delivering to (or the one that matches what you want to learn). You can switch at any time; your progress on the shared modules carries over.</p>
+    <div class="track-tabs">
+      <span class="track-label">Track:</span>
+      <button class="track-tab active" data-track="sbx-101"><span class="track-tab-badge">LP1</span>SBX 101 &mdash; developer intro</button>
+      <button class="track-tab" data-track="ai-governance"><span class="track-tab-badge">LP2</span>Docker AI Governance &mdash; corporate / compliance</button>
+    </div>
+  </div>
+  <h1 data-show-for-track="sbx-101">SBX 101: Hands-on with Docker Sandboxes</h1>
+  <h1 data-show-for-track="ai-governance">Docker AI Governance</h1>
+  <p class="meta" data-show-for-track="sbx-101">A hands-on workshop on SBX, DHI, MCP, Kits, and multi-agent orchestration.</p>
+  <p class="meta" data-show-for-track="ai-governance">A hands-on workshop on Docker's stack for safe, auditable, and compliant AI-agent adoption.</p>
   <div class="provider-selector">
     <p class="provider-intro"><strong>Pick your AI provider below.</strong> If you have a Claude / Anthropic API key, use <strong>Claude</strong> — the workshop's final steps are optimized for Anthropic. If you don't have Claude, sbx supports other providers, but for this lab we recommend <strong>OpenCode</strong> if you want a free option. You can switch at any time.</p>
     <div class="provider-tabs">
@@ -3350,6 +3432,40 @@ agents:
 
 <script>
   (function() {
+    // URL query params take precedence over saved state (for deep-linked shares).
+    var URL_PARAMS = new URLSearchParams(window.location.search);
+
+    // Track selector: pick which workshop (SBX 101 developer intro, or Docker
+    // AI Governance for corporate audiences). Same show/hide pattern as the
+    // provider selector, at the workshop level. Persists in localStorage,
+    // deep-linkable via ?track=<name>.
+    var TRACK_KEY = 'workshop-track';
+    var TRACKS = ['sbx-101', 'ai-governance'];
+    var TRACK_TITLES = {
+      'sbx-101':        'SBX 101: Hands-on with Docker Sandboxes',
+      'ai-governance':  'Docker AI Governance'
+    };
+    function applyTrack(track) {
+      if (TRACKS.indexOf(track) === -1) track = 'sbx-101';
+      TRACKS.forEach(function(t) { document.body.classList.remove('track-' + t); });
+      document.body.classList.add('track-' + track);
+      document.querySelectorAll('.track-tab').forEach(function(btn) {
+        if (btn.dataset.track === track) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      document.title = TRACK_TITLES[track] || document.title;
+    }
+    var urlTrack = URL_PARAMS.get('track');
+    var savedTrack = localStorage.getItem(TRACK_KEY);
+    applyTrack(urlTrack || savedTrack || 'sbx-101');
+    document.querySelectorAll('.track-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var t = btn.dataset.track;
+        applyTrack(t);
+        localStorage.setItem(TRACK_KEY, t);
+      });
+    });
+
     // Provider selector: pick which AI provider (Claude / Codex / OpenCode) the
     // workshop's commands and prose adapt to. Selection persists in localStorage.
     var PROVIDER_KEY = 'workshop-provider';
