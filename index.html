@@ -775,7 +775,7 @@
   </ol>
 </section>
 
-<section class="step" id="overview">
+<section class="step" id="overview" data-show-for-track="sbx-101">
   <div class="step-header">
     <span class="badge intro">Overview</span>
     <h2>What this workshop is</h2>
@@ -791,6 +791,39 @@
     <li>A <strong>supported platform</strong>: MacOS Apple Silicon, Linux x86_64 with KVM access, or Windows 11 x86_64. MacOS Intel is not supported.</li>
   </ul>
   <p>The detailed install and configuration steps are in <a href="#getting-started">Getting Started</a>.</p>
+</section>
+
+<section class="step" id="overview-lp2" data-show-for-track="ai-governance">
+  <div class="step-header">
+    <span class="badge intro">Overview</span>
+    <h2>What this workshop is</h2>
+  </div>
+  <p class="subtitle">Docker's stack for safe, auditable, and compliant AI-agent adoption.</p>
+  <p>AI agents are moving from experiments to production, and enterprises need to answer three governance questions before they let one loose in their stack: <strong>what does the agent ship</strong>, <strong>what can the agent see</strong>, and <strong>what can the agent do</strong>. This workshop takes each of those in order and shows the Docker primitive that answers it. Every module ends in an artifact your security or compliance team can review: a hardened image, an audit log, a scoped yaml, or a portable kit.</p>
+
+  <h3 class="substep">The three governance questions</h3>
+  <ul>
+    <li><strong>What does the agent ship?</strong> Any container an agent produces will go to production somewhere. If the base image has known CVEs, so does everything you ship. <strong>Docker Hardened Images (DHI)</strong> — the foundational module below — give you a supply-chain-grade base to build on.</li>
+    <li><strong>What can the agent see?</strong> An agent that can reach anything on the internet, read any file on your host, or grab any credential is a compliance nightmare. <strong>Docker Sandboxes</strong> and their <strong>network policy</strong> bound the agent's environment and audit every outbound request.</li>
+    <li><strong>What can the agent do?</strong> Even inside a sandbox, the agent's tool set determines the scope of its actions. The <strong>Docker MCP Gateway</strong>, <strong>sbx kits</strong>, and <strong>Docker Agent yaml</strong> let you declare tool sets, scope them per team or per role, and enforce the boundary at the runtime.</li>
+  </ul>
+
+  <h3 class="substep">What you'll leave with</h3>
+  <ul>
+    <li>A mental model of each governance question, mapped to a Docker primitive.</li>
+    <li>A running sandbox on your laptop with every primitive in place.</li>
+    <li>A kit template you can adapt and commit to your team's repo.</li>
+    <li>A per-role Docker Agent yaml that reads as an auditable compliance artifact.</li>
+  </ul>
+
+  <h3 class="substep">Before you start, you'll need:</h3>
+  <ul>
+    <li>A <strong>Docker account</strong>. Sign up at <a target="_blank" rel="noopener noreferrer" href="https://hub.docker.com/">hub.docker.com</a> if you don't have one (takes 30 seconds), then sign in.</li>
+    <li>An <strong>AI provider API key</strong>: Anthropic (for Claude Code), OpenAI (for Codex), or OpenCode (free tier on Zen).</li>
+    <li>A <strong>terminal</strong> of your choice (MacOS Terminal, iTerm2, Warp, PowerShell, or any equivalent).</li>
+    <li>A <strong>supported platform</strong>: MacOS Apple Silicon, Linux x86_64 with KVM access, or Windows 11 x86_64.</li>
+  </ul>
+  <p>The detailed install and configuration steps are in <a href="#getting-started">Getting Started</a>. LP2 needs Docker Desktop installed <em>before</em> the Foundational DHI module, so make sure it's up and running by the time you finish Getting Started.</p>
 </section>
 
 <section class="step" id="getting-started">
