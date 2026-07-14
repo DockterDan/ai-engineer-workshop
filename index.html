@@ -1180,11 +1180,15 @@ global   service  opencode    ****...****</pre>
 <section class="step" id="step-1">
   <div class="step-header">
     <span class="badge">Step 1</span>
-    <h2>SBX basics: your first sandbox</h2>
+    <h2 data-show-for-track="sbx-101">SBX basics: your first sandbox</h2>
+    <h2 data-show-for-track="ai-governance">Sandbox as an audited trust boundary</h2>
   </div>
-  <p class="subtitle">Spin up a Docker Sandbox with an agent inside, and confirm it's alive.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">Spin up a Docker Sandbox with an agent inside, and confirm it's alive.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent see?" — plus the artifact that documents the boundary.</p>
 
   <p>You'll create a sandbox on the host, verify it's running, attach your terminal to the agent inside, and then ask the agent three quick questions about its environment. By the end you'll have proved that the agent really is running on Linux in a microVM with its own kernel, its own user, and access to exactly the directory you mounted. Nothing more.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the sandbox is a VM with a hostname, an audit trail, and no residue outside the workspace mount. Every artifact in this workshop — from the policy log in the next step through the yaml in Step 7 — assumes this boundary as the trust anchor. If the boundary isn't real, none of the downstream artifacts mean anything to your auditor. This step establishes the boundary and the artifacts that prove it.</p>
 
   <p>Assumes you completed <a href="#getting-started">Getting Started</a> (install, login, secret, workspace setup).</p>
 
@@ -1706,11 +1710,15 @@ bash: ../sbx-docs/agent-wrote.txt: Read-only file system</pre>
 <section class="step" id="step-3">
   <div class="step-header">
     <span class="badge">Step 3</span>
-    <h2>Network Policy: what the agent can reach</h2>
+    <h2 data-show-for-track="sbx-101">Network Policy: what the agent can reach</h2>
+    <h2 data-show-for-track="ai-governance">Network policy and the audit trail</h2>
   </div>
-  <p class="subtitle">See the five default allow groups, watch allow vs deny vs default-deny in action, add a custom deny rule that breaks pip install, then clean up.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">See the five default allow groups, watch allow vs deny vs default-deny in action, add a custom deny rule that breaks pip install, then clean up.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">Every outbound request the agent makes goes through a proxy that logs it. That log <em>is</em> your audit trail.</p>
 
   <p>We'll list the network policies the sandbox starts with, then have the agent hit four URLs (two allowed by default, two not) to watch the proxy let some through and block others. We'll check the audit log on the host to see what got allowed and what got blocked, then add a custom deny rule for <code class="inline">pypi.org</code>. Once that rule is live we'll watch every workaround the agent might try fail in the same place. By the end you'll see that the network boundary is enforced at the host-side proxy, not in the agent. It doesn't matter how creative the model gets. Blocked traffic stays blocked.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the network policy answers "what can the agent reach?" and the policy log answers "what did the agent actually try to do?" Together they're the highest-value pair of artifacts an auditor can ask for. The compliance-ready audit report at the end of this step is what you hand a security reviewer to demonstrate that agent behavior is bounded AND observable.</p>
 
   <p>You'll need <strong>two terminals</strong> open side by side throughout Step 3.</p>
   <p><strong>Terminal A: the agent inside sandbox-alpha.</strong> If you went through any of the Step 2 go-deepers, you may have exited the agent or switched to bravo (which we've since removed). If your terminal isn't currently sitting at the agent prompt, reconnect:</p>
@@ -2041,11 +2049,15 @@ ERROR: No matching distribution found for requests</pre>
 <section class="step" id="step-4">
   <div class="step-header">
     <span class="badge">Step 4</span>
-    <h2>Connect tools via SBX MCP</h2>
+    <h2 data-show-for-track="sbx-101">Connect tools via SBX MCP</h2>
+    <h2 data-show-for-track="ai-governance">Tool governance via MCP and the Gateway</h2>
   </div>
-  <p class="subtitle">Give the sandboxed agent access to tools beyond reading and writing files by registering an MCP server and attaching it to sandbox-alpha.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">Give the sandboxed agent access to tools beyond reading and writing files by registering an MCP server and attaching it to sandbox-alpha.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent do?" — every tool declared, every invocation observable.</p>
 
   <p>In Step 3 you saw what happens when the agent reaches for something outside the default allow list: blocked at the proxy, audit log records it, you decide whether to open a targeted hole. That's a network-level lever. MCP gives you a different one: instead of unblocking a domain, register a specific <em>tool</em> (web search, GitHub access, file operations, an internal API) and let the agent invoke that tool through a controlled channel. The agent can do what the tool exposes and nothing more.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> tool access, not network access, is the granularity your compliance team wants. "The agent can reach Wikipedia" is coarse; "the agent has the <code class="inline">get_summary</code> and <code class="inline">search_wikipedia</code> tools" is precise. Each MCP registration is a documented capability grant. The Docker MCP Gateway (introduced in 4.2.1 below) is where team-scale tool governance lives — profiles, catalogs, and per-client scoping so different teams see different tool subsets from the same shared infrastructure.</p>
 
   <p>MCP (Model Context Protocol) is an open standard for how agents call tools. An MCP <em>server</em> exposes one or more tools, and the agent invokes them through the protocol. <code class="inline">sbx mcp</code> is how we register servers so that agents running inside a sandbox can use them. For this step we'll register two MCP servers using two different <code class="inline">sbx mcp add</code> modes (local stdio for Wikipedia, OCI image reference for DuckDuckGo), attach both to <code class="inline">sandbox-alpha</code>, and have the agent retrieve information through them.</p>
 
@@ -2325,9 +2337,13 @@ ERROR: No matching distribution found for requests</pre>
 <section class="step" id="step-5">
   <div class="step-header">
     <span class="badge">Step 5</span>
-    <h2>Hardened output via DHI: what the agent ships</h2>
+    <h2 data-show-for-track="sbx-101">Hardened output via DHI: what the agent ships</h2>
+    <h2 data-show-for-track="ai-governance">DHI applied: the artifact the agent ships to production</h2>
   </div>
-  <p class="subtitle">Give the agent a creative open-ended task that'll bump into the sandbox boundary. Watch the policy log while it works. Build and run what it produced, scan it with Scout, swap the base for a DHI variant, rebuild, run, and rescan.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">Give the agent a creative open-ended task that'll bump into the sandbox boundary. Watch the policy log while it works. Build and run what it produced, scan it with Scout, swap the base for a DHI variant, rebuild, run, and rescan.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">Foundational DHI, applied end-to-end: the agent writes code, you build the container, Docker Scout scans, then you swap in the hardened base and rescan.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the Foundational module at the top of this workshop showed the DHI delta at the base-image level. This step applies the same swap to a real artifact the agent produced — code inside a container. The comparison here is what your supply-chain reviewer actually wants to see: same code, same Dockerfile shape, hardened vs unhardened base, side-by-side CVE reports. The artifact from this step is the Scout scan output of the hardened build.</p>
 
   <h3 class="substep">5.1 Set up the project and the Dockerfile</h3>
   <p>On your host, create a project directory inside the workspace and a starter Dockerfile that points at <code class="inline">python:3.14-slim</code>. The Dockerfile stays exactly the same across both builds. We only swap the base image later. The <code class="inline">EXPOSE 8000</code> line declares the port the app will listen on.</p>
@@ -2580,11 +2596,15 @@ CMD ["python", "app.py"]
 <section class="step" id="step-6">
   <div class="step-header">
     <span class="badge">Step 6</span>
-    <h2>Standardize via SBX Kits</h2>
+    <h2 data-show-for-track="sbx-101">Standardize via SBX Kits</h2>
+    <h2 data-show-for-track="ai-governance">Kits as portable governance policy</h2>
   </div>
-  <p class="subtitle">Package the sandbox setup you've been doing by hand into a declarative kit anyone on your team can pull and run with one command.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">Package the sandbox setup you've been doing by hand into a declarative kit anyone on your team can pull and run with one command.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">One directory. One commit. One artifact your compliance team can review as your team's governed environment.</p>
 
   <p>In Steps 1 through 5 you set up a sandbox, proved its isolation, configured a network policy, added an MCP tool, and ran a hardened build. This is a useful pattern, but the setup was ad-hoc. You typed the commands by hand, edited the files manually, and attached the MCP one piece at a time. The next person on your team would have to repeat all of it from memory. An <strong>sbx Kit</strong> packages that setup into a declarative artifact: a <code class="inline">spec.yaml</code> plus an optional <code class="inline">files/</code> tree. You commit it to git. Anyone on your team clones the kit, runs one sbx command, and gets the same configured sandbox you have.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a kit turns "our team's governance policy" from a wiki page (that people forget to check) into a runtime artifact (that the sandbox enforces on every launch). Network rules, allowed MCPs, permitted skills — bake them into the kit, commit the kit, and every future sandbox on your team gets the same policy. This is the artifact your compliance team can point at when they need to answer "how do we enforce our AI-usage policy across the org."</p>
 
   <p>Kits come in two flavors. <strong>Mixin kits</strong> (<code class="inline">kind: mixin</code>) add capability to one of the built-in agents: skills, network rules, config files, credentials. You can stack several on the same sandbox. <strong>Agent kits</strong> (<code class="inline">kind: agent</code>) replace the agent definition itself: container image, entrypoint, base policy, the lot. The built-in <code class="inline">claude</code> agent you've been using this whole workshop is itself an agent kit, and you can fork it to change one thing (a different model, stricter permissions, a custom system prompt) without rebuilding the rest. For this step we'll build a mixin kit called <strong>docker-review</strong>. It ships a Claude Code skill with a five-point Dockerfile checklist: base image, layer order, image size, security, and reproducibility. Without the kit, asking the agent to "review my Dockerfile" gets you whatever the model decides to look at on a given day. With the kit installed, every reviewer on your team applies the same checklist consistently.</p>
 
@@ -2788,11 +2808,15 @@ Rules:
 <section class="step" id="step-7">
   <div class="step-header">
     <span class="badge">Step 7</span>
-    <h2>Multi-agent orchestration with Docker Agent</h2>
+    <h2 data-show-for-track="sbx-101">Multi-agent orchestration with Docker Agent</h2>
+    <h2 data-show-for-track="ai-governance">Docker Agent yaml as an auditable compliance artifact</h2>
   </div>
-  <p class="subtitle">Step out of the single-agent model. Spin up a small team where each role has its own tools, its own instruction, and they hand off work to each other.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">Step out of the single-agent model. Spin up a small team where each role has its own tools, its own instruction, and they hand off work to each other.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The yaml declares what each role can do. The runtime enforces it. Your security team can read the yaml and know exactly what capabilities you granted where.</p>
 
   <p>A single agent is fine when the task is bounded. The pattern starts to fray when the work spans roles that each want different tools: a researcher who needs to read sources, a writer who needs to edit files, a reviewer who shouldn't have either. The choice becomes give one agent everything (which violates the least-capability instinct we've been building all workshop) or split the work across specialized agents.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a multi-agent team is the point where per-role scoping becomes essential — and where a compliance-ready artifact becomes possible. The yaml you're about to write names each role, lists its tools, and declares its instruction. The runtime enforces the toolset boundary (Step 8 tests this). That yaml is legible to a non-engineer security reviewer: "the wiki-researcher has these three tools, the writer has these two, the analyst has none other than think." No hidden capability, no prompt-injection route to a tool the role wasn't granted. This is what your compliance team wants to see.</p>
 
   <p><strong>Docker Agent</strong> is a different piece of Docker's agent platform from sbx. sbx is the foundational sandbox runtime; Docker Agent is the multi-agent orchestrator. Instead of one agent with one set of tools, Docker Agent runs a small declared team. You write a yaml that names the roles, what each one does, what tools each one gets, and how they hand off. Docker Agent runs the whole team in one process on your host.</p>
 
@@ -3448,9 +3472,13 @@ agents:
 <section class="step" id="step-8">
   <div class="step-header">
     <span class="badge">Step 8</span>
-    <h2>Per-role capability isolation</h2>
+    <h2 data-show-for-track="sbx-101">Per-role capability isolation</h2>
+    <h2 data-show-for-track="ai-governance">Proving the yaml enforces its own boundary</h2>
   </div>
-  <p class="subtitle">The toolset assignments in the Docker Agent yaml are not documentation. They are runtime boundaries. We'll test that the runtime enforces them by asking each role to do something only the other role has tools for.</p>
+  <p class="subtitle" data-show-for-track="sbx-101">The toolset assignments in the Docker Agent yaml are not documentation. They are runtime boundaries. We'll test that the runtime enforces them by asking each role to do something only the other role has tools for.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The yaml says a role can do X and only X. This step verifies the runtime actually enforces that, so the yaml is a load-bearing compliance artifact, not a paper commitment.</p>
+
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a compliance artifact only holds if the runtime enforces what the artifact declares. This step is the verification pass. You'll ask each role to do things outside its declared toolset and confirm the runtime refuses — not because the prompt was clever, but because the tool literally does not exist for that role. That refusal, observed in the trace, is what makes the yaml an auditable artifact rather than a policy that "should" be followed.</p>
 
   <p>In Step 3 you saw sbx refuse a network request because no allow rule covered the destination. In Step 4 you saw the same sandbox reach Wikipedia successfully once an MCP tool was attached. In both cases, the boundary was enforced by the runtime; the agent could not talk its way past it. Step 8 makes the same argument for Docker Agent's per-role toolset scoping. The wiki-researcher's <code class="inline">toolsets</code> list does not include filesystem. If we ask it to save a file, the model can want to, but it has no tool to call. Same shape of constraint for paper-researcher, analyst, writer, publisher, and the coordinator: each role is bounded by what its yaml allows.</p>
 
