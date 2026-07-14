@@ -414,7 +414,10 @@
 
   /* Depth picker (Core 2h / Extended 4h) applies only inside the AI Governance
      track; content marked data-depth-for="extended" is invisible unless both
-     the track is AI Governance and the depth is Extended. */
+     the track is AI Governance and the depth is Extended. The :not() rule keeps
+     specificity high enough to defeat the track-show rule on elements that
+     carry both data-show-for-track="ai-governance" and data-depth-for="extended". */
+  body.track-ai-governance:not(.depth-extended) [data-depth-for~="extended"] { display: none; }
   body.track-ai-governance.depth-extended [data-depth-for~="extended"] { display: block; }
   body.track-ai-governance.depth-extended li[data-depth-for~="extended"] { display: list-item; }
 
@@ -731,6 +734,7 @@
     <li data-show-for-track="ai-governance"><a href="#step-7">7. Docker Agent yaml as compliance artifact</a></li>
     <li data-show-for-track="sbx-101"><a href="#step-8">8. Per-role isolation</a></li>
     <li data-show-for-track="ai-governance"><a href="#step-8">8. Prove the yaml enforces itself</a></li>
+    <li data-show-for-track="ai-governance" data-depth-for="extended"><a href="#governance-package-assembly">Extended: package assembly</a></li>
     <li class="group" data-show-for-track="ai-governance">Wrap</li>
     <li data-show-for-track="ai-governance"><a href="#governance-wrap">Your governance package</a></li>
   </ol>
