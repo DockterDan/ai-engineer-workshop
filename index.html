@@ -395,6 +395,7 @@
   [data-show-for] { display: none; }
   [data-show-for-inline] { display: none; }
   [data-show-for-track] { display: none; }
+  [data-depth-for] { display: none; }
   body.provider-claude    [data-show-for~="claude"]    { display: block; }
   body.provider-codex     [data-show-for~="codex"]     { display: block; }
   body.provider-gemini    [data-show-for~="gemini"]    { display: block; }
@@ -410,6 +411,17 @@
   body.track-ai-governance [data-show-for-track~="ai-governance"] { display: block; }
   body.track-sbx-101       li[data-show-for-track~="sbx-101"],
   body.track-ai-governance li[data-show-for-track~="ai-governance"] { display: list-item; }
+
+  /* Depth picker (Core 2h / Extended 4h) applies only inside the AI Governance
+     track; content marked data-depth-for="extended" is invisible unless both
+     the track is AI Governance and the depth is Extended. */
+  body.track-ai-governance.depth-extended [data-depth-for~="extended"] { display: block; }
+  body.track-ai-governance.depth-extended li[data-depth-for~="extended"] { display: list-item; }
+
+  /* The depth picker container itself is only visible inside the AI Governance
+     track. */
+  .depth-selector { display: none; }
+  body.track-ai-governance .depth-selector { display: block; }
   body.provider-claude    [data-show-for-inline~="claude"],
   body.provider-codex     [data-show-for-inline~="codex"],
   body.provider-gemini    [data-show-for-inline~="gemini"],
@@ -690,7 +702,7 @@
   }
 </style>
 </head>
-<body class="provider-opencode track-sbx-101">
+<body class="provider-opencode track-sbx-101 depth-core">
 
 <div class="layout">
 
@@ -733,6 +745,14 @@
       <span class="track-label">Track:</span>
       <button class="track-tab active" data-track="sbx-101"><span class="track-tab-badge">LP1</span>SBX 101 &mdash; developer intro</button>
       <button class="track-tab" data-track="ai-governance"><span class="track-tab-badge">LP2</span>Docker AI Governance &mdash; corporate / compliance</button>
+    </div>
+    <div class="depth-selector" style="margin-top: 12px;">
+      <div class="track-tabs">
+        <span class="track-label">Depth:</span>
+        <button class="track-tab active" data-depth="core">Core (2 hours)</button>
+        <button class="track-tab" data-depth="extended">Extended (4 hours) &mdash; deep dives on</button>
+      </div>
+      <p class="provider-note" style="margin-top: 6px;">Extended adds SBOMs and attestations to the Foundational module, a Docker Scout policy demo, multi-client Docker MCP Gateway federation, a fully-local Docker Agent team (no cloud key), and a governance-package-assembly wrap-up. Toggle it on for the 4-hour delivery.</p>
     </div>
   </div>
   <h1 data-show-for-track="sbx-101">SBX 101: Hands-on with Docker Sandboxes</h1>
@@ -3642,11 +3662,35 @@ agents:
     var urlTrack = URL_PARAMS.get('track');
     var savedTrack = localStorage.getItem(TRACK_KEY);
     applyTrack(urlTrack || savedTrack || 'sbx-101');
-    document.querySelectorAll('.track-tab').forEach(function(btn) {
+    document.querySelectorAll('.track-tab[data-track]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var t = btn.dataset.track;
         applyTrack(t);
         localStorage.setItem(TRACK_KEY, t);
+      });
+    });
+
+    // Depth picker (Core / Extended) applies only inside the AI Governance
+    // track. Same show/hide pattern via body.depth-<name> class.
+    var DEPTH_KEY = 'workshop-depth';
+    var DEPTHS = ['core', 'extended'];
+    function applyDepth(depth) {
+      if (DEPTHS.indexOf(depth) === -1) depth = 'core';
+      DEPTHS.forEach(function(d) { document.body.classList.remove('depth-' + d); });
+      document.body.classList.add('depth-' + depth);
+      document.querySelectorAll('.track-tab[data-depth]').forEach(function(btn) {
+        if (btn.dataset.depth === depth) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+    var urlDepth = URL_PARAMS.get('depth');
+    var savedDepth = localStorage.getItem(DEPTH_KEY);
+    applyDepth(urlDepth || savedDepth || 'core');
+    document.querySelectorAll('.track-tab[data-depth]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var d = btn.dataset.depth;
+        applyDepth(d);
+        localStorage.setItem(DEPTH_KEY, d);
       });
     });
 
