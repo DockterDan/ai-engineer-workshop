@@ -3526,6 +3526,46 @@ agents:
   </div>
 </section>
 
+<section class="step" id="governance-wrap" data-show-for-track="ai-governance">
+  <div class="step-header">
+    <span class="badge intro">Wrap</span>
+    <h2>Your governance package</h2>
+  </div>
+  <p class="subtitle">The artifacts your compliance team can hand to auditors.</p>
+
+  <p>Recap the three governance questions from the top:</p>
+  <ul>
+    <li><strong>What does the agent ship?</strong> A DHI base image with a CVE quickview attached. Verified in the Foundational module.</li>
+    <li><strong>What can the agent see?</strong> A sandbox VM with an explicit network policy. Every outbound request is in the policy log — that <em>is</em> your audit trail.</li>
+    <li><strong>What can the agent do?</strong> Two MCP servers registered by name (Wikipedia and DuckDuckGo), attached to the sandbox by <code class="inline">sbx mcp load</code>. The Docker MCP Gateway sits behind it as the team-scale primitive for scoping tools per client. In Step 7 the Docker Agent yaml declares per-role tools; the yaml itself reads as an auditable compliance artifact.</li>
+  </ul>
+
+  <h3 class="substep">The concrete artifacts you now have on disk</h3>
+  <ul>
+    <li><strong>The DHI CVE quickview output</strong> from the Foundational module — proof that the base image your builds run on has near-zero known CVEs.</li>
+    <li><strong>The <code class="inline">sbx policy log</code> output</strong> from Steps 3 and 5 — a complete audit trail of every outbound request your sandboxed agent made. Sliceable by rule, domain, and time. This is the report an auditor asks for.</li>
+    <li><strong>The <code class="inline">docker-review</code> sbx kit</strong> in <code class="inline">~/workshop/kits/docker-review/</code> — a portable governance profile (network rules + allowed MCPs + skill set) you can commit to your team's repo. One artifact, one commit, whole-team enforcement.</li>
+    <li><strong>The Docker Agent <code class="inline">team.yaml</code></strong> in <code class="inline">~/workshop/docker-agent/</code> — a per-role compliance artifact. Your security team can read it and know exactly what capabilities each role of the team has. The runtime enforces the boundary declared there.</li>
+  </ul>
+
+  <h3 class="substep">What to hand off, and to whom</h3>
+  <p>Different governance stakeholders in your org want different artifacts:</p>
+  <ul>
+    <li><strong>Supply-chain / AppSec reviewer</strong> &rarr; the DHI CVE quickview output and the base image name.</li>
+    <li><strong>Compliance / audit officer</strong> &rarr; the <code class="inline">sbx policy log</code> export, plus the <code class="inline">docker-review</code> kit as the "here's how our team runs sandboxed agents" reference.</li>
+    <li><strong>Security engineering / platform team</strong> &rarr; the Docker Agent <code class="inline">team.yaml</code>, plus the kit. Both are the ongoing configuration; both are what changes when the team adjusts what agents can do.</li>
+  </ul>
+
+  <h3 class="substep">Where LP2 sits in your governance journey</h3>
+  <p>You've now walked through Docker's stack from the base image up to a scoped multi-agent team. Each layer answers a governance question, and each ends in an artifact. Where you go from here depends on your org's shape:</p>
+  <ul>
+    <li>If your team wants the <strong>developer intro</strong> to sbx before the governance framing, point them at <a href="?track=sbx-101">LP1: SBX 101</a> — same primitives, developer-friendly narrative.</li>
+    <li>If you want to <strong>go deeper on any single layer</strong> — supply chain especially (SBOMs, provenance attestations, <code class="inline">dhictl</code>, Docker Scout policies) — that's the material we intentionally held back from this workshop for time. Sunil and the Partners team can point you at deeper modules or a follow-up learning path.</li>
+    <li>If you want the <strong>2-4 hour extended delivery</strong> of this same workshop with all the depth toggled on, flip the depth switch to Extended above.</li>
+  </ul>
+  <p>You've got the primitives, you've got the artifacts. What's left is applying them to your team's specific stack.</p>
+</section>
+
 </main>
 
 </div>
