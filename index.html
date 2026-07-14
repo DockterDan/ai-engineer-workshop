@@ -1089,7 +1089,78 @@ global   service  opencode    ****...****</pre>
   </div>
 </section>
 
-<aside class="recap" id="narrative-before-step-1">
+<section class="step" id="foundational-dhi" data-show-for-track="ai-governance">
+  <div class="step-header">
+    <span class="badge intro">Foundational</span>
+    <h2>Docker Hardened Images</h2>
+  </div>
+  <p class="subtitle">The supply-chain anchor. Ground here first, before we look at anything the agent does.</p>
+
+  <p>Before we go anywhere near sbx, let's ground on the piece your corporate audience already recognizes: <strong>Docker Hardened Images (DHI)</strong>. An AI agent that builds and ships containers ends up putting whatever base image you started from into production. If that base has known CVEs, so does everything you ship on top of it. Hardening the base is the single-highest-leverage supply-chain move you can make, and it's the one your compliance team will ask about first.</p>
+
+  <p>The rest of the workshop assumes the base your agent builds on is trustworthy. This foundational module makes sure it is.</p>
+
+  <h3 class="substep">F.1 What a DHI is</h3>
+  <p>A Docker Hardened Image is a base image (<code class="inline">python</code>, <code class="inline">node</code>, <code class="inline">nginx</code>, <code class="inline">alpine</code>, etc.) that Docker has stripped down, patched, and re-signed to have near-zero known CVEs. Each DHI ships in two variants:</p>
+  <ul>
+    <li>A <strong>dev variant</strong> with a shell and a package manager, used in the build stage of a multi-stage Dockerfile.</li>
+    <li>A <strong>prod variant</strong> with no shell, no extras, no package manager — just what the runtime needs. This is the variant that actually ships.</li>
+  </ul>
+  <p>Docker maintains DHIs with enterprise SLAs on vulnerability remediation, and each ships with a signed bill of materials so you can verify what's inside. That's the "supply-chain grade" piece your compliance team asks about. DHIs live under the <code class="inline">dhi.io</code> namespace and require a one-time login with your Docker Hub credentials before you can pull them.</p>
+
+  <p class="note-inline"><span class="label">Prep for this module</span> The commands below need Docker Desktop running and you signed in to Docker Hub. If you haven't set that up on this machine yet, jump to <a href="#prep-step-4">Before Step 4</a> below for the install / login steps, then come back here. All caught up if you already did that.</p>
+
+  <h3 class="substep">F.2 Sign in to the DHI registry</h3>
+  <p>DHI pulls require a login to <code class="inline">dhi.io</code>. Same Docker Hub credentials, different registry endpoint:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker login dhi.io</pre>
+  </div>
+
+  <h3 class="substep">F.3 Compare a standard base to its hardened variant</h3>
+  <p>Pull a standard Python base and its DHI equivalent, then scan both with Docker Scout to see the delta:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker pull python:3.14-slim</pre>
+  </div>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker pull dhi.io/python:3.14</pre>
+  </div>
+  <p>Scan the standard base first:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker scout quickview python:3.14-slim</pre>
+  </div>
+  <p>Take note of the CVE counts under Critical, High, Medium, and Low. On a recent build of <code class="inline">python:3.14-slim</code> you'll typically see a handful of Highs and a longer tail of Mediums and Lows. That's normal for a general-purpose base — it packs a shell, a package manager, dev headers, and the transitive dependencies of everything it might need.</p>
+  <p>Now the hardened variant:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker scout quickview dhi.io/python:3.14</pre>
+  </div>
+  <p>Same Python version, same runtime capability, near-zero CVEs. That's the payoff. The image is smaller too — no shell, no package manager, nothing you don't need to run the code.</p>
+
+  <h3 class="substep">F.4 Why this is the foundational module for the rest of the workshop</h3>
+  <p>Everything that follows assumes a hardened base. When Step 5 has the agent build a research app and swap in a DHI, the CVE delta you just observed is the delta you'll see there too — same mechanic, applied to code the agent wrote. When the Docker Agent team in Step 7 produces artifacts, the images backing those tools are DHIs. The rest of the workshop is about what the agent <em>does</em> with a trustworthy base; this module is the base itself.</p>
+  <p>Governance takeaway: the artifact from this module is <strong>the CVE quickview output</strong>, which your compliance team can attach to a supply-chain review. In the Extended path (2-4 hour delivery), we go deeper on SBOMs, provenance attestations, and Docker Scout policies applied against the images.</p>
+</section>
+
+<aside class="recap" id="narrative-before-step-1" data-show-for-track="sbx-101">
   <h3>What we'll cover and why</h3>
   <p>Setup is done. Here's the story we're about to walk through, and why each piece matters.</p>
   <p>Modern AI agents are useful precisely because they take real actions on your machine: they read files, run commands, hit the web, build containers, write code. That capability is also where the risk lives. Give an agent unrestricted access and a single bad prompt can do real damage. Give it too little and it's useless. The middle path is <strong>scoped autonomy</strong>: the agent gets exactly the capabilities it needs for the work, and nothing else.</p>
