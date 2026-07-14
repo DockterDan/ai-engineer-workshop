@@ -3026,7 +3026,7 @@ agents:
       <p>The Gateway prints its startup output and stays running. The last two lines matter:</p>
       <div class="expected">
         <pre>&gt; Gateway URL: http://localhost:8811/mcp
-&gt; Use Bearer token: Authorization: Bearer w8qqy63ydof7h9o0469jd0wy5g98lpqfm9guz5my7tj3gsnpbz</pre>
+&gt; Use Bearer token: Authorization: Bearer &lt;random-per-session-token&gt;</pre>
       </div>
       <p>The Bearer token is a per-session guard the Gateway prints for its own local TCP port; it's <em>not</em> an API key from Anthropic or any other provider, and it regenerates every time you start <code class="inline">docker mcp gateway run</code>. Store it in an environment variable so it stays out of any file. In your <em>original</em> terminal (the one where you'll run <code class="inline">docker agent</code>, not the Gateway terminal), copy the token from the Gateway output and export it:</p>
       <div class="cmd-block">
@@ -3366,7 +3366,7 @@ agents:
     var saved = localStorage.getItem(PROVIDER_KEY);
     var savedBtn = saved ? document.querySelector('.provider-tab[data-provider="' + saved + '"]') : null;
     if (savedBtn && savedBtn.disabled) saved = null;
-    applyProvider(saved || 'claude');
+    applyProvider(saved || 'opencode');
     document.querySelectorAll('.provider-tab').forEach(function(btn) {
       btn.addEventListener('click', function() {
         if (btn.disabled) return;
