@@ -395,7 +395,6 @@
   [data-show-for] { display: none; }
   [data-show-for-inline] { display: none; }
   [data-show-for-track] { display: none; }
-  [data-depth-for] { display: none; }
   body.provider-claude    [data-show-for~="claude"]    { display: block; }
   body.provider-codex     [data-show-for~="codex"]     { display: block; }
   body.provider-gemini    [data-show-for~="gemini"]    { display: block; }
@@ -412,19 +411,6 @@
   body.track-sbx-101       li[data-show-for-track~="sbx-101"],
   body.track-ai-governance li[data-show-for-track~="ai-governance"] { display: list-item; }
 
-  /* Depth picker (Core 2h / Extended 4h) applies only inside the AI Governance
-     track; content marked data-depth-for="extended" is invisible unless both
-     the track is AI Governance and the depth is Extended. The :not() rule keeps
-     specificity high enough to defeat the track-show rule on elements that
-     carry both data-show-for-track="ai-governance" and data-depth-for="extended". */
-  body.track-ai-governance:not(.depth-extended) [data-depth-for~="extended"] { display: none; }
-  body.track-ai-governance.depth-extended [data-depth-for~="extended"] { display: block; }
-  body.track-ai-governance.depth-extended li[data-depth-for~="extended"] { display: list-item; }
-
-  /* The depth picker container itself is only visible inside the AI Governance
-     track. */
-  .depth-selector { display: none; }
-  body.track-ai-governance .depth-selector { display: block; }
   body.provider-claude    [data-show-for-inline~="claude"],
   body.provider-codex     [data-show-for-inline~="codex"],
   body.provider-gemini    [data-show-for-inline~="gemini"],
@@ -705,7 +691,7 @@
   }
 </style>
 </head>
-<body class="provider-opencode track-sbx-101 depth-core">
+<body class="provider-opencode track-sbx-101">
 
 <div class="layout">
 
@@ -734,7 +720,8 @@
     <li data-show-for-track="ai-governance"><a href="#step-7">7. Docker Agent yaml as compliance artifact</a></li>
     <li data-show-for-track="sbx-101"><a href="#step-8">8. Per-role isolation</a></li>
     <li data-show-for-track="ai-governance"><a href="#step-8">8. Prove the yaml enforces itself</a></li>
-    <li data-show-for-track="ai-governance" data-depth-for="extended"><a href="#governance-package-assembly">Extended: package assembly</a></li>
+    <li class="group" data-show-for-track="ai-governance">Optional</li>
+    <li data-show-for-track="ai-governance"><a href="#lp2-go-deeper">Go Deeper: extended modules</a></li>
     <li class="group" data-show-for-track="ai-governance">Wrap</li>
     <li data-show-for-track="ai-governance"><a href="#governance-wrap">Your governance package</a></li>
   </ol>
@@ -749,14 +736,6 @@
       <span class="track-label">Track:</span>
       <button class="track-tab active" data-track="sbx-101"><span class="track-tab-badge">LP1</span>SBX 101 &mdash; developer intro</button>
       <button class="track-tab" data-track="ai-governance"><span class="track-tab-badge">LP2</span>Docker AI Governance &mdash; corporate / compliance</button>
-    </div>
-    <div class="depth-selector" style="margin-top: 12px;">
-      <div class="track-tabs">
-        <span class="track-label">Depth:</span>
-        <button class="track-tab active" data-depth="core">Core (2 hours)</button>
-        <button class="track-tab" data-depth="extended">Extended (4 hours) &mdash; deep dives on</button>
-      </div>
-      <p class="provider-note" style="margin-top: 6px;">Extended adds SBOMs and attestations to the Foundational module, a Docker Scout policy demo, multi-client Docker MCP Gateway federation, a fully-local Docker Agent team (no cloud key), and a governance-package-assembly wrap-up. Toggle it on for the 4-hour delivery.</p>
     </div>
   </div>
   <h1 data-show-for-track="sbx-101">SBX 101: Hands-on with Docker Sandboxes</h1>
@@ -1195,60 +1174,7 @@ global   service  opencode    ****...****</pre>
   <p>Everything that follows assumes a hardened base. When Step 5 has the agent build a research app and swap in a DHI, the CVE delta you just observed is the delta you'll see there too — same mechanic, applied to code the agent wrote. When the Docker Agent team in Step 7 produces artifacts, the images backing those tools are DHIs. The rest of the workshop is about what the agent <em>does</em> with a trustworthy base; this module is the base itself.</p>
   <p>Governance takeaway: the artifact from this module is <strong>the CVE quickview output</strong>, which your compliance team can attach to a supply-chain review. In the Extended path (2-4 hour delivery), we go deeper on SBOMs, provenance attestations, and Docker Scout policies applied against the images.</p>
 
-  <div data-depth-for="extended">
-    <h3 class="substep">F.5 Extended: inspect the SBOM and provenance attestations</h3>
-    <p>A DHI ships with more than the image bits — it comes with a signed <strong>Software Bill of Materials (SBOM)</strong> listing every package inside it, and a <strong>provenance attestation</strong> declaring how the image was built and by whom. Both are what your compliance team calls the "supply-chain evidence" for the image. Pull the SBOM and inspect it:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker scout sbom dhi.io/python:3.14</pre>
-    </div>
-    <p>You'll get back a full JSON SBOM. Each entry is a package name, version, and license. This is the artifact your compliance team compares against your allowlist — no restricted licenses, no known-vulnerable versions. In production you'd pipe this into a policy engine (Grype, syft, or Docker Scout itself) rather than eyeball it.</p>
-    <p>Now the provenance attestation, which documents how the image was built:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker scout attestation dhi.io/python:3.14 --predicate-type https://slsa.dev/provenance/v0.2</pre>
-    </div>
-    <p>This tells you the builder identity, the source repository, the build command, and the exact input hashes. For a compliance reviewer this is what "verifiably built from the source we say it was" actually means. If you're a compliance officer, this is the artifact you attach to a supply-chain review.</p>
-
-    <h3 class="substep">F.6 Extended: verify a DHI with dhictl</h3>
-    <p>Docker ships a small CLI (<code class="inline">dhictl</code>) that verifies a DHI's signature, SBOM, and attestation in one call. It's the "did this image come from where we think it did, unmodified" check your CI or admission controller runs on every deploy:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">dhictl verify dhi.io/python:3.14</pre>
-    </div>
-    <p>Clean output means the image is signed by Docker's DHI signing key, the SBOM is intact, and the attestation is valid. Any failure surfaces as a specific reason: wrong signer, tampered SBOM, missing attestation. This is the check to put in front of any deploy that pulls from <code class="inline">dhi.io</code>.</p>
-    <p>If <code class="inline">dhictl</code> isn't installed on your machine yet, grab it from the DHI docs at <a href="https://dhi.io/docs" target="_blank" rel="noopener">dhi.io/docs</a>. The exact install path varies by platform.</p>
-
-    <h3 class="substep">F.7 Extended: enforce a Docker Scout policy</h3>
-    <p>Everything so far has been reactive: scan an image, see what's in it. Docker Scout also supports <em>policies</em>, which turn the scan into a gate. Define what "acceptable" looks like once; every scan is a pass/fail against it.</p>
-    <p>See the policy list Docker Scout already ships with:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker scout policy list</pre>
-    </div>
-    <p>You'll see policies like "No fixable critical or high CVEs," "No high-profile vulnerabilities," and "SBOM available." Evaluate one against the hardened image:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker scout policy evaluate dhi.io/python:3.14</pre>
-    </div>
-    <p>The output lists each policy the image passes and each it fails, with the reason. In production you'd wire this into your CI as a required check — a failing policy blocks the deploy. That turns the DHI's supply-chain properties into an enforced organizational norm, not a "we should probably do that" doc.</p>
-    <p><strong>Extended takeaway:</strong> the SBOM, the provenance attestation, and the Docker Scout policy verdict are three artifacts that together answer the supply-chain governance question end-to-end. Your compliance team's checklist maps to those three outputs.</p>
-  </div>
+  
 </section>
 
 <aside class="recap" id="narrative-before-step-1" data-show-for-track="sbx-101">
@@ -2042,50 +1968,7 @@ ERROR: No matching distribution found for requests</pre>
     </div>
   </details>
 
-  <div data-show-for-track="ai-governance" data-depth-for="extended">
-    <h3 class="substep">3.8 Extended: build a compliance-ready audit report</h3>
-    <p>Auditors don't want the raw <code class="inline">sbx policy log</code> output. They want a structured artifact — CSV, or a formatted table — that answers a specific compliance question. Here's how to shape the policy log into that.</p>
-    <p>First, capture the log to a file so we can process it without re-running:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">sbx policy log sandbox-alpha &gt; audit-alpha.log</pre>
-    </div>
-    <p>Pull only the Blocked requests, one destination per line, sorted and counted (this is the "what did we try to reach that we shouldn't" report):</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">awk '/^Blocked requests:/{f=1;next} /^Allowed requests:/{f=0} f && $1 ~ /:/ {print $1}' audit-alpha.log | sort | uniq -c | sort -rn</pre>
-      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+' | ForEach-Object { ($_ -split '\s+')[0] } | Group-Object | Sort-Object Count -Descending | Format-Table Count, Name</pre>
-    </div>
-    <p>Now the "what did we actually reach" report (Allowed requests):</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">awk '/^Allowed requests:/{f=1;next} f && $1 ~ /:/ {print $1 "," $2}' audit-alpha.log | sort -u</pre>
-      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+\s+\S+' | ForEach-Object { $_.Line } | Sort-Object -Unique</pre>
-    </div>
-    <p>Save both to CSV for hand-off:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">awk 'BEGIN{print "destination,rule,count"} /^Blocked requests:/{f=1;next} /^Allowed requests:/{f=2;next} f && $1 ~ /:/ {print $1 "," (f==1?"blocked":"allowed") "," $NF}' audit-alpha.log &gt; audit-alpha.csv</pre>
-      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+' | ForEach-Object { $line = $_ -split '\s+'; "$($line[0]),$($line[-1])" } | Set-Content audit-alpha.csv</pre>
-    </div>
-    <p>Now <code class="inline">audit-alpha.csv</code> is the artifact you attach to a compliance review. It's structured, sortable, filterable, and shows both what the agent tried and what it actually reached. Combined with the sandbox's declared network policy (<code class="inline">sbx policy ls</code>), this is the pair of documents your auditor asks for: <em>the policy that was in effect</em> and <em>the log of every request that policy evaluated</em>.</p>
-    <p><strong>Extended takeaway:</strong> the raw policy log becomes governance evidence with two commands. In real ops you'd automate this into a per-sandbox nightly export.</p>
-  </div>
+  
 
   <div class="learnings-block">
     <h3>Key learnings</h3>
@@ -3598,180 +3481,9 @@ agents:
     </div>
   </details>
 
-  <div data-show-for-track="ai-governance" data-depth-for="extended">
-    <h3 class="substep">7.6 Extended: per-team scoping with multiple Gateway profiles</h3>
-    <p>The Bonus above pointed one Docker Agent yaml at a single Gateway profile. The team-scale reality is that different teams need different tool subsets. Let's stand up two profiles and wire two different agent yamls to them, so Team A sees only their tools and Team B sees only theirs — the same Gateway serving both, per-client scoping enforced by profile.</p>
-    <p>Create two profiles on the same Gateway. One for a research team (Wikipedia + Paper Search only), one for a discovery team (DuckDuckGo only):</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile create --name research-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile server add research-team --server catalog://docker-mcp/wikipedia-mcp --server catalog://docker-mcp/paper-search</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile create --name discovery-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile server add discovery-team --server catalog://docker-mcp/duckduckgo</pre>
-    </div>
-    <p>Run two Gateway instances (or one Gateway with server-set restrictions per client — the CLI supports both shapes). For simplicity here, run them on different ports:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell (Terminal G1)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp gateway run --port 8811 --transport streaming --profile research-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell (Terminal G2)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp gateway run --port 8812 --transport streaming --profile discovery-team</pre>
-    </div>
-    <p>Each Gateway prints its own Bearer token. Export them separately:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">export RESEARCH_TOKEN=&lt;paste-from-G1&gt;; export DISCOVERY_TOKEN=&lt;paste-from-G2&gt;</pre>
-      <pre class="cmd" data-os="windows">$env:RESEARCH_TOKEN = "&lt;paste-from-G1&gt;"; $env:DISCOVERY_TOKEN = "&lt;paste-from-G2&gt;"</pre>
-    </div>
-    <p>Now two Docker Agent yamls, one per team. Each binds to its own Gateway. Attendees on the LP2 track would write these out (or download from the workshop resources); here we just show the shape:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">team-research.yaml (snippet)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">toolsets:
-  - type: mcp
-    remote:
-      url: http://localhost:8811/mcp
-      transport_type: streamable
-      headers:
-        Authorization: Bearer $RESEARCH_TOKEN
-    allow_private_ips: true</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">team-discovery.yaml (snippet)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">toolsets:
-  - type: mcp
-    remote:
-      url: http://localhost:8812/mcp
-      transport_type: streamable
-      headers:
-        Authorization: Bearer $DISCOVERY_TOKEN
-    allow_private_ips: true</pre>
-    </div>
-    <p>Run each with <code class="inline">docker agent run team-research.yaml "..."</code> and <code class="inline">docker agent run team-discovery.yaml "..."</code>. Ask the research team a Wikipedia question — it works. Ask the discovery team the same question — no Wikipedia tool, it can't answer, and can only fall back to DuckDuckGo.</p>
-    <p><strong>Extended takeaway:</strong> the Gateway profile IS the per-team access-control list. Governance moves from "we told the developers to use only these tools" (advisory) to "the profile the client binds to has only these tools registered" (enforced at the Gateway). Same shape as network ACLs, applied to MCP tool catalogs.</p>
-  </div>
+  
 
-  <div data-show-for-track="ai-governance" data-depth-for="extended">
-    <h3 class="substep">7.7 Extended: a fully-local team via Docker Model Runner</h3>
-    <p>The Core Step 7 team runs Sonnet and Opus (cloud) for research and analysis, and a local model (smollm2) only for the writer. In some regulated environments — think data-sovereignty regimes, air-gapped labs, healthcare data that can't leave the machine — <em>no</em> role can call a cloud API. Everything runs locally.</p>
-    <p>Write a fully-local variant of the team. Every role uses <code class="inline">provider: dmr</code>, none use Anthropic. The tradeoff is model quality: local models are smaller and slower at synthesis, so we adjust each role's word budget down. What we keep is the shape (six roles, per-role toolsets, coordinator delegation) and the compliance property (no data leaves the host):</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">cat &gt; team-local.yaml &lt;&lt;'EOF'
-version: "2"
-
-models:
-  local-small:
-    provider: dmr
-    model: ai/smollm2
-    max_tokens: 4096
-  local-medium:
-    provider: dmr
-    model: ai/qwen3
-    max_tokens: 4096
-
-agents:
-  root:
-    model: local-medium
-    description: Coordinator (local)
-    instruction: |
-      You coordinate a local-only research team. Delegate to wiki-researcher,
-      paper-researcher, analyst, writer, publisher. Narrate briefly between
-      delegations. Save report.md and report.html.
-    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
-    toolsets:
-      - type: think
-  # (researchers, analyst, writer, publisher — each on local-small or
-  # local-medium with the same toolsets as the Core team.yaml)
-EOF</pre>
-      <pre class="cmd" data-os="windows">@'
-version: "2"
-
-models:
-  local-small:
-    provider: dmr
-    model: ai/smollm2
-    max_tokens: 4096
-  local-medium:
-    provider: dmr
-    model: ai/qwen3
-    max_tokens: 4096
-
-agents:
-  root:
-    model: local-medium
-    description: Coordinator (local)
-    instruction: |
-      You coordinate a local-only research team. Delegate to wiki-researcher,
-      paper-researcher, analyst, writer, publisher. Narrate briefly between
-      delegations. Save report.md and report.html.
-    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
-    toolsets:
-      - type: think
-  # (researchers, analyst, writer, publisher — each on local-small or
-  # local-medium with the same toolsets as the Core team.yaml)
-'@ | Set-Content team-local.yaml</pre>
-    </div>
-    <p>Pre-pull the second local model if you haven't already:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker model pull ai/qwen3</pre>
-    </div>
-    <p>Run the fully-local team. Notice: no <code class="inline">ANTHROPIC_API_KEY</code> required. Nothing outbound to a cloud LLM provider. The MCP tools still make network calls out (Wikipedia, DuckDuckGo) — those are separate concerns — but the model inference stays on your host:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker agent run team-local.yaml "Write me a short briefing on Docker Sandboxes and save it as report.md."</pre>
-    </div>
-    <p>Output quality will be visibly lower than Sonnet/Opus — that's the tradeoff. In practice you pick this configuration for compliance reasons (data sovereignty, air-gapped deploy, no cloud vendor dependency) and accept the model-quality delta as the cost.</p>
-    <p><strong>Extended takeaway:</strong> the same yaml shape supports fully-local, fully-cloud, or hybrid. Model choice is a per-role governance decision. For regulated data, this variant is the shape you'd start from.</p>
-  </div>
+  
 
   <div class="learnings-block">
     <h3>Key learnings</h3>
@@ -3865,8 +3577,306 @@ agents:
   </div>
 </section>
 
-<section class="step" id="governance-package-assembly" data-show-for-track="ai-governance" data-depth-for="extended">
+<section class="step" id="lp2-go-deeper" data-show-for-track="ai-governance">
   <div class="step-header">
+    <span class="badge intro">Go Deeper</span>
+    <h2>Extended: optional deep dives</h2>
+  </div>
+  <p class="subtitle">You've completed the Core LP2 flow. These modules go deeper on individual pillars &mdash; pick the ones your audience cares about, or skip the section entirely.</p>
+
+  <p>You already have the main concept from the Core modules above: DHI as the supply-chain anchor, sandbox as an audited trust boundary, network policy with an audit trail, Docker MCP Gateway for team-scale tool governance, kits as portable governance policy, and Docker Agent yaml as an auditable compliance artifact. That's the workshop's spine and it stands on its own as a 2-hour delivery.</p>
+
+  <p>The modules below extend specific layers for teams that need depth on one topic or another. Each is independent &mdash; you can do all of them (about 2 additional hours), a few, or none. Presenters delivering a 2-hour Partners session typically skip this section entirely. Presenters delivering a 4-hour Corporate-training session cover it in full. Attendees browsing on their own pick whatever's most relevant to their org.</p>
+
+  <p>Each module is collapsed by default. Click a heading to expand it.</p>
+
+  <details class="go-deeper">
+    <summary>Extended: DHI supply-chain evidence (SBOM, attestations, dhictl, Scout policy)</summary>
+    <div class="go-deeper-body">
+<h3 class="substep">F.5 Extended: inspect the SBOM and provenance attestations</h3>
+    <p>A DHI ships with more than the image bits — it comes with a signed <strong>Software Bill of Materials (SBOM)</strong> listing every package inside it, and a <strong>provenance attestation</strong> declaring how the image was built and by whom. Both are what your compliance team calls the "supply-chain evidence" for the image. Pull the SBOM and inspect it:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker scout sbom dhi.io/python:3.14</pre>
+    </div>
+    <p>You'll get back a full JSON SBOM. Each entry is a package name, version, and license. This is the artifact your compliance team compares against your allowlist — no restricted licenses, no known-vulnerable versions. In production you'd pipe this into a policy engine (Grype, syft, or Docker Scout itself) rather than eyeball it.</p>
+    <p>Now the provenance attestation, which documents how the image was built:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker scout attestation dhi.io/python:3.14 --predicate-type https://slsa.dev/provenance/v0.2</pre>
+    </div>
+    <p>This tells you the builder identity, the source repository, the build command, and the exact input hashes. For a compliance reviewer this is what "verifiably built from the source we say it was" actually means. If you're a compliance officer, this is the artifact you attach to a supply-chain review.</p>
+
+    <h3 class="substep">F.6 Extended: verify a DHI with dhictl</h3>
+    <p>Docker ships a small CLI (<code class="inline">dhictl</code>) that verifies a DHI's signature, SBOM, and attestation in one call. It's the "did this image come from where we think it did, unmodified" check your CI or admission controller runs on every deploy:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">dhictl verify dhi.io/python:3.14</pre>
+    </div>
+    <p>Clean output means the image is signed by Docker's DHI signing key, the SBOM is intact, and the attestation is valid. Any failure surfaces as a specific reason: wrong signer, tampered SBOM, missing attestation. This is the check to put in front of any deploy that pulls from <code class="inline">dhi.io</code>.</p>
+    <p>If <code class="inline">dhictl</code> isn't installed on your machine yet, grab it from the DHI docs at <a href="https://dhi.io/docs" target="_blank" rel="noopener">dhi.io/docs</a>. The exact install path varies by platform.</p>
+
+    <h3 class="substep">F.7 Extended: enforce a Docker Scout policy</h3>
+    <p>Everything so far has been reactive: scan an image, see what's in it. Docker Scout also supports <em>policies</em>, which turn the scan into a gate. Define what "acceptable" looks like once; every scan is a pass/fail against it.</p>
+    <p>See the policy list Docker Scout already ships with:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker scout policy list</pre>
+    </div>
+    <p>You'll see policies like "No fixable critical or high CVEs," "No high-profile vulnerabilities," and "SBOM available." Evaluate one against the hardened image:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker scout policy evaluate dhi.io/python:3.14</pre>
+    </div>
+    <p>The output lists each policy the image passes and each it fails, with the reason. In production you'd wire this into your CI as a required check — a failing policy blocks the deploy. That turns the DHI's supply-chain properties into an enforced organizational norm, not a "we should probably do that" doc.</p>
+    <p><strong>Extended takeaway:</strong> the SBOM, the provenance attestation, and the Docker Scout policy verdict are three artifacts that together answer the supply-chain governance question end-to-end. Your compliance team's checklist maps to those three outputs.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: compliance-ready audit report from the sbx policy log</summary>
+    <div class="go-deeper-body">
+<h3 class="substep">3.8 Extended: build a compliance-ready audit report</h3>
+    <p>Auditors don't want the raw <code class="inline">sbx policy log</code> output. They want a structured artifact — CSV, or a formatted table — that answers a specific compliance question. Here's how to shape the policy log into that.</p>
+    <p>First, capture the log to a file so we can process it without re-running:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">sbx policy log sandbox-alpha &gt; audit-alpha.log</pre>
+    </div>
+    <p>Pull only the Blocked requests, one destination per line, sorted and counted (this is the "what did we try to reach that we shouldn't" report):</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">awk '/^Blocked requests:/{f=1;next} /^Allowed requests:/{f=0} f && $1 ~ /:/ {print $1}' audit-alpha.log | sort | uniq -c | sort -rn</pre>
+      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+' | ForEach-Object { ($_ -split '\s+')[0] } | Group-Object | Sort-Object Count -Descending | Format-Table Count, Name</pre>
+    </div>
+    <p>Now the "what did we actually reach" report (Allowed requests):</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">awk '/^Allowed requests:/{f=1;next} f && $1 ~ /:/ {print $1 "," $2}' audit-alpha.log | sort -u</pre>
+      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+\s+\S+' | ForEach-Object { $_.Line } | Sort-Object -Unique</pre>
+    </div>
+    <p>Save both to CSV for hand-off:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">awk 'BEGIN{print "destination,rule,count"} /^Blocked requests:/{f=1;next} /^Allowed requests:/{f=2;next} f && $1 ~ /:/ {print $1 "," (f==1?"blocked":"allowed") "," $NF}' audit-alpha.log &gt; audit-alpha.csv</pre>
+      <pre class="cmd" data-os="windows">Get-Content audit-alpha.log | Select-String -Pattern '^\S+:\d+' | ForEach-Object { $line = $_ -split '\s+'; "$($line[0]),$($line[-1])" } | Set-Content audit-alpha.csv</pre>
+    </div>
+    <p>Now <code class="inline">audit-alpha.csv</code> is the artifact you attach to a compliance review. It's structured, sortable, filterable, and shows both what the agent tried and what it actually reached. Combined with the sandbox's declared network policy (<code class="inline">sbx policy ls</code>), this is the pair of documents your auditor asks for: <em>the policy that was in effect</em> and <em>the log of every request that policy evaluated</em>.</p>
+    <p><strong>Extended takeaway:</strong> the raw policy log becomes governance evidence with two commands. In real ops you'd automate this into a per-sandbox nightly export.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: per-team scoping with multiple Gateway profiles</summary>
+    <div class="go-deeper-body">
+<h3 class="substep">7.6 Extended: per-team scoping with multiple Gateway profiles</h3>
+    <p>The Bonus above pointed one Docker Agent yaml at a single Gateway profile. The team-scale reality is that different teams need different tool subsets. Let's stand up two profiles and wire two different agent yamls to them, so Team A sees only their tools and Team B sees only theirs — the same Gateway serving both, per-client scoping enforced by profile.</p>
+    <p>Create two profiles on the same Gateway. One for a research team (Wikipedia + Paper Search only), one for a discovery team (DuckDuckGo only):</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp profile create --name research-team</pre>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp profile server add research-team --server catalog://docker-mcp/wikipedia-mcp --server catalog://docker-mcp/paper-search</pre>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp profile create --name discovery-team</pre>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp profile server add discovery-team --server catalog://docker-mcp/duckduckgo</pre>
+    </div>
+    <p>Run two Gateway instances (or one Gateway with server-set restrictions per client — the CLI supports both shapes). For simplicity here, run them on different ports:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell (Terminal G1)</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp gateway run --port 8811 --transport streaming --profile research-team</pre>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell (Terminal G2)</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker mcp gateway run --port 8812 --transport streaming --profile discovery-team</pre>
+    </div>
+    <p>Each Gateway prints its own Bearer token. Export them separately:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">export RESEARCH_TOKEN=&lt;paste-from-G1&gt;; export DISCOVERY_TOKEN=&lt;paste-from-G2&gt;</pre>
+      <pre class="cmd" data-os="windows">$env:RESEARCH_TOKEN = "&lt;paste-from-G1&gt;"; $env:DISCOVERY_TOKEN = "&lt;paste-from-G2&gt;"</pre>
+    </div>
+    <p>Now two Docker Agent yamls, one per team. Each binds to its own Gateway. Attendees on the LP2 track would write these out (or download from the workshop resources); here we just show the shape:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">team-research.yaml (snippet)</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">toolsets:
+  - type: mcp
+    remote:
+      url: http://localhost:8811/mcp
+      transport_type: streamable
+      headers:
+        Authorization: Bearer $RESEARCH_TOKEN
+    allow_private_ips: true</pre>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">team-discovery.yaml (snippet)</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">toolsets:
+  - type: mcp
+    remote:
+      url: http://localhost:8812/mcp
+      transport_type: streamable
+      headers:
+        Authorization: Bearer $DISCOVERY_TOKEN
+    allow_private_ips: true</pre>
+    </div>
+    <p>Run each with <code class="inline">docker agent run team-research.yaml "..."</code> and <code class="inline">docker agent run team-discovery.yaml "..."</code>. Ask the research team a Wikipedia question — it works. Ask the discovery team the same question — no Wikipedia tool, it can't answer, and can only fall back to DuckDuckGo.</p>
+    <p><strong>Extended takeaway:</strong> the Gateway profile IS the per-team access-control list. Governance moves from "we told the developers to use only these tools" (advisory) to "the profile the client binds to has only these tools registered" (enforced at the Gateway). Same shape as network ACLs, applied to MCP tool catalogs.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: a fully-local Docker Agent team (data-sovereignty)</summary>
+    <div class="go-deeper-body">
+<h3 class="substep">7.7 Extended: a fully-local team via Docker Model Runner</h3>
+    <p>The Core Step 7 team runs Sonnet and Opus (cloud) for research and analysis, and a local model (smollm2) only for the writer. In some regulated environments — think data-sovereignty regimes, air-gapped labs, healthcare data that can't leave the machine — <em>no</em> role can call a cloud API. Everything runs locally.</p>
+    <p>Write a fully-local variant of the team. Every role uses <code class="inline">provider: dmr</code>, none use Anthropic. The tradeoff is model quality: local models are smaller and slower at synthesis, so we adjust each role's word budget down. What we keep is the shape (six roles, per-role toolsets, coordinator delegation) and the compliance property (no data leaves the host):</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">cat &gt; team-local.yaml &lt;&lt;'EOF'
+version: "2"
+
+models:
+  local-small:
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
+  local-medium:
+    provider: dmr
+    model: ai/qwen3
+    max_tokens: 4096
+
+agents:
+  root:
+    model: local-medium
+    description: Coordinator (local)
+    instruction: |
+      You coordinate a local-only research team. Delegate to wiki-researcher,
+      paper-researcher, analyst, writer, publisher. Narrate briefly between
+      delegations. Save report.md and report.html.
+    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
+    toolsets:
+      - type: think
+  # (researchers, analyst, writer, publisher — each on local-small or
+  # local-medium with the same toolsets as the Core team.yaml)
+EOF</pre>
+      <pre class="cmd" data-os="windows">@'
+version: "2"
+
+models:
+  local-small:
+    provider: dmr
+    model: ai/smollm2
+    max_tokens: 4096
+  local-medium:
+    provider: dmr
+    model: ai/qwen3
+    max_tokens: 4096
+
+agents:
+  root:
+    model: local-medium
+    description: Coordinator (local)
+    instruction: |
+      You coordinate a local-only research team. Delegate to wiki-researcher,
+      paper-researcher, analyst, writer, publisher. Narrate briefly between
+      delegations. Save report.md and report.html.
+    sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
+    toolsets:
+      - type: think
+  # (researchers, analyst, writer, publisher — each on local-small or
+  # local-medium with the same toolsets as the Core team.yaml)
+'@ | Set-Content team-local.yaml</pre>
+    </div>
+    <p>Pre-pull the second local model if you haven't already:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker model pull ai/qwen3</pre>
+    </div>
+    <p>Run the fully-local team. Notice: no <code class="inline">ANTHROPIC_API_KEY</code> required. Nothing outbound to a cloud LLM provider. The MCP tools still make network calls out (Wikipedia, DuckDuckGo) — those are separate concerns — but the model inference stays on your host:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker agent run team-local.yaml "Write me a short briefing on Docker Sandboxes and save it as report.md."</pre>
+    </div>
+    <p>Output quality will be visibly lower than Sonnet/Opus — that's the tradeoff. In practice you pick this configuration for compliance reasons (data sovereignty, air-gapped deploy, no cloud vendor dependency) and accept the model-quality delta as the cost.</p>
+    <p><strong>Extended takeaway:</strong> the same yaml shape supports fully-local, fully-cloud, or hybrid. Model choice is a per-role governance decision. For regulated data, this variant is the shape you'd start from.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: assemble the full governance package for hand-off</summary>
+    <div class="go-deeper-body">
+<div class="step-header">
     <span class="badge intro">Extended</span>
     <h2>Governance package assembly</h2>
   </div>
@@ -3992,6 +4002,9 @@ Generated by LP2 workshop assembly on the local host.
   </div>
 
   <p>That folder is the hand-off. Compress it, sign it, attach it to your compliance ticket, or check it into your governance repo — whatever your org's flow is. Every file inside answers a specific question a reviewer will ask.</p>
+    </div>
+  </details>
+
 </section>
 
 <section class="step" id="governance-wrap" data-show-for-track="ai-governance">
@@ -4078,29 +4091,6 @@ Generated by LP2 workshop assembly on the local host.
       });
     });
 
-    // Depth picker (Core / Extended) applies only inside the AI Governance
-    // track. Same show/hide pattern via body.depth-<name> class.
-    var DEPTH_KEY = 'workshop-depth';
-    var DEPTHS = ['core', 'extended'];
-    function applyDepth(depth) {
-      if (DEPTHS.indexOf(depth) === -1) depth = 'core';
-      DEPTHS.forEach(function(d) { document.body.classList.remove('depth-' + d); });
-      document.body.classList.add('depth-' + depth);
-      document.querySelectorAll('.track-tab[data-depth]').forEach(function(btn) {
-        if (btn.dataset.depth === depth) btn.classList.add('active');
-        else btn.classList.remove('active');
-      });
-    }
-    var urlDepth = URL_PARAMS.get('depth');
-    var savedDepth = localStorage.getItem(DEPTH_KEY);
-    applyDepth(urlDepth || savedDepth || 'core');
-    document.querySelectorAll('.track-tab[data-depth]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var d = btn.dataset.depth;
-        applyDepth(d);
-        localStorage.setItem(DEPTH_KEY, d);
-      });
-    });
 
     // Provider selector: pick which AI provider (Claude / Codex / OpenCode) the
     // workshop's commands and prose adapt to. Selection persists in localStorage.
