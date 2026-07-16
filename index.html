@@ -677,12 +677,43 @@
 
   /* Footer */
   footer {
-    text-align: center;
     padding: 32px;
     color: var(--text-muted);
-    font-size: 12.5px;
+    font-size: 13px;
     border-top: 1px solid var(--border);
     margin-top: 40px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  footer .footer-line {
+    margin: 0 0 14px 0;
+  }
+  footer h4 {
+    margin: 0 0 12px 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  footer .footer-links {
+    line-height: 2.1;
+  }
+  footer .footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+  footer .footer-links a:hover {
+    text-decoration: underline;
+  }
+  footer .footer-links .sep {
+    color: var(--border);
+    padding: 0 4px;
+    user-select: none;
   }
 
   @media (max-width: 900px) {
@@ -712,6 +743,7 @@
     <li data-show-for-track="ai-governance"><a href="#step-3">3. Network policy + audit trail</a></li>
     <li data-show-for-track="sbx-101"><a href="#step-4">4. Connect tools (MCP)</a></li>
     <li data-show-for-track="ai-governance"><a href="#step-4">4. Tool governance (MCP + Gateway)</a></li>
+    <li data-show-for-track="ai-governance"><a href="#lp2-model-runner">4.5. Docker Model Runner</a></li>
     <li data-show-for-track="sbx-101"><a href="#step-5">5. Hardened Output (DHI)</a></li>
     <li data-show-for-track="ai-governance"><a href="#step-5">5. DHI applied to a real build</a></li>
     <li data-show-for-track="sbx-101"><a href="#step-6">6. SBX Kits</a></li>
@@ -731,11 +763,11 @@
 
 <header class="workshop-header">
   <div class="track-selector">
-    <p class="track-intro"><strong>Which workshop are you doing?</strong> Two tracks share this page. Pick the one that matches the audience you're delivering to (or the one that matches what you want to learn). You can switch at any time; your progress on the shared modules carries over.</p>
+    <p class="track-intro"><strong>Pick your track.</strong> Two workshops share this page. LP1 is the developer intro to Docker Sandboxes. LP2 is the governance-oriented walkthrough for teams that need to answer what an AI agent ships, sees, and can do. Both use the same underlying stack, so you can switch tracks at any time and your position in the shared modules carries over.</p>
     <div class="track-tabs">
       <span class="track-label">Track:</span>
-      <button class="track-tab active" data-track="sbx-101"><span class="track-tab-badge">LP1</span>SBX 101 &mdash; developer intro</button>
-      <button class="track-tab" data-track="ai-governance"><span class="track-tab-badge">LP2</span>Docker AI Governance &mdash; corporate / compliance</button>
+      <button class="track-tab active" data-track="sbx-101"><span class="track-tab-badge">LP1</span>SBX 101: developer intro</button>
+      <button class="track-tab" data-track="ai-governance"><span class="track-tab-badge">LP2</span>Docker AI Governance</button>
     </div>
   </div>
   <h1 data-show-for-track="sbx-101">SBX 101: Hands-on with Docker Sandboxes</h1>
@@ -743,7 +775,7 @@
   <p class="meta" data-show-for-track="sbx-101">A hands-on workshop on SBX, DHI, MCP, Kits, and multi-agent orchestration.</p>
   <p class="meta" data-show-for-track="ai-governance">A hands-on workshop on Docker's stack for safe, auditable, and compliant AI-agent adoption.</p>
   <div class="provider-selector">
-    <p class="provider-intro"><strong>Pick your AI provider below.</strong> If you have a Claude / Anthropic API key, use <strong>Claude</strong> — the workshop's final steps are optimized for Anthropic. If you don't have Claude, sbx supports other providers, but for this lab we recommend <strong>OpenCode</strong> if you want a free option. You can switch at any time.</p>
+    <p class="provider-intro"><strong>Pick your AI provider below.</strong> If you have a Claude / Anthropic API key, use <strong>Claude</strong>. The workshop's final steps are optimized for Anthropic. If you don't have Claude, sbx supports other providers, but for this lab we recommend <strong>OpenCode</strong> if you want a free option. You can switch at any time.</p>
     <div class="provider-tabs">
       <span class="provider-label">Your provider:</span>
       <button class="provider-tab" data-provider="claude">Claude (Anthropic)</button>
@@ -818,7 +850,7 @@
 
   <h3 class="substep">The three governance questions</h3>
   <ul>
-    <li><strong>What does the agent ship?</strong> Any container an agent produces will go to production somewhere. If the base image has known CVEs, so does everything you ship. <strong>Docker Hardened Images (DHI)</strong> — the foundational module below — give you a supply-chain-grade base to build on.</li>
+    <li><strong>What does the agent ship?</strong> Any container an agent produces will go to production somewhere. If the base image has known CVEs, so does everything you ship. <strong>Docker Hardened Images (DHI)</strong>, the foundational module below, give you a supply-chain-grade base to build on.</li>
     <li><strong>What can the agent see?</strong> An agent that can reach anything on the internet, read any file on your host, or grab any credential is a compliance nightmare. <strong>Docker Sandboxes</strong> and their <strong>network policy</strong> bound the agent's environment and audit every outbound request.</li>
     <li><strong>What can the agent do?</strong> Even inside a sandbox, the agent's tool set determines the scope of its actions. The <strong>Docker MCP Gateway</strong>, <strong>sbx kits</strong>, and <strong>Docker Agent yaml</strong> let you declare tool sets, scope them per team or per role, and enforce the boundary at the runtime.</li>
   </ul>
@@ -836,7 +868,7 @@
     <li>A <strong>Docker account</strong>. Sign up at <a target="_blank" rel="noopener noreferrer" href="https://hub.docker.com/">hub.docker.com</a> if you don't have one (takes 30 seconds), then sign in.</li>
     <li>An <strong>AI provider API key</strong>: Anthropic (for Claude Code), OpenAI (for Codex), or OpenCode (free tier on Zen).</li>
     <li>A <strong>terminal</strong> of your choice (MacOS Terminal, iTerm2, Warp, PowerShell, or any equivalent).</li>
-    <li>A <strong>supported platform</strong>: MacOS Apple Silicon or Windows 11 x86_64. Linux users should run the workshop inside a supported guest OS (VMware Fusion, Parallels, UTM). Native Linux is not yet supported by the workshop's sbx path; Dan and Michael Irwin are working on the fix.</li>
+    <li>A <strong>supported platform</strong>: MacOS Apple Silicon or Windows 11 x86_64. Linux users should run the workshop inside a supported guest OS (VMware Fusion, Parallels, UTM). Native Linux is not yet supported by the workshop's sbx path.</li>
   </ul>
   <p>The detailed install and configuration steps are in <a href="#getting-started">Getting Started</a>. LP2 needs Docker Desktop installed <em>before</em> the Foundational DHI module, so make sure it's up and running by the time you finish Getting Started.</p>
 </section>
@@ -1082,6 +1114,49 @@ global   service  opencode    ****...****</pre>
     </div>
   </div>
 
+  <h3 class="substep" data-show-for-track="ai-governance" id="lp2-install-docker-desktop">Install Docker Desktop (LP2)</h3>
+  <div data-show-for-track="ai-governance">
+    <p>LP2 uses Docker Desktop in two places later in the workshop: the Foundational Docker Hardened Images module (which uses <code class="inline">docker scout</code> for the CVE scan), and Step 4 (where we register MCP servers that ship as Docker images and touch the Docker MCP Gateway). Neither module is optional in LP2, so we install Docker Desktop now.</p>
+    <p class="note-inline"><span class="label">Heads up</span> Docker Desktop is not required to run sbx itself. Steps 1 through 3 use sbx alone. We're installing Docker Desktop now for the Foundational DHI module below and for the MCP work in Step 4.</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">brew install --cask docker</pre>
+      <pre class="cmd" data-os="windows">winget install -h Docker.DockerDesktop</pre>
+    </div>
+    <p>Then launch Docker Desktop from your Applications folder (MacOS) or Start menu (Windows), or open it from the command line:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">open -a Docker</pre>
+      <pre class="cmd" data-os="windows">Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"</pre>
+    </div>
+    <p>Wait for it to finish starting. On MacOS the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid. Then confirm the daemon is up:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker info</pre>
+    </div>
+    <p>If it prints engine details (server version, OS, kernel), you're set. If it prints <code class="inline">Cannot connect to the Docker daemon</code>, Docker Desktop hasn't finished starting yet. Wait a few seconds and try again. If you just installed Docker for the first time, open a fresh terminal so your shell picks up the updated PATH.</p>
+    <p>Now sign in to Docker Hub. LP2's Foundational module pulls a Docker Hardened Image (<code class="inline">dhi.io</code>) that needs a Docker Hub login, and Step 4 pulls MCP server images from <code class="inline">docker.io/mcp/*</code>. On a fresh install, Docker Desktop often pops a sign-in dialog the first time you launch it. If you see it, sign in with your Docker Hub account and you're done. Otherwise, sign in from the terminal:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker login</pre>
+    </div>
+    <p>Either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter.</p>
+  </div>
+
   <h3 class="substep">Create your workshop directory</h3>
   <p>We'll keep everything we create today inside a single umbrella folder, <code class="inline">~/workshop</code>, with the sbx workspace at <code class="inline">~/workshop/sbx</code>. That way nothing sprays into your home directory and cleanup at the end is one command.</p>
   <div class="cmd-block">
@@ -1111,7 +1186,7 @@ global   service  opencode    ****...****</pre>
   </div>
   <p class="subtitle">The supply-chain anchor. Ground here first, before we look at anything the agent does.</p>
 
-  <p>Before we go anywhere near sbx, let's ground on the piece your corporate audience already recognizes: <strong>Docker Hardened Images (DHI)</strong>. An AI agent that builds and ships containers ends up putting whatever base image you started from into production. If that base has known CVEs, so does everything you ship on top of it. Hardening the base is the single-highest-leverage supply-chain move you can make, and it's the one your compliance team will ask about first.</p>
+  <p>Before we go anywhere near sbx, let's ground on the piece your security and platform teams already recognize: <strong>Docker Hardened Images (DHI)</strong>. An AI agent that builds and ships containers ends up putting whatever base image you started from into production. If that base has known CVEs, so does everything you ship on top of it. Hardening the base is the single-highest-leverage supply-chain move you can make, and it's the one a security reviewer will ask about first.</p>
 
   <p>The rest of the workshop assumes the base your agent builds on is trustworthy. This foundational module makes sure it is.</p>
 
@@ -1120,11 +1195,11 @@ global   service  opencode    ****...****</pre>
   <p>Concretely, a DHI is a base image (<code class="inline">python</code>, <code class="inline">node</code>, <code class="inline">nginx</code>, <code class="inline">alpine</code>, etc.) that Docker has stripped down, patched, and re-signed to have near-zero known CVEs. Each DHI ships in two variants:</p>
   <ul>
     <li>A <strong>dev variant</strong> with a shell and a package manager, used in the build stage of a multi-stage Dockerfile.</li>
-    <li>A <strong>prod variant</strong> with no shell, no extras, no package manager — just what the runtime needs. This is the variant that actually ships.</li>
+    <li>A <strong>prod variant</strong> with no shell, no extras, no package manager, just what the runtime needs. This is the variant that actually ships.</li>
   </ul>
   <p>Docker maintains DHIs with enterprise SLAs on vulnerability remediation, and each ships with a signed <strong>SBOM</strong> (Software Bill of Materials) listing every package inside. That SBOM is the telemetry your compliance team uses to prove and instantiate every supply-chain claim you make about the image: "this component, this version, this license, this vulnerability status." Without the SBOM you're vouching for the image from memory; with the SBOM you're pointing at a signed document. DHIs live under the <code class="inline">dhi.io</code> namespace and require a one-time login with your Docker Hub credentials before you can pull them.</p>
 
-  <p class="note-inline"><span class="label">Prep for this module</span> The commands below need Docker Desktop running and you signed in to Docker Hub. If you haven't set that up on this machine yet, jump to <a href="#prep-step-4">Before Step 4</a> below for the install / login steps, then come back here. All caught up if you already did that.</p>
+  <p class="note-inline"><span class="label">Prep for this module</span> The commands below need Docker Desktop running and you signed in to Docker Hub, both set up in Getting Started's <a href="#lp2-install-docker-desktop">Install Docker Desktop</a> substep. If you skipped it, go do it now, then come back here. Otherwise you're set.</p>
 
   <h3 class="substep">F.2 Sign in to the DHI registry</h3>
   <p>DHI pulls require a login to <code class="inline">dhi.io</code>. Same Docker Hub credentials, different registry endpoint:</p>
@@ -1160,7 +1235,7 @@ global   service  opencode    ****...****</pre>
     </div>
     <pre class="cmd active">docker scout quickview python:3.14-slim</pre>
   </div>
-  <p>Take note of the CVE counts under Critical, High, Medium, and Low. On a recent build of <code class="inline">python:3.14-slim</code> you'll typically see a handful of Highs and a longer tail of Mediums and Lows. That's normal for a general-purpose base — it packs a shell, a package manager, dev headers, and the transitive dependencies of everything it might need.</p>
+  <p>Take note of the CVE counts under Critical, High, Medium, and Low. On a recent build of <code class="inline">python:3.14-slim</code> you'll typically see a handful of Highs and a longer tail of Mediums and Lows. That's normal for a general-purpose base: it packs a shell, a package manager, dev headers, and the transitive dependencies of everything it might need.</p>
   <p>Now the hardened variant:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -1169,10 +1244,10 @@ global   service  opencode    ****...****</pre>
     </div>
     <pre class="cmd active">docker scout quickview dhi.io/python:3.14</pre>
   </div>
-  <p>Same Python version, same runtime capability, near-zero CVEs. That's the payoff. The image is smaller too — no shell, no package manager, nothing you don't need to run the code.</p>
+  <p>Same Python version, same runtime capability, near-zero CVEs. That's the payoff. The image is smaller too: no shell, no package manager, nothing you don't need to run the code.</p>
 
   <h3 class="substep">F.4 Why this is the foundational module for the rest of the workshop</h3>
-  <p>Everything that follows assumes a hardened base. When Step 5 has the agent build a research app and swap in a DHI, the CVE delta you just observed is the delta you'll see there too — same mechanic, applied to code the agent wrote. When the Docker Agent team in Step 7 produces artifacts, the images backing those tools are DHIs. The rest of the workshop is about what the agent <em>does</em> with a trustworthy base; this module is the base itself.</p>
+  <p>Everything that follows assumes a hardened base. When Step 5 has the agent build a research app and swap in a DHI, the CVE delta you just observed is the delta you'll see there too. Same mechanic, applied to code the agent wrote. When the Docker Agent team in Step 7 produces artifacts, the images backing those tools are DHIs. The rest of the workshop is about what the agent <em>does</em> with a trustworthy base; this module is the base itself.</p>
   <p>Governance takeaway: the artifact from this module is <strong>the CVE quickview output</strong>, which your compliance team can attach to a supply-chain review. In the Extended path (2-4 hour delivery), we go deeper on SBOMs, provenance attestations, and Docker Scout policies applied against the images.</p>
 
   
@@ -1202,11 +1277,11 @@ global   service  opencode    ****...****</pre>
     <h2 data-show-for-track="ai-governance">Sandbox as an audited trust boundary</h2>
   </div>
   <p class="subtitle" data-show-for-track="sbx-101">Spin up a Docker Sandbox with an agent inside, and confirm it's alive.</p>
-  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent see?" — plus the artifact that documents the boundary.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent see?", plus the artifact that documents the boundary.</p>
 
   <p>You'll create a sandbox on the host, verify it's running, attach your terminal to the agent inside, and then ask the agent three quick questions about its environment. By the end you'll have proved that the agent really is running on Linux in a microVM with its own kernel, its own user, and access to exactly the directory you mounted. Nothing more.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the sandbox is a VM with a hostname, an audit trail, and no residue outside the workspace mount. Every artifact in this workshop — from the policy log in the next step through the yaml in Step 7 — assumes this boundary as the trust anchor. If the boundary isn't real, none of the downstream artifacts mean anything to your auditor. This step establishes the boundary and the artifacts that prove it.</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the sandbox is a VM with a hostname, an audit trail, and no residue outside the workspace mount. Every artifact in this workshop, from the policy log in the next step through the yaml in Step 7, assumes this boundary as the trust anchor. If the boundary isn't real, none of the downstream artifacts mean anything to your auditor. This step establishes the boundary and the artifacts that prove it.</p>
 
   <p>Assumes you completed <a href="#getting-started">Getting Started</a> (install, login, secret, workspace setup).</p>
 
@@ -1262,8 +1337,8 @@ global   service  opencode    ****...****</pre>
   </div>
   <p>You'll likely need to restart your computer afterward for the change to take effect, then re-run <code class="inline">sbx create</code>.</p>
 
-  <h3 class="substep">1.2 (Optional) Verify the sandbox is running</h3>
-  <p><code class="inline">sbx ls</code> lists every sandbox the sbx daemon knows about along with its agent type, status, exposed ports, and workspace path. Right after <code class="inline">sbx create</code> the sandbox should show <code class="inline">running</code> immediately. Useful sanity check before you connect to it.</p>
+  <h3 class="substep">1.2 See what's running</h3>
+  <p><code class="inline">sbx ls</code> lists every sandbox the sbx daemon knows about along with its agent type, status, exposed ports, and workspace path. It's the command you'll come back to any time you want to see what sandboxes exist on your machine. Right after <code class="inline">sbx create</code> the sandbox you just made should show <code class="inline">running</code>.</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1386,7 +1461,7 @@ agent
           <pre class="cmd active" data-os="mac">sbx create --name sandbox-bravo opencode ~/workshop/sbx</pre><pre class="cmd" data-os="windows">sbx create --name sandbox-bravo opencode $HOME/workshop/sbx</pre>
         </div>
       </div>
-      <p>Then list them both:</p>
+      <p>List them both to confirm the new sandbox exists alongside the first:</p>
       <div class="cmd-block">
         <div class="cmd-bar">
           <span class="cmd-label">host shell</span>
@@ -1394,7 +1469,40 @@ agent
         </div>
         <pre class="cmd active">sbx ls</pre>
       </div>
-      <p>You'll see <code class="inline">sandbox-alpha</code> and <code class="inline">sandbox-bravo</code> as two independent rows. Connect to bravo with <code class="inline">sbx run --name sandbox-bravo</code>: its own hostname, its own process list, its own policies. The two don't share state. Remove bravo when you're done with <code class="inline">sbx stop sandbox-bravo; sbx rm sandbox-bravo</code>.</p>
+      <p>You'll see <code class="inline">sandbox-alpha</code> and <code class="inline">sandbox-bravo</code> as two independent rows. Connect to bravo:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx run --name sandbox-bravo</pre>
+      </div>
+      <p>Bravo has its own hostname, its own process list, and its own policies. The two sandboxes don't share state; anything you do in one is invisible to the other.</p>
+      <p>When you're done exploring, stop bravo:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx stop sandbox-bravo</pre>
+      </div>
+      <p>Then remove it:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx rm sandbox-bravo</pre>
+      </div>
+      <p>Confirm it's gone:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx ls</pre>
+      </div>
+      <p>Only <code class="inline">sandbox-alpha</code> remains. The <code class="inline">stop</code> / <code class="inline">rm</code> split is deliberate: <code class="inline">stop</code> shuts the VM down but keeps the sandbox record and its workspace mount around, so you can start it again with <code class="inline">sbx run</code>. <code class="inline">rm</code> deletes the record. Use <code class="inline">stop</code> when you're pausing; use <code class="inline">rm</code> when you're done.</p>
     </div>
   </details>
 
@@ -1795,7 +1903,7 @@ reddit.com: 403 (0 bytes)
 wikipedia.org: 403 (0 bytes)
 fifa.com: 403 (0 bytes)</pre>
   </div>
-  <p><code class="inline">github.com</code> and <code class="inline">pypi.org</code> are in default-allow lists, so the proxy forwards the request and you get a full page back (status 200, non-zero byte count). <code class="inline">reddit.com</code>, <code class="inline">wikipedia.org</code>, and <code class="inline">fifa.com</code> aren't on any allow list, so default-deny kicks in: the proxy refuses (status 403, zero bytes. Nothing left the VM).</p>
+  <p><code class="inline">github.com</code> and <code class="inline">pypi.org</code> are in default-allow lists, so the proxy forwards the request and you get a full page back (status 200, non-zero byte count). <code class="inline">reddit.com</code>, <code class="inline">wikipedia.org</code>, and <code class="inline">fifa.com</code> aren't on any allow list, so default-deny kicks in: the proxy refuses (status 403, zero bytes, nothing left the VM).</p>
 
   <h3 class="substep">3.3 Check the audit trail</h3>
   <p>After the agent ran those curls, print the connection log on your host:</p>
@@ -1824,7 +1932,7 @@ pypi.org:443      domain-allowed   1</pre>
 
   <div class="callout">
     <span class="label">In real use</span>
-    When you ran the curls in 3.2, <code class="inline">fifa.com</code> showed up in the Blocked requests section of the log with the reason "No matching allow rule (default deny)". It isn't on any of the default allow groups, but say we want the agent to do some research on the 2026 World Cup later in the workshop — <code class="inline">fifa.com</code> is exactly the kind of source we'd want it to reach. That's the pattern you'll hit constantly in real use: you decide your agent needs a domain that isn't on the default allow list (or sometimes the agent binary itself needs it, like OpenCode reaching for <code class="inline">opencode.ai</code> on first launch). The audit log tells you what was blocked. A targeted allow rule opens just that one thing:
+    When you ran the curls in 3.2, <code class="inline">fifa.com</code> showed up in the Blocked requests section of the log with the reason "No matching allow rule (default deny)". It isn't on any of the default allow groups, but say we want the agent to do some research on the 2026 World Cup later in the workshop. <code class="inline">fifa.com</code> is exactly the kind of source we'd want it to reach. That's the pattern you'll hit constantly in real use: you decide your agent needs a domain that isn't on the default allow list (or sometimes the agent binary itself needs it, like OpenCode reaching for <code class="inline">opencode.ai</code> on first launch). The audit log tells you what was blocked. A targeted allow rule opens just that one thing:
     <div class="cmd-block">
       <div class="cmd-bar">
         <span class="cmd-label">host shell</span>
@@ -1898,7 +2006,15 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx policy deny network example.com</pre>
   </div>
-  <p>Confirm it's there with <code class="inline">sbx policy ls</code>, then remove it:</p>
+  <p>Confirm it's there:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx policy ls</pre>
+  </div>
+  <p>Then remove it:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1906,8 +2022,16 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx policy rm network --resource example.com</pre>
   </div>
-  <p><code class="inline">--resource</code> tells sbx which rule to drop by the domain it applies to. If you prefer to remove by rule ID, swap <code class="inline">--resource example.com</code> for <code class="inline">--id &lt;UUID&gt;</code>; find the UUID in the first column of <code class="inline">sbx policy ls</code>. Either form removes the rule.</p>
-  <p>Run <code class="inline">sbx policy ls</code> again and the <code class="inline">example.com</code> row is gone. That same mechanic works on any rule, including the <code class="inline">fifa.com</code> allow and the <code class="inline">pypi.org</code> deny we added earlier. When you're done with this workshop, you can clean up everything you added with <code class="inline">sbx policy rm network --resource &lt;domain&gt;</code> per rule. For now, leave <code class="inline">fifa.com</code> allowed and <code class="inline">pypi.org</code> denied. Step 4 (MCP) won't touch policy; Step 5's prep step removes the pypi.org deny so pip installs work in the research demo.</p>
+  <p><code class="inline">--resource</code> tells sbx which rule to drop by the domain it applies to. If you prefer to remove by rule ID, swap <code class="inline">--resource example.com</code> for <code class="inline">--id &lt;UUID&gt;</code>; find the UUID in the first column of the policy list. Either form removes the rule.</p>
+  <p>Run the list one more time to confirm the row is gone:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx policy ls</pre>
+  </div>
+  <p>The <code class="inline">example.com</code> row is gone. That same mechanic works on any rule, including the <code class="inline">fifa.com</code> allow and the <code class="inline">pypi.org</code> deny we added earlier. When you're done with this workshop, you can clean up everything you added with <code class="inline">sbx policy rm network --resource &lt;domain&gt;</code> per rule. For now, leave <code class="inline">fifa.com</code> allowed and <code class="inline">pypi.org</code> denied. Step 4 (MCP) won't touch policy; Step 5's prep step removes the pypi.org deny so pip installs work in the research demo.</p>
 
   <div class="insight">A persistent or smarter agent cannot bypass a network deny rule. The policy blocks at the proxy regardless of how the agent dresses up the request.</div>
 
@@ -1928,9 +2052,33 @@ ERROR: No matching distribution found for requests</pre>
         <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
         Run <code>curl -s https://1.1.1.1 -o /dev/null -w "1.1.1.1: %{http_code} (%{size_download} bytes)\n"</code> and tell me what you see.
       </div>
-      <p>You should see something like <code class="inline">1.1.1.1: 301</code> (or another non-403 status). The exact status depends on what's listening at the IP. 1.1.1.1 returns Cloudflare's branded redirect to one.one.one.one, which is fine for this demo: the key signal is that you got something other than 403, meaning the proxy let the connection through. Check the audit log on Terminal B with <code class="inline">sbx policy log sandbox-alpha</code> and you'll see 1.1.1.1 listed under Allowed requests, alongside its earlier Blocked entry from before the rule.</p>
+      <p>You should see something like <code class="inline">1.1.1.1: 301</code> (or another non-403 status). The exact status depends on what's listening at the IP. 1.1.1.1 returns Cloudflare's branded redirect to one.one.one.one, which is fine for this demo: the key signal is that you got something other than 403, meaning the proxy let the connection through.</p>
+      <p>Check the audit log on Terminal B:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell (Terminal B)</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx policy log sandbox-alpha</pre>
+      </div>
+      <p>You'll see 1.1.1.1 listed under Allowed requests, alongside its earlier Blocked entry from before the rule.</p>
       <p>For a range of addresses instead of a single IP, use CIDR notation: <code class="inline">sbx policy allow network 10.0.0.0/24</code> opens an entire /24 CIDR range (e.g., to give the sandbox access to a whole staging environment).</p>
-      <p>If the <code class="inline">allow network &lt;ip&gt;</code> form errors on your sbx version, run <code class="inline">sbx policy allow network --help</code> for the exact syntax your build accepts. Clean up when you're done: <code class="inline">sbx policy rm network --resource 1.1.1.1</code>.</p>
+      <p>If the <code class="inline">allow network &lt;ip&gt;</code> form errors on your sbx version, check the exact syntax your build accepts:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx policy allow network --help</pre>
+      </div>
+      <p>Clean up when you're done:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx policy rm network --resource 1.1.1.1</pre>
+      </div>
     </div>
   </details>
 
@@ -1987,51 +2135,67 @@ ERROR: No matching distribution found for requests</pre>
 
   <h3>Next: what tools the agent can use</h3>
   <p>Network policy controls which hostnames the sandbox can connect to directly. <strong>MCP</strong> (Model Context Protocol) controls which specific tools the agent can call. They solve different problems and they compose: a production-shape agent typically has restrictive network policy AND a curated set of MCP tools, so the agent reaches the outside world only through channels you've explicitly approved.</p>
-  <p>An MCP server exposes one or more tools, and the agent invokes them through the protocol. In <strong>Step 4</strong> we'll register two MCP servers with sbx (Wikipedia and DuckDuckGo web search, using two different registration modes), attach them to <code class="inline">sandbox-alpha</code>, and watch the agent retrieve information through those tools — including from domains the sandbox's network policy doesn't allow directly. By the end you'll have a clean mental model for when to add domains to the network allow list versus when to add MCP tools that wrap them.</p>
+  <p>An MCP server exposes one or more tools, and the agent invokes them through the protocol. In <strong>Step 4</strong> we'll register two MCP servers with sbx (Wikipedia and DuckDuckGo web search, using two different registration modes), attach them to <code class="inline">sandbox-alpha</code>, and watch the agent retrieve information through those tools, including from domains the sandbox's network policy doesn't allow directly. By the end you'll have a clean mental model for when to add domains to the network allow list versus when to add MCP tools that wrap them.</p>
   <p>After <strong>Step 4</strong> the workshop turns to what the agent <em>builds</em>. We'll have the agent produce a small app and look at the security posture of what it ships. That's <strong>Step 5</strong>, where Docker Hardened Images come in.</p>
 </aside>
 
 <section class="pre-step" id="prep-step-4">
-  <h3>Before Step 4: get Docker Desktop running</h3>
-  <p class="note-inline"><span class="label">Heads up</span> Until now you've worked entirely through sbx, which doesn't require Docker on the host. Step 4 introduces a new wrinkle. The MCP server we're about to register runs as a Docker container (sbx will literally spawn <code class="inline">docker run mcp/wikipedia-mcp</code> when an agent attaches to it), so to launch that container the Docker daemon needs to be up and the <code class="inline">docker</code> CLI needs to be on PATH. Step 5 will also need Docker on the host for building images and running Docker Scout. Docker Desktop bundles the <code class="inline">docker</code> CLI, the Docker engine, and Docker Scout in one install, so it's the fastest way to get everything Steps 4 and 5 need running together.</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <button class="cmd-tab active" data-os="mac">MacOS</button>
-      <button class="cmd-tab" data-os="windows">Windows</button>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+  <h3 data-show-for-track="sbx-101">Before Step 4: Get Docker Desktop running</h3>
+  <h3 data-show-for-track="ai-governance">Before Step 4: Confirm Docker Desktop is still running</h3>
+
+  <div data-show-for-track="ai-governance">
+    <p>You installed Docker Desktop in Getting Started's <a href="#lp2-install-docker-desktop">Install Docker Desktop</a> substep. Confirm the daemon is still up before we register MCP servers:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker info</pre>
     </div>
-    <pre class="cmd active" data-os="mac">brew install --cask docker</pre>
-    <pre class="cmd" data-os="windows">winget install -h Docker.DockerDesktop</pre>
+    <p>If it prints engine details, you're set. If not, launch Docker Desktop from your Applications folder / Start menu and give it a few seconds to start. If Docker Desktop isn't installed at all, jump back to <a href="#lp2-install-docker-desktop">Install Docker Desktop</a>, then come back here.</p>
   </div>
-  <p>Then start Docker Desktop. You can launch it from your Applications folder or Start menu, or from the command line:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <button class="cmd-tab active" data-os="mac">MacOS</button>
-      <button class="cmd-tab" data-os="windows">Windows</button>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+
+  <div data-show-for-track="sbx-101">
+    <p class="note-inline"><span class="label">Heads up</span> Until now you've worked entirely through sbx, which doesn't require Docker on the host. Step 4 introduces a new wrinkle. The MCP server we're about to register runs as a Docker container (sbx will literally spawn <code class="inline">docker run mcp/wikipedia-mcp</code> when an agent attaches to it), so to launch that container the Docker daemon needs to be up and the <code class="inline">docker</code> CLI needs to be on PATH. Step 5 will also need Docker on the host for building images and running Docker Scout. Docker Desktop bundles the <code class="inline">docker</code> CLI, the Docker engine, and Docker Scout in one install, so it's the fastest way to get everything Steps 4 and 5 need running together.</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">brew install --cask docker</pre>
+      <pre class="cmd" data-os="windows">winget install -h Docker.DockerDesktop</pre>
     </div>
-    <pre class="cmd active" data-os="mac">open -a Docker</pre>
-    <pre class="cmd" data-os="windows">Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"</pre>
-  </div>
-  <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid. Then confirm the daemon is up:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    <p>Then start Docker Desktop. You can launch it from your Applications folder or Start menu, or from the command line:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">open -a Docker</pre>
+      <pre class="cmd" data-os="windows">Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"</pre>
     </div>
-    <pre class="cmd active">docker info</pre>
-  </div>
-  <p>If it prints engine details (server version, OS, kernel), you're good. If it prints <code class="inline">Cannot connect to the Docker daemon</code>, Docker Desktop hasn't finished starting yet. Wait a few seconds and try again. If you just installed Docker for the first time, open a fresh terminal so your shell picks up the updated PATH.</p>
-  <p>Now sign in to Docker Hub. You need to be signed in to pull the MCP image we'll use in a moment (and Docker Scout in Step 5).</p>
-  <p>On a fresh install, Docker Desktop often pops a sign-in dialog the first time you launch it. If you see it, sign in there with your Docker Hub account (same one from Quick Setup step 1) and you're done. If you don't see the dialog, or you dismissed it, sign in from the terminal instead:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    <p>Wait for it to finish starting. On Mac the whale icon in the menu bar stops animating; on Windows the system tray icon turns solid. Then confirm the daemon is up:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker info</pre>
     </div>
-    <pre class="cmd active">docker login</pre>
+    <p>If it prints engine details (server version, OS, kernel), you're good. If it prints <code class="inline">Cannot connect to the Docker daemon</code>, Docker Desktop hasn't finished starting yet. Wait a few seconds and try again. If you just installed Docker for the first time, open a fresh terminal so your shell picks up the updated PATH.</p>
+    <p>Now sign in to Docker Hub. You need to be signed in to pull the MCP image we'll use in a moment (and Docker Scout in Step 5).</p>
+    <p>On a fresh install, Docker Desktop often pops a sign-in dialog the first time you launch it. If you see it, sign in there with your Docker Hub account (same one from Quick Setup step 1) and you're done. If you don't see the dialog, or you dismissed it, sign in from the terminal instead:</p>
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <span class="cmd-label">host shell</span>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active">docker login</pre>
+    </div>
+    <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop).</p>
   </div>
-  <p>This either prompts for your Docker Hub username and access token, or opens a browser with a device-flow code to enter (similar to how <code class="inline">sbx login</code> worked at the start of the workshop).</p>
 
   <h4>Pre-pull the workshop's images</h4>
   <p>Steps 4, 5, and 7 all pull Docker images or models mid-flow. Pulling them now, while the workshop is still in setup, keeps the live steps snappy and works around fussy conference Wi-Fi:</p>
@@ -2063,7 +2227,7 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">docker model pull ai/smollm2</pre>
   </div>
-  <p><code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/duckduckgo</code> are the two MCP servers we'll register in Step 4. <code class="inline">mcp/paper-search</code> is a third MCP server that Step 7's Docker Agent team uses for academic literature. <code class="inline">ai/smollm2</code> is a small local language model that a role in Step 7 will use through Docker Model Runner. Pulls run in parallel; if any one fails, re-run just that command. Once all four complete, you're ready for Step 4.</p>
+  <p><code class="inline">mcp/wikipedia-mcp</code> and <code class="inline">mcp/duckduckgo</code> are the two MCP servers we'll register in Step 4. <code class="inline">mcp/paper-search</code> is a third MCP server that Step 7's Docker Agent team uses for academic literature. <code class="inline">ai/smollm2</code> is a small local language model that a role in Step 7 will use through Docker Model Runner. These pulls can run in parallel; if any one fails, re-run just that command. Once all four complete, you're ready for Step 4.</p>
 </section>
 
 <section class="step" id="step-4">
@@ -2073,13 +2237,13 @@ ERROR: No matching distribution found for requests</pre>
     <h2 data-show-for-track="ai-governance">Tool governance via MCP and the Gateway</h2>
   </div>
   <p class="subtitle" data-show-for-track="sbx-101">Give the sandboxed agent access to tools beyond reading and writing files by registering an MCP server and attaching it to sandbox-alpha.</p>
-  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent do?" — every tool declared, every invocation observable.</p>
+  <p class="subtitle" data-show-for-track="ai-governance">The primitive that answers "what can the agent do?": every tool declared, every invocation observable.</p>
 
-  <p>In Step 3 you saw what happens when the agent reaches for something outside the default allow list: blocked at the proxy, audit log records it, you decide whether to open a targeted hole. That's a network-level lever. MCP gives you a different one: instead of unblocking a domain, register a specific <em>tool</em> (web search, GitHub access, file operations, an internal API) and let the agent invoke that tool through a controlled channel. The agent can do what the tool exposes and nothing more.</p>
+  <p>In Step 3 you saw what happens when the agent reaches for something outside the default allow list: the proxy blocks it, the audit log records it, and you decide whether to open a targeted hole. That's a network-level lever. MCP gives you a different one: instead of unblocking a domain, register a specific <em>tool</em> (web search, GitHub access, file operations, an internal API) and let the agent invoke that tool through a controlled channel. The agent can do what the tool exposes and nothing more.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> tool access, not network access, is the granularity your compliance team wants. "The agent can reach Wikipedia" is coarse; "the agent has the <code class="inline">get_summary</code> and <code class="inline">search_wikipedia</code> tools" is precise. Each MCP registration is a documented capability grant. The Docker MCP Gateway (introduced in 4.2.1 below) is where team-scale tool governance lives — profiles, catalogs, and per-client scoping so different teams see different tool subsets from the same shared infrastructure.</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> tool access, not network access, is the granularity your compliance team wants. "The agent can reach Wikipedia" is coarse; "the agent has the <code class="inline">get_summary</code> and <code class="inline">search_wikipedia</code> tools" is precise. Each MCP registration is a documented capability grant. The Docker MCP Gateway (introduced in 4.2.1 below) is where team-scale tool governance lives: profiles, catalogs, and per-client scoping so different teams see different tool subsets from the same shared infrastructure.</p>
 
-  <p>MCP (Model Context Protocol) is an open standard for how agents call tools. An MCP <em>server</em> exposes one or more tools, and the agent invokes them through the protocol. <code class="inline">sbx mcp</code> is how we register servers so that agents running inside a sandbox can use them. For this step we'll register two MCP servers using two different <code class="inline">sbx mcp add</code> modes (local stdio for Wikipedia, OCI image reference for DuckDuckGo), attach both to <code class="inline">sandbox-alpha</code>, and have the agent retrieve information through them.</p>
+  <p>MCP (Model Context Protocol) is an open standard for how agents call tools. An MCP <em>server</em> exposes one or more tools, and the agent invokes them through the protocol. <code class="inline">sbx mcp</code> is how we register servers so that agents running inside a sandbox can use them. For this step we'll register two MCP servers (Wikipedia and DuckDuckGo web search), attach both to <code class="inline">sandbox-alpha</code>, and have the agent retrieve information through them.</p>
 
   <h3 class="substep">4.1 Enable the sbx mcp subtree</h3>
   <p>The <code class="inline">sbx mcp</code> subtree is hidden by default. It only appears when the <code class="inline">SBX_MCP_URL</code> environment variable is set to an absolute http/https URL. The simplest path is to point it at the public MCP community registry, which unlocks the subcommands without requiring any additional infrastructure:</p>
@@ -2116,7 +2280,7 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp --help</pre>
   </div>
   <p>You'll see subcommands like <code class="inline">add</code>, <code class="inline">ls</code>, <code class="inline">inspect</code>, <code class="inline">rm</code>, and <code class="inline">bundle</code>. <code class="inline">SBX_MCP_URL</code> is a per-shell variable, so if you open a new terminal you'll need to set it again or persist it in your shell's rc file (<code class="inline">~/.zshrc</code>, <code class="inline">~/.bashrc</code>, or <code class="inline">~/.config/fish/config.fish</code>).</p>
-  <p class="note-inline"><span class="label">If MCP commands later fail with a gateway error</span> Two common causes: (1) the sbx daemon doesn't know about <code class="inline">SBX_MCP_URL</code> because it was started before you exported the env var; the daemon restart we did in this step is what fixes that. (2) Docker Desktop isn't signed in to Docker Hub, so it can't pull the MCP image; open Docker Desktop and sign in. We'll touch on both again in Step 4's prep, before the first MCP load.</p>
+  <p class="note-inline"><span class="label">If MCP commands later fail with a gateway error</span> Two common causes: (1) the sbx daemon doesn't know about <code class="inline">SBX_MCP_URL</code> because it was started before you exported the env var; the daemon restart we did in this step is what fixes that. (2) Docker Desktop isn't signed in to Docker Hub, so it can't pull the MCP image; open Docker Desktop and sign in. Keep these two causes in mind if you hit an MCP error later on.</p>
 
   <h3 class="substep">4.2 Register a local MCP server</h3>
   <p><code class="inline">sbx mcp add</code> supports four registration modes: remote OAuth, community registry (managed), community registry (local), and local stdio. We'll use the fourth: a local stdio MCP server that runs as a Docker container on the host. It's the most reliable path and needs nothing beyond your machine.</p>
@@ -2126,10 +2290,10 @@ ERROR: No matching distribution found for requests</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp add local-wiki --command docker --args "run,-i,--rm,mcp/wikipedia-mcp"</pre>
+    <pre class="cmd active">sbx mcp add wiki-mcp --command docker --args "run,-i,--rm,mcp/wikipedia-mcp"</pre>
   </div>
   <p>Walking through that command piece by piece:</p>
-  <p><code class="inline">sbx mcp add</code> registers a new MCP server so sbx-managed sandboxes can attach to it later. <code class="inline">local-wiki</code> is just a name we picked for this registration. The prefix <code class="inline">local</code> is a reminder that this is a local stdio server (not a remote OAuth one) and <code class="inline">wiki</code> is shorthand for Wikipedia. You can call it whatever you want; it's just the handle you'll reference in later commands like <code class="inline">sbx mcp inspect local-wiki</code> or as the value of <code class="inline">--mcp local-wiki</code> when creating a sandbox.</p>
+  <p><code class="inline">sbx mcp add</code> registers a new MCP server so sbx-managed sandboxes can attach to it later. <code class="inline">wiki-mcp</code> is just a name we picked for this registration; you can call it whatever you want. It's the handle you'll reference in later commands like <code class="inline">sbx mcp inspect wiki-mcp</code> or as the value of <code class="inline">--mcp wiki-mcp</code> when creating a sandbox.</p>
   <p><code class="inline">--command docker</code> tells sbx what executable to invoke when it starts the MCP server, so the server runs in a container rather than on the bare host. <code class="inline">--args</code> is comma-separated (not space-separated, a common gotcha), and these args translate to <code class="inline">docker run -i --rm mcp/wikipedia-mcp</code>. Of those Docker flags: <code class="inline">-i</code> keeps stdin open, which is what makes stdio transport work in the first place (without it sbx can't pipe JSON-RPC into the container); <code class="inline">--rm</code> auto-removes the container on exit so you don't accumulate stopped containers every MCP session.</p>
   <p><code class="inline">mcp/wikipedia-mcp</code> is the OCI image, published in Docker's MCP catalog as a Verified Publisher image. It wraps Wikipedia's API in the MCP protocol and exposes 22 read-only tools that the agent can call once the server is attached to a sandbox: <code class="inline">search_wikipedia</code>, <code class="inline">get_article</code>, <code class="inline">get_summary</code>, <code class="inline">extract_key_facts</code>, <code class="inline">get_sections</code>, <code class="inline">get_links</code>, and friends. We're using Wikipedia here because every tool the server exposes is scoped to Wikipedia (no general web access), it's free and requires no API key, and it gives the agent a capability that's clearly distinct from anything in its default toolkit. Any MCP server published to the catalog could take its place: a GitHub MCP, a Notion MCP, a Slack MCP, a custom one you built.</p>
   <p>Now inspect the server you just registered to see what it actually exposes. This pulls the server's tool list, descriptions, and metadata back from the underlying MCP server, so you can confirm both that the registration worked and what the agent will be able to call:</p>
@@ -2138,7 +2302,7 @@ ERROR: No matching distribution found for requests</pre>
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp inspect local-wiki</pre>
+    <pre class="cmd active">sbx mcp inspect wiki-mcp</pre>
   </div>
   <p>You'll see the server's name, transport mode (stdio), the underlying command sbx will launch when an agent attaches to it, and the tools it advertises (the 22 Wikipedia-scoped tools listed above). If anything looks wrong here, sbx never got to a clean working state with that registration; fix it before moving on.</p>
   <p>If you want to see every MCP server registered so far in one view, list them:</p>
@@ -2149,12 +2313,12 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx mcp ls</pre>
   </div>
-  <p><code class="inline">local-wiki</code> should appear in the output.</p>
+  <p><code class="inline">wiki-mcp</code> should appear in the output.</p>
   <p class="note-inline"><span class="label">Heads up</span> Local stdio MCP servers run on the HOST, not inside the sandbox. They execute with your full user permissions: filesystem, network, secrets, everything. The sandbox boundary you built in Steps 1-3 still holds for the agent's own actions; the MCP server is just a tool the agent can call through that boundary. Use local stdio MCP servers for development and code you trust, not for arbitrary third-party code.</p>
 
   <h3 class="substep">4.2.1 Zoom out: the Docker MCP Gateway</h3>
   <p>Everything you just did with <code class="inline">sbx mcp add</code> registered a server with sbx's own MCP layer, scoped to sandboxes managed by this daemon. That's the right shape for a single developer running one or two sandboxes at a time. As soon as you scale past that (a team using the same MCP servers, or one client wanting to see a curated subset of tools), you want a broader primitive. Docker ships one: the <strong>Docker MCP Gateway</strong>.</p>
-  <p>The Gateway is a local proxy that sits between MCP <em>clients</em> (agents, IDEs, Docker Agent, LM Studio, Cursor) and MCP <em>servers</em>. You register servers against the Gateway, group them into <em>profiles</em>, and connect each client to the profile that fits its role. Command surface, bundled with Docker Desktop 4.62+ (also installable via a CLI plugin):</p>
+  <p>The Gateway is a local proxy that sits between MCP <em>clients</em> (agents, IDEs, Docker Agent, LM Studio, Cursor) and MCP <em>servers</em>. You register servers against the Gateway, group them into <em>profiles</em>, and connect each client to the profile that fits its role. Bundled with Docker Desktop 4.62+, also installable as a CLI plugin. Explore the command surface:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -2162,51 +2326,28 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">docker mcp --help</pre>
   </div>
-  <p>A minimal profile-based workflow looks like:</p>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">docker mcp profile create --name workshop</pre>
-  </div>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">docker mcp profile server add workshop --server catalog://docker-mcp/wikipedia-mcp</pre>
-  </div>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
-    </div>
-    <pre class="cmd active">docker mcp gateway run --profile workshop</pre>
-  </div>
-  <p>Then a client (an IDE, a Docker Agent yaml, or a custom MCP client) binds to that profile with <code class="inline">docker mcp client connect &lt;client&gt; --profile workshop</code>, and it sees exactly the tools in that profile — no more, no less. Different clients bind different profiles; that's how a team gets per-client tool scoping without duplicating registrations.</p>
-  <p>We're keeping the rest of the workshop on the per-sandbox <code class="inline">sbx mcp</code> path because it makes the sandbox-as-trust-boundary story cleaner. But if you're planning an MCP setup that a team is going to share, the Gateway is the primitive to know about. Full docs at <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a>.</p>
+  <p class="note-inline"><span class="label">Conceptual only in this workshop</span> The rest of this subsection describes the Gateway workflow at a high level. The commands are illustrative, not for copy-paste in Step 4 (they don't cleanly fit the sandbox-first shape of this step). If you want to actually stand a Gateway up on your machine, follow the walkthrough in the LP2 Go Deeper section (<em>MCP Gateway at scale</em>) or the official docs at <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a>.</p>
+  <p>Conceptually, a minimal profile-based workflow looks like this: you create a profile with a name (something like <code class="inline">workshop</code>), add MCP servers to that profile (from Docker's MCP catalog or from OCI images you host), then run the Gateway pinned to that profile. Once it's running, an MCP client (an IDE, a Docker Agent yaml, or any custom client) binds to the profile, and from then on that client sees exactly the tools the profile grants, no more, no less. Different clients bind different profiles; that's how a team gets per-client tool scoping without duplicating registrations.</p>
+  <p>We're keeping the rest of the workshop on the per-sandbox <code class="inline">sbx mcp</code> path because it makes the sandbox-as-trust-boundary story cleaner. But if you're planning an MCP setup that a team is going to share, the Gateway is the primitive to know about.</p>
 
-  <h3 class="substep">4.2.2 Register a second MCP via OCI image reference</h3>
-  <p>The wiki registration you just did used <code class="inline">--command</code> + <code class="inline">--args</code>. It works, but <code class="inline">sbx mcp add</code>'s help explicitly flags that mode as "for ad-hoc development only" — local stdio servers run as subprocesses on your host with no identity, no supply chain verification, and no sandboxing. It's a fine choice for a lab, but not the recommended path for production.</p>
-  <p>The recommended path is <code class="inline">--url</code> with an OCI image reference. sbx pulls the image, inspects its OCI labels for the MCP transport / port / path, and stores the registration against those. Same runtime shape (a container speaking MCP), better supply-chain story (an OCI image on docker.io, verifiable, signed by the publisher). Let's use it for a second server: DuckDuckGo web search.</p>
+  <h3 class="substep">4.2.2 Register a second MCP</h3>
+  <p>One MCP gets the agent Wikipedia access; a second MCP with a different tool surface makes the "the agent picks the right tool for the sub-question" story real. Register the DuckDuckGo web-search server:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp add local-duck --url docker.io/mcp/duckduckgo:latest</pre>
+    <pre class="cmd active">sbx mcp add duck-mcp --command docker --args "run,-i,--rm,mcp/duckduckgo"</pre>
   </div>
-  <p>Walking through the differences from the wiki command: no <code class="inline">--command</code>, no <code class="inline">--args</code>, no <code class="inline">docker run</code> incantation. <code class="inline">--url docker.io/mcp/duckduckgo:latest</code> tells sbx "here's the OCI image, figure out how to talk to it." sbx pulls the image (or uses the local cache from prep), reads the <code class="inline">io.modelcontextprotocol.transport</code> / <code class="inline">.port</code> / <code class="inline">.path</code> labels off the image config, and auto-detects the transport. For v1, sbx accepts image refs only from docker.io — other registries (gcr.io, ghcr.io, ECR) are rejected.</p>
+  <p>Same shape as the wiki registration, different image. <code class="inline">mcp/duckduckgo</code> wraps DuckDuckGo's web-search API in the MCP protocol and exposes web search, image search, news search, and content fetching. Different tool surface from Wikipedia, which is the point. The agent will pick each tool based on the sub-question.</p>
   <p>Confirm it registered and inspect what it exposes:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp inspect local-duck</pre>
+    <pre class="cmd active">sbx mcp inspect duck-mcp</pre>
   </div>
-  <p>You'll see the detected transport (stdio for this image), the OCI image reference, and the tools DuckDuckGo exposes: web search, image search, news search, and content fetching. Different tool surface from Wikipedia — that's the point. The agent now has two distinct capabilities to reach for, and it'll pick the one that fits the sub-question.</p>
   <p>List all your registrations to confirm both are there:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2215,8 +2356,15 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx mcp ls</pre>
   </div>
-  <p><code class="inline">local-wiki</code> and <code class="inline">local-duck</code> should both appear.</p>
-  <p class="note-inline"><span class="label">Other registration modes</span> <code class="inline">sbx mcp add</code> also accepts a remote MCP endpoint (<code class="inline">--url https://mcp.notion.com/mcp</code>, OAuth handled automatically) and a community registry URL (<code class="inline">--url https://registry.modelcontextprotocol.io/v0/servers/&lt;name&gt;/versions/latest</code>, optionally with <code class="inline">--local</code> to run the image on your host). Run <code class="inline">sbx mcp add --help</code> to see them all.</p>
+  <p><code class="inline">wiki-mcp</code> and <code class="inline">duck-mcp</code> should both appear.</p>
+  <p class="note-inline"><span class="label">Other registration modes</span> <code class="inline">sbx mcp add</code> also accepts remote MCP endpoints (<code class="inline">--url https://mcp.notion.com/mcp</code>, OAuth handled automatically) and, in a preview state as of this workshop, a direct <em>OCI image reference</em> mode (<code class="inline">--url docker.io/mcp/&lt;image&gt;:&lt;tag&gt;</code>) where sbx auto-detects the transport from the image's labels. OCI-native mode registers today but live-attach isn't fully wired for local sandboxes yet, which is why this workshop stays on the stdio-with-<code class="inline">docker</code>-command path for both servers. To see the full surface:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx mcp add --help</pre>
+  </div>
 
   <h3 class="substep">4.3 Try without MCPs, then with both attached</h3>
   <p>Two MCPs are registered but neither is attached to a sandbox yet. Before we attach them, let's prove the agent really can't reach Wikipedia or web search through normal channels. The contrast is the whole point of this step.</p>
@@ -2251,16 +2399,16 @@ ERROR: No matching distribution found for requests</pre>
       <span class="cmd-label">host shell (Terminal B)</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp load local-wiki --sandbox sandbox-alpha</pre>
+    <pre class="cmd active">sbx mcp load wiki-mcp --sandbox sandbox-alpha</pre>
   </div>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal B)</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp load local-duck --sandbox sandbox-alpha</pre>
+    <pre class="cmd active">sbx mcp load duck-mcp --sandbox sandbox-alpha</pre>
   </div>
-  <p>Each <code class="inline">load</code> attaches its MCP server to the running sandbox's MCP gateway. The agent inside the sandbox sees the new servers' tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification, once per load call. No restart required.</p>
+  <p>Each <code class="inline">load</code> attaches its MCP server to the running sandbox's MCP gateway. The agent inside the sandbox sees the new servers' tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification, once per load call. No restart required. That's the "boundary shifts at runtime" pattern: the same sandbox went from no-tools to two-tools without a restart.</p>
   <p>Switch back to Terminal A. If you exited the agent at any point during Part 1 (Ctrl+C twice), reconnect now:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2269,14 +2417,14 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx run --name sandbox-alpha</pre>
   </div>
-  <p>If you're already at the agent prompt, skip the command above. Either way, ask a question that needs both tools — an article summary and some fresh news the article won't cover:</p>
+  <p>If you're already at the agent prompt, skip the command above. Either way, ask an open question that naturally needs both background and current information. Don't tell the agent which tools to use; let it decide:</p>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
-    Look up the 2026 FIFA World Cup on Wikipedia and give me the article's summary and three key facts. Then use DuckDuckGo to search for recent news about the tournament and add two or three of the freshest items you can find. Cite each item's source.
+    Tell me what's happening with the 2026 FIFA World Cup. Give me a short background on the tournament (host countries, format, what makes this edition notable), and then any recent news you can find about it. At the end, tell me which tools you used to get the information, and if you tried anything that didn't work, explain what happened.
   </div>
-  <p>This time the agent has both Wikipedia and DuckDuckGo MCP tools available. It should reach for the Wikipedia tools for the encyclopedia lookup and the DuckDuckGo tools for the news search, picking each based on the sub-question. The same intent that failed a minute ago now returns a mix of encyclopedia content and current news. Same sandbox, same agent session; what changed is the set of capabilities the agent has to work with.</p>
+  <p>Watch how the agent responds. With both MCPs attached, it should reach for a Wikipedia-shaped tool for the background and a web-search-shaped tool for the recent news, picking each based on the sub-question. The final summary is the interesting part: the agent tells you which tool calls it made, and if it tried anything direct that got blocked, it should say so. Same sandbox, same agent session as Part 1; what changed is the set of capabilities the agent has to work with.</p>
 
-  <p><strong>Part 3: confirm the agent did not touch the network directly.</strong> Switch to Terminal B again and check the policy log:</p>
+  <p><strong>Part 3: confirm what actually happened at the network layer.</strong> Whatever the agent said it did, the audit trail is the source of truth. Switch to Terminal B and check the policy log:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal B)</span>
@@ -2284,19 +2432,19 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx policy log sandbox-alpha</pre>
   </div>
-  <p>There's no new Blocked requests entry for <code class="inline">wikipedia.org</code> or <code class="inline">duckduckgo.com</code> from this second attempt, and no new Allowed requests entries for them either. The agent retrieved real Wikipedia content and real search results without the sandbox's network ever touching either domain. Every tool call traveled from the agent, through the MCP protocol, to the host-side MCP server, out to the underlying API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
+  <p>Two things are worth looking for in the log. First, if the agent tried to reach any domain directly before falling back to the MCP tools, you'll see that as a Blocked entry with a "no matching allow rule" reason. Some models do try the direct network path first; that attempt hits the default-deny policy and shows up in the log. Second, and this is the important half: there should be no successful Allowed entries for the information sources themselves (like <code class="inline">wikipedia.org</code> or <code class="inline">duckduckgo.com</code>). The agent got its answer through the MCP tools, which means every tool call traveled from the agent, through the MCP protocol, to the host-side MCP server, out to the underlying API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
 
   <div class="callout">
     <span class="label">One-step alternative</span>
-    We split this into "create the sandbox, then attach the MCPs" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-tools to two-tools without a restart. If you'd rather declare MCPs at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> (or <code class="inline">--static-mcp</code> on newer builds) does the same end-state in one command:
+    We split this into "create the sandbox, then attach the MCPs" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-tools to two-tools without a restart. If you'd rather declare MCPs at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> does the same end-state in one command:
     <div class="cmd-block" style="margin-top: 10px;">
       <div class="cmd-bar">
         <button class="cmd-tab active" data-os="mac">MacOS</button>
         <button class="cmd-tab" data-os="windows">Windows</button>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp local-wiki --mcp local-duck claude ~/workshop/sbx</pre>
-      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp local-wiki --mcp local-duck claude $HOME/workshop/sbx</pre>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp wiki-mcp --mcp duck-mcp claude ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp wiki-mcp --mcp duck-mcp claude $HOME/workshop/sbx</pre>
     </div>
     Use whichever flow fits the situation: <code class="inline">--mcp</code> at create when the MCPs are part of the sandbox's identity from the start, <code class="inline">sbx mcp load</code> when you want to add (or swap) tools on a sandbox that's already running.
   </div>
@@ -2307,7 +2455,7 @@ ERROR: No matching distribution found for requests</pre>
   <div class="learnings-block">
     <h3>Key learnings</h3>
     <p>Network policy (Step 3) and tool access via MCP (Step 4) solve different problems. Network policy controls which hostnames the sandbox can connect to directly. MCP controls which specific tools the agent can invoke. They compose: a production-shape agent typically has restrictive network policy AND a curated set of MCP tools, so the agent reaches the outside world only through channels you've explicitly approved.</p>
-    <p>The registration modes trade convenience for control. Local stdio (<code class="inline">--command</code> + <code class="inline">--args</code>) runs a subprocess on the host with your full user permissions — fine for ad-hoc development, not for anything you don't trust. OCI image references (<code class="inline">--url docker.io/&lt;org&gt;/&lt;image&gt;:&lt;tag&gt;</code>) give you a signed, verifiable image and let sbx auto-detect the transport. Remote MCP endpoints (<code class="inline">--url https://mcp.&lt;service&gt;.com/mcp</code>) let you plug into hosted MCP services with OAuth handled automatically. Community registry URLs let you pull registrations by name from a catalog. Same runtime shape; different supply-chain and identity properties. Beyond the per-sandbox <code class="inline">sbx mcp</code> path, the Docker MCP Gateway (4.2.1) is the team-scale primitive: profiles, catalogs, per-client scoping.</p>
+    <p>Both registrations used the same stdio-with-<code class="inline">docker</code>-command mode (<code class="inline">--command docker --args "run,-i,--rm,&lt;image&gt;"</code>). sbx also accepts remote MCP endpoints (<code class="inline">--url https://mcp.&lt;service&gt;.com/mcp</code>, OAuth handled automatically) for hosted services, and has a preview OCI-image reference mode (<code class="inline">--url docker.io/mcp/&lt;image&gt;:&lt;tag&gt;</code>) that auto-detects the transport from image labels; that OCI mode isn't fully wired for local sandboxes yet, so this workshop uses the stdio path. Beyond the per-sandbox <code class="inline">sbx mcp</code> path, the Docker MCP Gateway (4.2.1) is the team-scale primitive: profiles, catalogs, per-client scoping.</p>
   </div>
 </section>
 
@@ -2334,10 +2482,58 @@ ERROR: No matching distribution found for requests</pre>
   <p><strong>Docker Hardened Images (DHI)</strong> are Docker's hardened variants of those same base images, trimmed down to what an application actually needs at runtime: no dev shell, no extra package managers, no extra utilities beyond what it needs to do the job. The result is a base image with near-zero known CVEs (Common Vulnerabilities and Exposures, the public registry of known software security flaws). Docker maintains them with enterprise SLAs on vulnerability remediation, and each one ships with a signed bill of materials so you can verify what's inside. DHI plays the same role in the Dockerfile as a standard base, but ships with far less surface to defend.</p>
   <p>In <strong>Step 5</strong> we'll see this side by side. The agent will build a small Python app for us to run on our host. It'll use a standard base image from Docker Hub. Once it's done, we'll use a tool called <strong>Docker Scout</strong> to scan the resulting image and audit it for known vulnerabilities. Then we'll change one line of the Dockerfile to point at the DHI equivalent, rebuild the same app, and re-run the scan. The code stays identical, the Dockerfile structure stays identical, but the CVE count drops dramatically.</p>
   <p>By the end of Step 5 you'll have hardened two things: where the agent works, and what it ships. If you're shipping anything to production, especially in an enterprise context, use a DHI whenever there's an equivalent for your base image.</p>
+
+  <p class="note-inline" data-show-for-track="ai-governance"><span class="label">LP2 detour before Step 5</span> Before we look at what the agent builds, we take a short section on <strong>Docker Model Runner</strong>. Step 4 governed what tools the agent can invoke; the next section governs <em>where the model runs</em>. Local inference is the fourth pillar of Docker's AI-governance stack, and it matters for regulated data. It's up next, then Step 5.</p>
 </aside>
 
+<section class="step" id="lp2-model-runner" data-show-for-track="ai-governance">
+  <div class="step-header">
+    <span class="badge intro">Governance pillar</span>
+    <h2>Docker Model Runner</h2>
+  </div>
+  <p class="subtitle">Where the model runs matters, not just what tools it can invoke. Local inference is a governance option, one that matters for regulated data, air-gapped environments, and cost control.</p>
+
+  <p><strong>What it is.</strong> Docker Model Runner (DMR) is Docker Desktop's local LLM inference feature. You pull a model with <code class="inline">docker model pull ai/smollm2</code>, and it runs on your machine, exposing an OpenAI-compatible endpoint at <code class="inline">http://model-runner.docker.internal</code> (from containers) or <code class="inline">http://localhost:12434</code> (from the host, when TCP is enabled). Any client that speaks the OpenAI API (Docker Agent, IDEs, custom code) can point at that endpoint and get inference without a cloud call.</p>
+
+  <p><strong>Why it matters for AI governance.</strong> The model layer is where your data goes when the agent thinks. For regulated industries (healthcare, financial services, government) and any organization with data-sovereignty policies, "the model can't see this data" is a hard constraint. Model Runner lets you satisfy that constraint at the runtime layer, not by trusting a cloud provider's data-handling policy. Same shape as the other pillars in this workshop: the capability boundary is enforced by the runtime, not by the prompt or the model.</p>
+
+  <p><strong>How it composes with the other pillars.</strong> A fully-governed AI-agent setup pairs a hardened base image (DHI), a bounded environment (sbx), a curated tool surface (MCP + Gateway), and, where policy demands, a local model (DMR). You'll see a preview of this in Step 7's Core team.yaml, where the <code class="inline">writer</code> role runs on <code class="inline">ai/smollm2</code> via <code class="inline">provider: dmr</code>. The Go Deeper section at the end of LP2 has a fully-local Docker Agent team where every role runs on DMR, the shape you'd start from for a regulated deploy where no cloud call is acceptable.</p>
+
+  <p>Confirm DMR is enabled and available on your Docker Desktop:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker model status --json</pre>
+  </div>
+  <p>Running status confirms DMR is up. List the models pulled locally:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker model list</pre>
+  </div>
+  <p>If <code class="inline">ai/smollm2</code> shows up (from the Quick Setup pre-pull), you're already set. If it doesn't, pull it now:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">docker model pull ai/smollm2</pre>
+  </div>
+  <p>Docker's model catalog lives at <a href="https://hub.docker.com/u/ai" target="_blank" rel="noopener">hub.docker.com/u/ai</a>: verified publisher, signed images, small-to-medium models suited for local inference.</p>
+
+  <p><strong>The governance takeaway.</strong> Model choice is a per-role architectural knob AND a per-workload compliance constraint. Local for the roles that touch regulated data, cloud for the roles that need frontier synthesis, hybrid teams where the yaml documents the split. The Docker Agent yaml is the compliance artifact; DMR is what makes "local" a real option.</p>
+
+  <aside class="callout">
+    <p><span class="label">Adjacent: Gordon</span> Where DMR is the inference layer you point <em>your</em> agents at, <strong>Ask Gordon</strong> is Docker's own AI assistant baked into Docker Desktop and the CLI. It answers questions about your images, containers, and Dockerfiles from inside the Docker context you're already working in. It's not part of the governance chain (you don't hand its yaml to an auditor), but if your team wants an AI companion that already knows Docker's shape, it's the built-in option. Enable it from Docker Desktop, or invoke <code class="inline">docker ai</code> from any terminal. Not covered further in LP2; noted here because it comes up when teams evaluate Docker's full AI story.</p>
+  </aside>
+</section>
+
 <section class="pre-step" id="prep-step-5">
-  <h3>Before Step 5: prep your environment</h3>
+  <h3>Before Step 5: Prep your environment</h3>
   <p>Two quick setup tasks before Step 5 begins. First, restore the sandbox to default network behavior. Then, sign in to Docker Hub so Docker Scout (the vulnerability scanner we'll use) can pull policy data.</p>
 
   <h4>Restore default sandbox network access</h4>
@@ -2349,9 +2545,17 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx policy rm network --resource pypi.org</pre>
   </div>
-  <p>Confirm it's gone with <code class="inline">sbx policy ls</code>. The sandbox is now back to default network behavior for <code class="inline">pypi.org</code>. The <code class="inline">fifa.com</code> allow from 3.3 stays in place since the agent may want it during Step 5's research.</p>
+  <p>Confirm it's gone:</p>
+  <div class="cmd-block">
+    <div class="cmd-bar">
+      <span class="cmd-label">host shell</span>
+      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+    </div>
+    <pre class="cmd active">sbx policy ls</pre>
+  </div>
+  <p>The sandbox is now back to default network behavior for <code class="inline">pypi.org</code>. The <code class="inline">fifa.com</code> allow from 3.3 stays in place since the agent may want it during Step 5's research.</p>
 
-  <p>You signed in to Docker Hub before Step 4, so Docker Scout (Step 5's vulnerability scanner) is already authorized to fetch policy data. Nothing more to do here — you're ready for Step 5.</p>
+  <p>You signed in to Docker Hub before Step 4, so Docker Scout (Step 5's vulnerability scanner) is already authorized to fetch policy data. Nothing more to do here. You're ready for Step 5.</p>
 </section>
 
 <section class="step" id="step-5">
@@ -2363,7 +2567,7 @@ ERROR: No matching distribution found for requests</pre>
   <p class="subtitle" data-show-for-track="sbx-101">Give the agent a creative open-ended task that'll bump into the sandbox boundary. Watch the policy log while it works. Build and run what it produced, scan it with Scout, swap the base for a DHI variant, rebuild, run, and rescan.</p>
   <p class="subtitle" data-show-for-track="ai-governance">Foundational DHI, applied end-to-end: the agent writes code, you build the container, Docker Scout scans, then you swap in the hardened base and rescan.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the Foundational module at the top of this workshop showed the DHI delta at the base-image level. This step applies the same swap to a real artifact the agent produced — code inside a container. The comparison here is what your supply-chain reviewer actually wants to see: same code, same Dockerfile shape, hardened vs unhardened base, side-by-side CVE reports. The artifact from this step is the Scout scan output of the hardened build.</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> the Foundational module at the top of this workshop showed the DHI delta at the base-image level. This step applies the same swap to a real artifact the agent produced: code inside a container. The comparison here is what your supply-chain reviewer actually wants to see: same code, same Dockerfile shape, hardened vs unhardened base, side-by-side CVE reports. The artifact from this step is the Scout scan output of the hardened build.</p>
 
   <h3 class="substep">5.1 Set up the project and the Dockerfile</h3>
   <p>On your host, create a project directory inside the workspace and a starter Dockerfile that points at <code class="inline">python:3.14-slim</code>. The Dockerfile stays exactly the same across both builds. We only swap the base image later. The <code class="inline">EXPOSE 8000</code> line declares the port the app will listen on.</p>
@@ -2421,7 +2625,7 @@ CMD ["python", "app.py"]
     <br>
     This is also a chance to show off some real Python craft on the build side. Visualizations, animations, layout, copy. Lean in.<br>
     <br>
-    Research with real football sources. Try fifa.com for tournament info, sports outlets (ESPN, BBC Sport, theathletic.com, skysports.com), and transfermarkt.com or similar for player and match data. Mix in GitHub for repos and recent open-source activity. Some connections will work, others won't — that's expected, just move on to a different source rather than retrying the same one. Cap your total external requests at around 5 to 6 attempts. <strong>Stop researching after 1 to 2 minutes regardless of what you've gathered</strong> and start writing <code>app.py</code> with whatever you have.<br>
+    Research with real football sources. Try fifa.com for tournament info, sports outlets (ESPN, BBC Sport, theathletic.com, skysports.com), and transfermarkt.com or similar for player and match data. Mix in GitHub for repos and recent open-source activity. Some connections will work, others won't. That's expected, just move on to a different source rather than retrying the same one. Cap your total external requests at around 5 to 6 attempts. <strong>Stop researching after 1 to 2 minutes regardless of what you've gathered</strong> and start writing <code>app.py</code> with whatever you have.<br>
     <br>
     <strong>Constraints:</strong><br>
     - Only write <code>app.py</code>. Don't modify the Dockerfile or create any other files. Embed all research data inline as Python literals (dict, list, etc.) at the top of the file. Don't read from external JSON, CSV, or any data file at runtime. The container only ships <code>app.py</code>, so anything not in that file won't exist inside the running image.<br>
@@ -2624,7 +2828,7 @@ CMD ["python", "app.py"]
 
   <p>In Steps 1 through 5 you set up a sandbox, proved its isolation, configured a network policy, added an MCP tool, and ran a hardened build. This is a useful pattern, but the setup was ad-hoc. You typed the commands by hand, edited the files manually, and attached the MCP one piece at a time. The next person on your team would have to repeat all of it from memory. An <strong>sbx Kit</strong> packages that setup into a declarative artifact: a <code class="inline">spec.yaml</code> plus an optional <code class="inline">files/</code> tree. You commit it to git. Anyone on your team clones the kit, runs one sbx command, and gets the same configured sandbox you have.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a kit turns "our team's governance policy" from a wiki page (that people forget to check) into a runtime artifact (that the sandbox enforces on every launch). Network rules, allowed MCPs, permitted skills — bake them into the kit, commit the kit, and every future sandbox on your team gets the same policy. This is the artifact your compliance team can point at when they need to answer "how do we enforce our AI-usage policy across the org."</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a kit turns "our team's governance policy" from a wiki page (that people forget to check) into a runtime artifact (that the sandbox enforces on every launch). Network rules, allowed MCPs, permitted skills: bake them into the kit, commit the kit, and every future sandbox on your team gets the same policy. This is the artifact your compliance team can point at when they need to answer "how do we enforce our AI-usage policy across the org."</p>
 
   <p>Kits come in two flavors. <strong>Mixin kits</strong> (<code class="inline">kind: mixin</code>) add capability to one of the built-in agents: skills, network rules, config files, credentials. You can stack several on the same sandbox. <strong>Agent kits</strong> (<code class="inline">kind: agent</code>) replace the agent definition itself: container image, entrypoint, base policy, the lot. The built-in <code class="inline">claude</code> agent you've been using this whole workshop is itself an agent kit, and you can fork it to change one thing (a different model, stricter permissions, a custom system prompt) without rebuilding the rest. For this step we'll build a mixin kit called <strong>docker-review</strong>. It ships a Claude Code skill with a five-point Dockerfile checklist: base image, layer order, image size, security, and reproducibility. Without the kit, asking the agent to "review my Dockerfile" gets you whatever the model decides to look at on a given day. With the kit installed, every reviewer on your team applies the same checklist consistently.</p>
 
@@ -2820,9 +3024,12 @@ Rules:
     <li><strong>Step 6: How to ship the setup itself.</strong> The whole configuration (skills, files, rules) is packaged as a kit. One directory, committable to git, re-runnable by anyone on the team with a single sbx command.</li>
   </ul>
 
-  <h3>Next: a glimpse of Docker Agent (extra layer)</h3>
-  <p>Steps 1 through 6 cover sbx end-to-end: foundational isolation for a single agent at a time. The next two steps step outside sbx to show <strong>Docker Agent</strong>, a different piece of Docker's agent platform aimed at multi-agent orchestration. We're including them as an extra layer beyond the core workshop. Where sbx scopes one agent inside an isolated VM, Docker Agent runs on your host and composes multiple roles in one declarative yaml. Today, this is a quick demo of how easily you can stand up that pattern on your laptop, and a preview of where the platform is heading.</p>
-  <p>In <strong>Step 7</strong> we'll write a small team yaml with six roles (a coordinator, two researchers, an analyst, a writer, and a publisher) and watch them hand off work. The writer runs on a local model via Docker Model Runner while the rest run on cloud models, so you'll see a hybrid team where model choice is a per-role architectural knob. An optional bonus at the end federates the whole team's tool access through the Docker MCP Gateway. In <strong>Step 8</strong> we'll test that each role's tools stay scoped: capability isolation at a different layer than the network policy you saw in Step 3, but the same load-bearing idea.</p>
+  <h3 data-show-for-track="sbx-101">Next: a glimpse of Docker Agent (extra layer)</h3>
+  <h3 data-show-for-track="ai-governance">Next: Docker Agent yaml as a compliance artifact</h3>
+  <p data-show-for-track="sbx-101">Steps 1 through 6 cover sbx end-to-end: foundational isolation for a single agent at a time. The next two steps step outside sbx to show <strong>Docker Agent</strong>, a different piece of Docker's agent platform aimed at multi-agent orchestration. We're including them as an extra layer beyond the core workshop. Where sbx scopes one agent inside an isolated VM, Docker Agent runs on your host and composes multiple roles in one declarative yaml. Today, this is a quick demo of how easily you can stand up that pattern on your laptop, and a preview of where the platform is heading.</p>
+  <p data-show-for-track="ai-governance">The remaining two steps move up one layer. Steps 1 through 6 hardened the sandbox, the network, the tool surface, and the base image; Step 7 introduces <strong>Docker Agent</strong>, where the yaml declares what each role of a multi-agent team can do, and the runtime enforces it. For LP2 this is the load-bearing artifact: the yaml is the document your security team reviews to answer "what can this agent do", and Step 8 proves the runtime enforces exactly what the yaml declares.</p>
+  <p data-show-for-track="sbx-101">In <strong>Step 7</strong> we'll write a small team yaml with six roles (a coordinator, two researchers, an analyst, a writer, and a publisher) and watch them hand off work. The writer runs on a local model via Docker Model Runner while the rest run on cloud models, so you'll see a hybrid team where model choice is a per-role architectural knob. An optional bonus at the end federates the whole team's tool access through the Docker MCP Gateway. In <strong>Step 8</strong> we'll test that each role's tools stay scoped: capability isolation at a different layer than the network policy you saw in Step 3, but the same load-bearing idea.</p>
+  <p data-show-for-track="ai-governance">In <strong>Step 7</strong> we'll write a small team yaml with six roles (a coordinator, two researchers, an analyst, a writer, and a publisher). Each role's toolset is declared explicitly; each role's model is declared explicitly. The writer runs on a local model via Docker Model Runner (data sovereignty as a per-role knob), the rest run on cloud models. An optional bonus at the end federates the whole team through the Docker MCP Gateway, so per-team scoping and per-role scoping compose. In <strong>Step 8</strong> we'll test enforcement: a role that isn't granted a tool cannot invoke it. This is the runtime side of the yaml-as-artifact story.</p>
 </aside>
 
 <section class="step" id="step-7">
@@ -2836,7 +3043,7 @@ Rules:
 
   <p>A single agent is fine when the task is bounded. The pattern starts to fray when the work spans roles that each want different tools: a researcher who needs to read sources, a writer who needs to edit files, a reviewer who shouldn't have either. The choice becomes give one agent everything (which violates the least-capability instinct we've been building all workshop) or split the work across specialized agents.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a multi-agent team is the point where per-role scoping becomes essential — and where a compliance-ready artifact becomes possible. The yaml you're about to write names each role, lists its tools, and declares its instruction. The runtime enforces the toolset boundary (Step 8 tests this). That yaml is legible to a non-engineer security reviewer: "the wiki-researcher has these three tools, the writer has these two, the analyst has none other than think." No hidden capability, no prompt-injection route to a tool the role wasn't granted. This is what your compliance team wants to see.</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a multi-agent team is the point where per-role scoping becomes essential, and where a compliance-ready artifact becomes possible. The yaml you're about to write names each role, lists its tools, and declares its instruction. The runtime enforces the toolset boundary (Step 8 tests this). That yaml is legible to a non-engineer security reviewer: "the wiki-researcher has these three tools, the writer has these two, the analyst has none other than think." No hidden capability, no prompt-injection route to a tool the role wasn't granted. This is what your compliance team wants to see.</p>
 
   <p><strong>Docker Agent</strong> is a different piece of Docker's agent platform from sbx. sbx is the foundational sandbox runtime; Docker Agent is the multi-agent orchestrator. Instead of one agent with one set of tools, Docker Agent runs a small declared team. You write a yaml that names the roles, what each one does, what tools each one gets, and how they hand off. Docker Agent runs the whole team in one process on your host.</p>
 
@@ -3221,7 +3428,7 @@ agents:
     <pre class="cmd active" data-os="mac">cat ~/workshop/docker-agent/report.md</pre>
     <pre class="cmd" data-os="windows">Get-Content $HOME/workshop/docker-agent/report.md</pre>
   </div>
-  <p>You should see a short briefing on the 2026 FIFA World Cup with Abstract, Findings, and Sources sections. Sources enumerates every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered. If the writer's prose reads a little basic or the structure looks off, that's the local model showing its limits — flip the writer's <code class="inline">model:</code> from <code class="inline">local</code> back to <code class="inline">fast</code> in the yaml and re-run to see the same team on Sonnet.</p>
+  <p>You should see a short briefing on the 2026 FIFA World Cup with Abstract, Findings, and Sources sections. Sources enumerates every paper the paper-researcher returned, with real titles, authors, year, and source. No hallucinated content beyond what the researchers gathered. If the writer's prose reads a little basic or the structure looks off, that's the local model showing its limits. Flip the writer's <code class="inline">model:</code> from <code class="inline">local</code> back to <code class="inline">fast</code> in the yaml and re-run to see the same team on Sonnet.</p>
   <p>Now open the HTML version in your browser:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -3245,7 +3452,7 @@ agents:
       <p>This bonus rewires the same team through a Gateway you run locally. Same six roles, same behavior, different MCP plumbing.</p>
 
       <h4>Step A: start the Gateway in a second terminal</h4>
-      <p>Open a fresh host terminal and run the Gateway against the three MCPs we care about — the two researchers and the DuckDuckGo one we registered in Step 4.2.2:</p>
+      <p>Open a fresh host terminal and run the Gateway against the three MCPs we care about: the two researchers and the DuckDuckGo one we registered in Step 4.2.2:</p>
       <div class="cmd-block">
         <div class="cmd-bar">
           <span class="cmd-label">host shell (Gateway terminal)</span>
@@ -3474,11 +3681,11 @@ agents:
         </div>
         <pre class="cmd active">docker agent run team-gateway.yaml "Write me a short academic-style briefing on the 2026 FIFA World Cup. Use Wikipedia for background, and the academic literature for findings on World Cup economic impact, infrastructure, and host-country outcomes. Keep it tight. Save as report.md."</pre>
       </div>
-      <p>Watch two things at once. In your agent terminal, the coordinator narrates as before and the team produces the same shape of report. In your Gateway terminal (Step A), you'll see log lines every time a role hits the Gateway to invoke a tool — that's the confirmation the researchers are federating through <code class="inline">localhost:8811</code> instead of spawning their own containers. The tool names in the agent's trace are also different: they carry the <code class="inline">mcp_docker_mcp-gateway_&lt;server&gt;_&lt;tool&gt;</code> prefix that Docker Agent uses for Gateway-routed tools.</p>
+      <p>Watch two things at once. In your agent terminal, the coordinator narrates as before and the team produces the same shape of report. In your Gateway terminal (Step A), you'll see log lines every time a role hits the Gateway to invoke a tool. That's the confirmation the researchers are federating through <code class="inline">localhost:8811</code> instead of spawning their own containers. The tool names in the agent's trace are also different: they carry the <code class="inline">mcp_docker_mcp-gateway_&lt;server&gt;_&lt;tool&gt;</code> prefix that Docker Agent uses for Gateway-routed tools.</p>
 
       <p class="note-inline"><span class="label">On per-role tool scoping</span> When two roles point at the same Gateway URL, they both see the full set of federated tools (Wikipedia + DuckDuckGo + Paper Search here). The <code class="inline">wiki-researcher</code> role's instruction still says "use the Wikipedia tools," which usually gets the model to pick correctly, but the yaml no longer strictly gates it. Per-role scoping in this pattern moves to either (a) narrower Gateway processes per role, (b) Docker MCP Gateway's <code class="inline">--tools</code> filter at startup, or (c) profile-based Gateway config where different profiles expose different tools. Step 8's "yaml is the boundary" story still holds for the original <code class="inline">team.yaml</code>; when you switch to Gateway federation, the boundary moves down a layer.</p>
 
-      <p>When you're done, stop the Gateway (Ctrl+C in the Gateway terminal). <code class="inline">team-gateway.yaml</code> stays in place — it's an artifact you could commit to a repo as your team's Docker Agent starting point.</p>
+      <p>When you're done, stop the Gateway (Ctrl+C in the Gateway terminal). <code class="inline">team-gateway.yaml</code> stays in place. It's an artifact you could commit to a repo as your team's Docker Agent starting point.</p>
     </div>
   </details>
 
@@ -3489,7 +3696,7 @@ agents:
   <div class="learnings-block">
     <h3>Key learnings</h3>
     <p>Docker Agent is a multi-agent harness. The yaml declares roles, their models, their instructions, and their toolsets. Each role is its own agent with its own scoped capability set, and the coordinator orchestrates handoffs declaratively rather than through prompt chaining inside one model context.</p>
-    <p>The bigger lesson sits a level above the yaml. claude, codex, and opencode are single-agent harnesses optimized for one agent at the wheel. Docker Agent is a different harness category, built for orchestrating multiple specialized roles. Picking the right harness for the shape of the work is an architectural choice in its own right, separate from picking the model.</p>
+    <p>The bigger lesson sits a level above the yaml. Claude, Codex, and OpenCode are single-agent harnesses optimized for one agent at the wheel. Docker Agent is a different harness category, built for orchestrating multiple specialized roles. Picking the right harness for the shape of the work is an architectural choice in its own right, separate from picking the model.</p>
   </div>
 </section>
 
@@ -3502,7 +3709,7 @@ agents:
   <p class="subtitle" data-show-for-track="sbx-101">The toolset assignments in the Docker Agent yaml are not documentation. They are runtime boundaries. We'll test that the runtime enforces them by asking each role to do something only the other role has tools for.</p>
   <p class="subtitle" data-show-for-track="ai-governance">The yaml says a role can do X and only X. This step verifies the runtime actually enforces that, so the yaml is a load-bearing compliance artifact, not a paper commitment.</p>
 
-  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a compliance artifact only holds if the runtime enforces what the artifact declares. This step is the verification pass. You'll ask each role to do things outside its declared toolset and confirm the runtime refuses — not because the prompt was clever, but because the tool literally does not exist for that role. That refusal, observed in the trace, is what makes the yaml an auditable artifact rather than a policy that "should" be followed.</p>
+  <p data-show-for-track="ai-governance"><strong>Governance framing:</strong> a compliance artifact only holds if the runtime enforces what the artifact declares. This step is the verification pass. You'll ask each role to do things outside its declared toolset and confirm the runtime refuses, not because the prompt was clever, but because the tool literally does not exist for that role. That refusal, observed in the trace, is what makes the yaml an auditable artifact rather than a policy that "should" be followed.</p>
 
   <p>In Step 3 you saw sbx refuse a network request because no allow rule covered the destination. In Step 4 you saw the same sandbox reach Wikipedia successfully once an MCP tool was attached. In both cases, the boundary was enforced by the runtime; the agent could not talk its way past it. Step 8 makes the same argument for Docker Agent's per-role toolset scoping. The wiki-researcher's <code class="inline">toolsets</code> list does not include filesystem. If we ask it to save a file, the model can want to, but it has no tool to call. Same shape of constraint for paper-researcher, analyst, writer, publisher, and the coordinator: each role is bounded by what its yaml allows.</p>
 
@@ -3583,11 +3790,11 @@ agents:
     <span class="badge intro">Go Deeper</span>
     <h2>Extended: optional deep dives</h2>
   </div>
-  <p class="subtitle">You've completed the Core LP2 flow. These modules go deeper on individual pillars &mdash; pick the ones your audience cares about, or skip the section entirely.</p>
+  <p class="subtitle">You've completed the Core LP2 flow. These modules go deeper on individual pillars: pick the ones your audience cares about, or skip the section entirely.</p>
 
   <p>You already have the main concept from the Core modules above: DHI as the supply-chain anchor, sandbox as an audited trust boundary, network policy with an audit trail, Docker MCP Gateway for team-scale tool governance, kits as portable governance policy, and Docker Agent yaml as an auditable compliance artifact. That's the workshop's spine and it stands on its own as a 2-hour delivery.</p>
 
-  <p>The modules below extend specific layers for teams that need depth on one topic or another. Each is independent &mdash; you can do all of them (about 2 additional hours), a few, or none. Presenters delivering a 2-hour Partners session typically skip this section entirely. Presenters delivering a 4-hour Corporate-training session cover it in full. Attendees browsing on their own pick whatever's most relevant to their org.</p>
+  <p>The modules below extend specific layers for teams that need depth on one topic or another. Each is independent: you can do all of them (about 2 additional hours), a few, or none. Presenters delivering a 2-hour session typically skip this section entirely. Presenters running a 4-hour extended session cover it in full. Attendees browsing on their own pick whatever's most relevant to their org.</p>
 
   <p>Each module is collapsed by default. Click a heading to expand it.</p>
 
@@ -3595,7 +3802,7 @@ agents:
     <summary>Extended: DHI supply-chain evidence (SBOM, attestations, dhictl, Scout policy)</summary>
     <div class="go-deeper-body">
 <h3 class="substep">F.5 Extended: inspect the SBOM and provenance attestations</h3>
-    <p>A DHI ships with more than the image bits — it comes with a signed <strong>Software Bill of Materials (SBOM)</strong> listing every package inside it, and a <strong>provenance attestation</strong> declaring how the image was built and by whom. Both are what your compliance team calls the "supply-chain evidence" for the image. Pull the SBOM and inspect it:</p>
+    <p>A DHI ships with more than the image bits: it comes with a signed <strong>Software Bill of Materials (SBOM)</strong> listing every package inside it, and a <strong>provenance attestation</strong> declaring how the image was built and by whom. Both are what your compliance team calls the "supply-chain evidence" for the image. Pull the SBOM and inspect it:</p>
     <div class="cmd-block">
       <div class="cmd-bar">
         <span class="cmd-label">host shell</span>
@@ -3603,7 +3810,7 @@ agents:
       </div>
       <pre class="cmd active">docker scout sbom dhi.io/python:3.14</pre>
     </div>
-    <p>You'll get back a full JSON SBOM. Each entry is a package name, version, and license. This is the artifact your compliance team compares against your allowlist — no restricted licenses, no known-vulnerable versions. In production you'd pipe this into a policy engine (Grype, syft, or Docker Scout itself) rather than eyeball it.</p>
+    <p>You'll get back a full JSON SBOM. Each entry is a package name, version, and license. This is the artifact your compliance team compares against your allowlist: no restricted licenses, no known-vulnerable versions. In production you'd pipe this into a policy engine (Grype, syft, or Docker Scout itself) rather than eyeball it.</p>
     <p>Now the provenance attestation, which documents how the image was built:</p>
     <div class="cmd-block">
       <div class="cmd-bar">
@@ -3644,7 +3851,7 @@ agents:
       </div>
       <pre class="cmd active">docker scout policy evaluate dhi.io/python:3.14</pre>
     </div>
-    <p>The output lists each policy the image passes and each it fails, with the reason. In production you'd wire this into your CI as a required check — a failing policy blocks the deploy. That turns the DHI's supply-chain properties into an enforced organizational norm, not a "we should probably do that" doc.</p>
+    <p>The output lists each policy the image passes and each it fails, with the reason. In production you'd wire this into your CI as a required check: a failing policy blocks the deploy. That turns the DHI's supply-chain properties into an enforced organizational norm, not a "we should probably do that" doc.</p>
     <p><strong>Extended takeaway:</strong> the SBOM, the provenance attestation, and the Docker Scout policy verdict are three artifacts that together answer the supply-chain governance question end-to-end. Your compliance team's checklist maps to those three outputs.</p>
     </div>
   </details>
@@ -3652,7 +3859,7 @@ agents:
     <summary>Extended: compliance-ready audit report from the sbx policy log</summary>
     <div class="go-deeper-body">
 <h3 class="substep">3.8 Extended: build a compliance-ready audit report</h3>
-    <p>Auditors don't want the raw <code class="inline">sbx policy log</code> output. They want a structured artifact — CSV, or a formatted table — that answers a specific compliance question. Here's how to shape the policy log into that.</p>
+    <p>Auditors don't want the raw <code class="inline">sbx policy log</code> output. They want a structured artifact (CSV, or a formatted table) that answers a specific compliance question. Here's how to shape the policy log into that.</p>
     <p>First, capture the log to a file so we can process it without re-running:</p>
     <div class="cmd-block">
       <div class="cmd-bar">
@@ -3699,91 +3906,25 @@ agents:
     <summary>Extended: per-team scoping with multiple Gateway profiles</summary>
     <div class="go-deeper-body">
 <h3 class="substep">7.6 Extended: per-team scoping with multiple Gateway profiles</h3>
-    <p>The Bonus above pointed one Docker Agent yaml at a single Gateway profile. The team-scale reality is that different teams need different tool subsets. Let's stand up two profiles and wire two different agent yamls to them, so Team A sees only their tools and Team B sees only theirs — the same Gateway serving both, per-client scoping enforced by profile.</p>
-    <p>Create two profiles on the same Gateway. One for a research team (Wikipedia + Paper Search only), one for a discovery team (DuckDuckGo only):</p>
+    <p>The Bonus above pointed one Docker Agent yaml at a single Gateway profile. The team-scale reality is that different teams need different tool subsets. Below is the <em>shape</em> of how per-team scoping works with the Docker MCP Gateway: this is a conceptual walkthrough rather than a runnable one, because the CLI surface for profile creation and catalog references is still stabilizing. For the exact command syntax that ships with your version, follow the walkthrough in <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a>.</p>
+    <p><strong>The setup, conceptually.</strong> Create two profiles on the same Gateway: one for a research team that gets the Wikipedia and Paper Search MCP servers, one for a discovery team that gets DuckDuckGo only. Each profile is a named tool subset the Gateway will serve. Then run two Gateway instances (or one Gateway with per-client restrictions, depending on the version): the research Gateway on one port, the discovery Gateway on another. Each Gateway on start prints its own Bearer token for MCP clients to authenticate with.</p>
+    <p><strong>Wiring the yamls.</strong> Each team gets its own Docker Agent yaml. The research team's yaml points at the research Gateway's URL and authenticates with the research Bearer token; the discovery team's yaml points at the discovery Gateway's URL with the discovery token. The relevant toolsets stanza looks like this:</p>
     <div class="cmd-block">
       <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile create --name research-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile server add research-team --server catalog://docker-mcp/wikipedia-mcp --server catalog://docker-mcp/paper-search</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile create --name discovery-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp profile server add discovery-team --server catalog://docker-mcp/duckduckgo</pre>
-    </div>
-    <p>Run two Gateway instances (or one Gateway with server-set restrictions per client — the CLI supports both shapes). For simplicity here, run them on different ports:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell (Terminal G1)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp gateway run --port 8811 --transport streaming --profile research-team</pre>
-    </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">host shell (Terminal G2)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">docker mcp gateway run --port 8812 --transport streaming --profile discovery-team</pre>
-    </div>
-    <p>Each Gateway prints its own Bearer token. Export them separately:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">export RESEARCH_TOKEN=&lt;paste-from-G1&gt;; export DISCOVERY_TOKEN=&lt;paste-from-G2&gt;</pre>
-      <pre class="cmd" data-os="windows">$env:RESEARCH_TOKEN = "&lt;paste-from-G1&gt;"; $env:DISCOVERY_TOKEN = "&lt;paste-from-G2&gt;"</pre>
-    </div>
-    <p>Now two Docker Agent yamls, one per team. Each binds to its own Gateway. Attendees on the LP2 track would write these out (or download from the workshop resources); here we just show the shape:</p>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">team-research.yaml (snippet)</span>
+        <span class="cmd-label">team yaml (snippet, illustrative)</span>
         <button class="cmd-copy" aria-label="Copy command">Copy</button>
       </div>
       <pre class="cmd active">toolsets:
   - type: mcp
     remote:
-      url: http://localhost:8811/mcp
+      url: http://localhost:&lt;team-port&gt;/mcp
       transport_type: streamable
       headers:
-        Authorization: Bearer $RESEARCH_TOKEN
+        Authorization: Bearer $&lt;TEAM&gt;_TOKEN
     allow_private_ips: true</pre>
     </div>
-    <div class="cmd-block">
-      <div class="cmd-bar">
-        <span class="cmd-label">team-discovery.yaml (snippet)</span>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active">toolsets:
-  - type: mcp
-    remote:
-      url: http://localhost:8812/mcp
-      transport_type: streamable
-      headers:
-        Authorization: Bearer $DISCOVERY_TOKEN
-    allow_private_ips: true</pre>
-    </div>
-    <p>Run each with <code class="inline">docker agent run team-research.yaml "..."</code> and <code class="inline">docker agent run team-discovery.yaml "..."</code>. Ask the research team a Wikipedia question — it works. Ask the discovery team the same question — no Wikipedia tool, it can't answer, and can only fall back to DuckDuckGo.</p>
+    <p>Substitute the real port and Bearer token per team. This is the same yaml shape as Step 7's Bonus; the only thing that changes per team is which Gateway URL and token it binds to.</p>
+    <p><strong>The proof.</strong> Ask the research team a Wikipedia question. It works. Ask the discovery team the same question. The research MCP isn't in its profile, so the model has no Wikipedia tool to reach for and falls back to DuckDuckGo. Nothing was enforced in the prompt or the model; the runtime rejected the tool call because the profile the client bound to didn't include it.</p>
     <p><strong>Extended takeaway:</strong> the Gateway profile IS the per-team access-control list. Governance moves from "we told the developers to use only these tools" (advisory) to "the profile the client binds to has only these tools registered" (enforced at the Gateway). Same shape as network ACLs, applied to MCP tool catalogs.</p>
     </div>
   </details>
@@ -3791,7 +3932,7 @@ agents:
     <summary>Extended: a fully-local Docker Agent team (data-sovereignty)</summary>
     <div class="go-deeper-body">
 <h3 class="substep">7.7 Extended: a fully-local team via Docker Model Runner</h3>
-    <p>The Core Step 7 team runs Sonnet and Opus (cloud) for research and analysis, and a local model (smollm2) only for the writer. In some regulated environments — think data-sovereignty regimes, air-gapped labs, healthcare data that can't leave the machine — <em>no</em> role can call a cloud API. Everything runs locally.</p>
+    <p>The Core Step 7 team runs Sonnet and Opus (cloud) for research and analysis, and a local model (smollm2) only for the writer. In some regulated environments (think data-sovereignty regimes, air-gapped labs, healthcare data that can't leave the machine), <em>no</em> role can call a cloud API. Everything runs locally.</p>
     <p>Write a fully-local variant of the team. Every role uses <code class="inline">provider: dmr</code>, none use Anthropic. The tradeoff is model quality: local models are smaller and slower at synthesis, so we adjust each role's word budget down. What we keep is the shape (six roles, per-role toolsets, coordinator delegation) and the compliance property (no data leaves the host):</p>
     <div class="cmd-block">
       <div class="cmd-bar">
@@ -3823,7 +3964,7 @@ agents:
     sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
     toolsets:
       - type: think
-  # (researchers, analyst, writer, publisher — each on local-small or
+  # (researchers, analyst, writer, publisher, each on local-small or
   # local-medium with the same toolsets as the Core team.yaml)
 EOF</pre>
       <pre class="cmd" data-os="windows">@'
@@ -3850,7 +3991,7 @@ agents:
     sub_agents: [wiki-researcher, paper-researcher, analyst, writer, publisher]
     toolsets:
       - type: think
-  # (researchers, analyst, writer, publisher — each on local-small or
+  # (researchers, analyst, writer, publisher, each on local-small or
   # local-medium with the same toolsets as the Core team.yaml)
 '@ | Set-Content team-local.yaml</pre>
     </div>
@@ -3862,7 +4003,7 @@ agents:
       </div>
       <pre class="cmd active">docker model pull ai/qwen3</pre>
     </div>
-    <p>Run the fully-local team. Notice: no <code class="inline">ANTHROPIC_API_KEY</code> required. Nothing outbound to a cloud LLM provider. The MCP tools still make network calls out (Wikipedia, DuckDuckGo) — those are separate concerns — but the model inference stays on your host:</p>
+    <p>Run the fully-local team. Notice: no <code class="inline">ANTHROPIC_API_KEY</code> required. Nothing outbound to a cloud LLM provider. The MCP tools still make network calls out (Wikipedia, DuckDuckGo); those are separate concerns, but the model inference stays on your host:</p>
     <div class="cmd-block">
       <div class="cmd-bar">
         <span class="cmd-label">host shell</span>
@@ -3870,8 +4011,88 @@ agents:
       </div>
       <pre class="cmd active">docker agent run team-local.yaml "Write me a short briefing on Docker Sandboxes and save it as report.md."</pre>
     </div>
-    <p>Output quality will be visibly lower than Sonnet/Opus — that's the tradeoff. In practice you pick this configuration for compliance reasons (data sovereignty, air-gapped deploy, no cloud vendor dependency) and accept the model-quality delta as the cost.</p>
+    <p>Output quality will be visibly lower than Sonnet/Opus. That's the tradeoff. In practice you pick this configuration for compliance reasons (data sovereignty, air-gapped deploy, no cloud vendor dependency) and accept the model-quality delta as the cost.</p>
     <p><strong>Extended takeaway:</strong> the same yaml shape supports fully-local, fully-cloud, or hybrid. Model choice is a per-role governance decision. For regulated data, this variant is the shape you'd start from.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: MCP Gateway at scale (multi-client fan-out, portable profiles, control plane)</summary>
+    <div class="go-deeper-body">
+      <h3 class="substep">GW.1 Where "scale" actually lives</h3>
+      <p>In the Core flow you ran a single Docker MCP Gateway process on your workstation and pointed one Docker Agent at it. That's the shape most people meet the Gateway in. For a team or an organization the shape gets bigger in three separate axes, and it's worth naming them individually because they're often confused with each other:</p>
+      <ul>
+        <li><strong>Multi-client fan-out on one Gateway process.</strong> One Gateway, many clients (Docker Agent, IDEs, CI jobs, other MCP clients). This is the default extension: the Gateway is designed to serve concurrent clients over its streaming endpoint.</li>
+        <li><strong>Portable Gateway configuration.</strong> A profile (the servers + secrets + policy a Gateway should serve) is packaged as an OCI artifact and pushed to any registry. Someone else pulls the same artifact and runs an identical Gateway locally. Same shape as pulling a Docker image, applied to Gateway config.</li>
+        <li><strong>Central control plane.</strong> One authority defines policy and pushes it to many local Gateways in your fleet. This is where "governance at scale" actually lives, and Docker calls it <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">Docker AI Governance</a>, a separate invite-only enterprise product.</li>
+      </ul>
+      <p>What Docker does <em>not</em> document (as of this writing) is a first-class Kubernetes / Helm deployment for the Gateway itself. If you go looking for "Gateway as a cluster service," what you'll actually find is the three patterns above. Below is a short treatment of each.</p>
+
+      <h3 class="substep">GW.2 Multi-client fan-out on a single Gateway</h3>
+      <p>The Gateway you started in Step 7's Bonus already accepts multiple clients on the same streaming endpoint. Point Docker Agent, an IDE, and a CI job at <code class="inline">http://host.docker.internal:8811</code> and all three share the same tool catalog. This is the cheapest way to give a team of five or ten a common tool surface: run the Gateway on a shared host, hand out the URL and token, done.</p>
+      <p>The knobs that matter here are the same ones from the Core flow, applied to shared use:</p>
+      <ul>
+        <li><code class="inline">--port</code>: pick a stable port your team documents.</li>
+        <li><code class="inline">--transport streaming</code>: required for remote clients (stdio is single-process).</li>
+        <li><code class="inline">--profile &lt;name&gt;</code>: which policy this Gateway instance serves. One process per profile is the cleanest model.</li>
+      </ul>
+      <p>Watch the Gateway log while a second and third client attach and you'll see each connection's tool calls flow through the same catalog. For a small team this is often enough: you don't need a control plane, you need a shared endpoint.</p>
+
+      <h3 class="substep">GW.3 Portable profiles as OCI artifacts</h3>
+      <p>A Gateway profile (the set of MCP servers, secrets, and policy that Gateway should serve) can be pushed to any OCI registry and pulled by anyone else on your team:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">docker mcp profile push &lt;registry&gt;/&lt;org&gt;/gateway-profile:v1</pre>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">docker mcp profile pull &lt;registry&gt;/&lt;org&gt;/gateway-profile:v1</pre>
+      </div>
+      <p>Same registry, same auth, same versioning discipline as any other OCI artifact. This is how you get a repeatable "docker-review team Gateway" that anyone can run locally, without a shared server or a control plane. The profile is the deliverable; the Gateway process is just what runs it.</p>
+      <p>For governance this is powerful because the profile is diff-able, review-able, and pinnable. A change to the team's tool surface goes through the same review flow as a change to any other image. When the change lands, everyone re-pulls to the new tag and their local Gateway serves the updated policy.</p>
+
+      <h3 class="substep">GW.4 Docker AI Governance: the control plane</h3>
+      <p>The moment you have "hundreds of developers, each with a local Gateway, and one policy that has to apply to all of them," profile pull-based updates start to be too slow. That's where a control plane comes in: a central authority that pushes policy to the fleet of local Gateways, records what each one did, and reconciles drift automatically.</p>
+      <p>Docker's answer here is a separate product: <strong>Docker AI Governance</strong>, currently invite-only. From the docs: "Docker AI Governance is an enterprise control plane for the Docker MCP Gateway... enabling admins to push governed policy to distributed local Gateways, monitor usage, and enforce guardrails across the fleet."</p>
+      <p>Structurally: your central admin defines a policy (which servers, which tools, which teams). The control plane pushes it to every registered local Gateway in your org. Each Gateway continues to serve its clients locally (so latency stays low and there's no single point of failure in the request path), but its allowed tool surface is whatever the control plane most recently sent. Audit and usage roll back up to the plane.</p>
+      <p>For LP2 audiences the take-away is not "run this in your lab today" (it's not open) but "when you evaluate 'MCP at enterprise scale', Docker AI Governance is the answer to look at." Everything you did in Core (Gateway with profiles, per-team scoping, per-role Docker Agent yaml) is the local shape the control plane distributes. The Core flow scales down and up along the same axis.</p>
+      <p>Links for the compliance reviewer in your audience: <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">docs.docker.com/ai/mcp-gateway/</a> for the Gateway itself, and the same page's "AI Governance" section for the enterprise control-plane story.</p>
+    </div>
+  </details>
+  <details class="go-deeper">
+    <summary>Extended: the AI Governance ecosystem view</summary>
+    <div class="go-deeper-body">
+      <h3 class="substep">EG.1 The four pillars, seen together</h3>
+      <p>Everything LP2 has done so far treated one pillar at a time. This module steps back and shows how they compose. Same shape the AI Governance instructor deck closes on.</p>
+      <p>Docker's answer to "how do you govern an AI agent" is not one product. It's four primitives that answer four separate questions, each with its own compliance artifact:</p>
+      <ul>
+        <li><strong>Docker Hardened Images (DHI): what does it ship?</strong> A base image with near-zero known CVEs, a signed SBOM, and a provenance attestation. The artifact is the SBOM plus the attestation, verifiable with <code class="inline">dhictl</code>.</li>
+        <li><strong>Docker Sandbox (sbx): where does it work, and what can it reach?</strong> A microVM boundary with a governable network policy and an audit trail. The artifact is the policy config plus the policy log.</li>
+        <li><strong>Docker MCP Gateway: what tools can it invoke?</strong> A single point where the tool catalog is defined, scoped by profile, and audited per call. The artifact is the profile, which is portable as an OCI reference and diffable in git.</li>
+        <li><strong>Docker Model Runner (DMR): where does the model run?</strong> A local inference endpoint, OpenAI-compatible, that keeps regulated data off any cloud. The artifact is the yaml declaration in Docker Agent that pins the role to a local model.</li>
+      </ul>
+      <p>Docker Agent is the composition layer: one yaml declares which pillar each role uses. Every role can be pinned to a specific model (cloud or DMR), a specific tool subset (via a Gateway profile), running inside a specific sandbox, built from a specific base image. When a compliance reviewer asks "prove this agent can only do X," the yaml is the first answer and the four pillar artifacts back it up.</p>
+
+      <h3 class="substep">EG.2 Where each pillar sits in the request path</h3>
+      <p>Trace one prompt from developer to result and you'll pass through all four:</p>
+      <ol>
+        <li>A developer types a prompt into an agent client.</li>
+        <li>The Docker Agent runtime resolves which role handles it, per the yaml.</li>
+        <li>The role invokes a model. If <code class="inline">provider: dmr</code>, DMR handles inference locally; otherwise a cloud provider does.</li>
+        <li>The model asks for a tool. The Gateway resolves whether the role's profile grants that tool. If yes, the call goes through and gets logged; if no, it's rejected before the tool ever runs.</li>
+        <li>The tool executes inside a sandbox with its network policy in force. The policy log records the outbound calls.</li>
+        <li>The tool returns; the model composes an answer.</li>
+      </ol>
+      <p>At every hop something is checked and something is logged. That's the shape "runtime enforcement" actually takes. None of it lives in the prompt; all of it lives in yaml, config, and audit logs your compliance team can read.</p>
+
+      <h3 class="substep">EG.3 What sits on top: the control plane</h3>
+      <p>All four pillars can be operated by an individual developer on one laptop (the shape LP2 taught). At team scale you use portable profiles, shared Gateway endpoints, and reviewed yamls. At org scale you use <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">Docker AI Governance</a> as the control plane that pushes policy to all four pillars across a fleet, the shape described in the "Gateway at scale" module above. Same primitives, same artifacts, distributed centrally.</p>
+      <p>The compliance conversation with a customer usually happens at all three scales at once: an individual dev has a laptop shape, a team has a shared shape, and the CISO wants a fleet shape. The Docker answer is the same four pillars, operated at whichever scale fits the org, with the yaml and the artifacts as the throughline.</p>
     </div>
   </details>
   <details class="go-deeper">
@@ -3883,7 +4104,7 @@ agents:
   </div>
   <p class="subtitle">Collect every artifact you produced into one folder your compliance team can hand off to auditors.</p>
 
-  <p>Everything the workshop has done ends in an artifact somewhere on your disk or in a container registry. This module walks through pulling those artifacts into a single package. Not a novel command sequence — it's the "checklist" step. Do this at the end of a governance-relevant sandbox deployment and hand the result to your compliance lead.</p>
+  <p>Everything the workshop has done ends in an artifact somewhere on your disk or in a container registry. This module walks through pulling those artifacts into a single package. Not a novel command sequence. It's the "checklist" step. Do this at the end of a governance-relevant sandbox deployment and hand the result to your compliance lead.</p>
 
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -3966,13 +4187,13 @@ agents:
     <pre class="cmd active" data-os="mac">cat &gt; MANIFEST.md &lt;&lt;'EOF'
 # Governance package
 
-- sbom-dhi-python.json — SBOM for the DHI base image
-- provenance-dhi-python.json — SLSA provenance attestation for the DHI base
-- policy-config.txt — sbx network policy in effect
-- audit-log.txt — full outbound-request log
-- mcp-registrations.txt — MCP servers registered with sbx
-- sbx-kit/ — portable governance policy (network + MCPs + skills)
-- team.yaml — Docker Agent per-role capability declaration
+- sbom-dhi-python.json - SBOM for the DHI base image
+- provenance-dhi-python.json - SLSA provenance attestation for the DHI base
+- policy-config.txt - sbx network policy in effect
+- audit-log.txt - full outbound-request log
+- mcp-registrations.txt - MCP servers registered with sbx
+- sbx-kit/ - portable governance policy (network + MCPs + skills)
+- team.yaml - Docker Agent per-role capability declaration
 
 Generated by LP2 workshop assembly on the local host.
 EOF</pre>
@@ -4002,7 +4223,7 @@ Generated by LP2 workshop assembly on the local host.
     <pre class="cmd" data-os="windows">Get-ChildItem $HOME/workshop/governance-package/</pre>
   </div>
 
-  <p>That folder is the hand-off. Compress it, sign it, attach it to your compliance ticket, or check it into your governance repo — whatever your org's flow is. Every file inside answers a specific question a reviewer will ask.</p>
+  <p>That folder is the hand-off. Compress it, sign it, attach it to your compliance ticket, or check it into your governance repo, whatever your org's flow is. Every file inside answers a specific question a reviewer will ask.</p>
     </div>
   </details>
 
@@ -4018,31 +4239,31 @@ Generated by LP2 workshop assembly on the local host.
   <p>Recap the three governance questions from the top:</p>
   <ul>
     <li><strong>What does the agent ship?</strong> A DHI base image with a CVE quickview attached. Verified in the Foundational module.</li>
-    <li><strong>What can the agent see?</strong> A sandbox VM with an explicit network policy. Every outbound request is in the policy log — that <em>is</em> your audit trail.</li>
+    <li><strong>What can the agent see?</strong> A sandbox VM with an explicit network policy. Every outbound request is in the policy log. That <em>is</em> your audit trail.</li>
     <li><strong>What can the agent do?</strong> Two MCP servers registered by name (Wikipedia and DuckDuckGo), attached to the sandbox by <code class="inline">sbx mcp load</code>. The Docker MCP Gateway sits behind it as the team-scale primitive for scoping tools per client. In Step 7 the Docker Agent yaml declares per-role tools; the yaml itself reads as an auditable compliance artifact.</li>
   </ul>
 
   <h3 class="substep">The concrete artifacts you now have on disk</h3>
   <ul>
-    <li><strong>The DHI CVE quickview output</strong> from the Foundational module — proof that the base image your builds run on has near-zero known CVEs.</li>
-    <li><strong>The <code class="inline">sbx policy log</code> output</strong> from Steps 3 and 5 — a complete audit trail of every outbound request your sandboxed agent made. Sliceable by rule, domain, and time. This is the report an auditor asks for.</li>
-    <li><strong>The <code class="inline">docker-review</code> sbx kit</strong> in <code class="inline">~/workshop/kits/docker-review/</code> — a portable governance profile (network rules + allowed MCPs + skill set) you can commit to your team's repo. One artifact, one commit, whole-team enforcement.</li>
-    <li><strong>The Docker Agent <code class="inline">team.yaml</code></strong> in <code class="inline">~/workshop/docker-agent/</code> — a per-role compliance artifact. Your security team can read it and know exactly what capabilities each role of the team has. The runtime enforces the boundary declared there.</li>
+    <li><strong>The DHI CVE quickview output</strong> from the Foundational module: proof that the base image your builds run on has near-zero known CVEs.</li>
+    <li><strong>The <code class="inline">sbx policy log</code> output</strong> from Steps 3 and 5: a complete audit trail of every outbound request your sandboxed agent made. Sliceable by rule, domain, and time. This is the report an auditor asks for.</li>
+    <li><strong>The <code class="inline">docker-review</code> sbx kit</strong> in <code class="inline">~/workshop/kits/docker-review/</code>: a portable governance profile (network rules + allowed MCPs + skill set) you can commit to your team's repo. One artifact, one commit, whole-team enforcement.</li>
+    <li><strong>The Docker Agent <code class="inline">team.yaml</code></strong> in <code class="inline">~/workshop/docker-agent/</code>: a per-role compliance artifact. Your security team can read it and know exactly what capabilities each role of the team has. The runtime enforces the boundary declared there.</li>
   </ul>
 
   <h3 class="substep">What to hand off, and to whom</h3>
   <p>Different governance stakeholders in your org want different artifacts:</p>
   <ul>
-    <li><strong>Supply-chain / AppSec reviewer</strong> &rarr; the DHI CVE quickview output and the base image name.</li>
-    <li><strong>Compliance / audit officer</strong> &rarr; the <code class="inline">sbx policy log</code> export, plus the <code class="inline">docker-review</code> kit as the "here's how our team runs sandboxed agents" reference.</li>
-    <li><strong>Security engineering / platform team</strong> &rarr; the Docker Agent <code class="inline">team.yaml</code>, plus the kit. Both are the ongoing configuration; both are what changes when the team adjusts what agents can do.</li>
+    <li><strong>Supply-chain / AppSec reviewer:</strong> the DHI CVE quickview output and the base image name.</li>
+    <li><strong>Governance / audit officer:</strong> the <code class="inline">sbx policy log</code> export, plus the <code class="inline">docker-review</code> kit as the "here's how our team runs sandboxed agents" reference.</li>
+    <li><strong>Security engineering / platform team:</strong> the Docker Agent <code class="inline">team.yaml</code>, plus the kit. Both are the ongoing configuration; both are what changes when the team adjusts what agents can do.</li>
   </ul>
 
   <h3 class="substep">Where LP2 sits in your governance journey</h3>
   <p>You've now walked through Docker's stack from the base image up to a scoped multi-agent team. Each layer answers a governance question, and each ends in an artifact. Where you go from here depends on your org's shape:</p>
   <ul>
-    <li>If your team wants the <strong>developer intro</strong> to sbx before the governance framing, point them at <a href="?track=sbx-101">LP1: SBX 101</a> — same primitives, developer-friendly narrative.</li>
-    <li>If you want to <strong>go deeper on any single layer</strong> — supply chain (SBOMs, provenance attestations, <code class="inline">dhictl</code>, Docker Scout policies), multi-Gateway team scoping, fully-local agent teams, or full governance-package assembly — flip open the <a href="#lp2-go-deeper">Go Deeper</a> section above. Each module there is self-contained; do one, do all, or skip the section entirely.</li>
+    <li>If your team wants the <strong>developer intro</strong> to sbx before the governance framing, point them at <a href="?track=sbx-101">LP1: SBX 101</a>. Same primitives, developer-friendly narrative.</li>
+    <li>If you want to <strong>go deeper on any single layer</strong>: supply chain (SBOMs, provenance attestations, <code class="inline">dhictl</code>, Docker Scout policies), MCP Gateway at scale (multi-client fan-out, portable profiles, Docker AI Governance control plane), the four-pillar ecosystem view, per-team Gateway scoping, fully-local agent teams, or full governance-package assembly. Flip open the <a href="#lp2-go-deeper">Go Deeper</a> section above. Each module there is self-contained; do one, do all, or skip the section entirely.</li>
   </ul>
   <p>You've got the primitives, you've got the artifacts. What's left is applying them to your team's specific stack.</p>
 
@@ -4055,8 +4276,8 @@ Generated by LP2 workshop assembly on the local host.
     </div>
     <pre class="cmd active">bash ~/PKM-D/workshop/scripts/reset-workshop.sh</pre>
   </div>
-  <p>The script stops and removes every workshop sandbox, deletes the workshop MCP registrations (<code class="inline">local-wiki</code> and <code class="inline">local-duck</code>), unloads the workshop-pulled MCP images (<code class="inline">mcp/wikipedia-mcp</code>, <code class="inline">mcp/duckduckgo</code>, <code class="inline">mcp/paper-search</code>), removes the local <code class="inline">ai/smollm2</code> Docker Model Runner model, and deletes the workshop project folders (<code class="inline">~/workshop/sbx/research-app</code>, <code class="inline">~/workshop/kits</code>, <code class="inline">~/workshop/docker-agent</code>). Ask it to confirm before each destructive step; type <code class="inline">y</code> to proceed.</p>
-  <p class="note-inline"><span class="label">Heads up</span> The reset is a "soft" restore — it removes what the workshop created but doesn't uninstall sbx, Docker Desktop, or Docker Agent (in case you have other projects using them). For a nuclear reset that undoes everything including the tool installs, use <code class="inline">scripts/uninstall-workshop.sh</code> instead. Full disclosure: not every trace is guaranteed to be wiped (some Docker Desktop VM state, some cached OS credentials); if you need a truly clean machine, a fresh account is the safest path.</p>
+  <p>The script stops and removes every workshop sandbox, deletes the workshop MCP registrations (<code class="inline">wiki-mcp</code> and <code class="inline">duck-mcp</code>), unloads the workshop-pulled MCP images (<code class="inline">mcp/wikipedia-mcp</code>, <code class="inline">mcp/duckduckgo</code>, <code class="inline">mcp/paper-search</code>), removes the local <code class="inline">ai/smollm2</code> Docker Model Runner model, and deletes the workshop project folders (<code class="inline">~/workshop/sbx/research-app</code>, <code class="inline">~/workshop/kits</code>, <code class="inline">~/workshop/docker-agent</code>). Ask it to confirm before each destructive step; type <code class="inline">y</code> to proceed.</p>
+  <p class="note-inline"><span class="label">Heads up</span> The reset is a "soft" restore: it removes what the workshop created but doesn't uninstall sbx, Docker Desktop, or Docker Agent (in case you have other projects using them). For a nuclear reset that undoes everything including the tool installs, use <code class="inline">scripts/uninstall-workshop.sh</code> instead. Full disclosure: not every trace is guaranteed to be wiped (some Docker Desktop VM state, some cached OS credentials); if you need a truly clean machine, a fresh account is the safest path.</p>
 </section>
 
 </main>
@@ -4064,7 +4285,27 @@ Generated by LP2 workshop assembly on the local host.
 </div>
 
 <footer>
-  Workshop authored by Dan Ndombe. Commands verified against Docker documentation at docs.docker.com.
+  <p class="footer-line">Last updated 2026-07-16.</p>
+  <h4>Documentation</h4>
+  <p class="footer-links">
+    <a href="https://docs.docker.com/ai/sandbox/" target="_blank" rel="noopener">Docker Sandboxes (sbx)</a>
+    <span class="sep">&middot;</span>
+    <a href="https://docs.docker.com/dhi/" target="_blank" rel="noopener">Docker Hardened Images</a>
+    <span class="sep">&middot;</span>
+    <a href="https://docs.docker.com/ai/mcp-gateway/" target="_blank" rel="noopener">Docker MCP Gateway</a>
+    <span class="sep">&middot;</span>
+    <a href="https://docs.docker.com/ai/model-runner/" target="_blank" rel="noopener">Docker Model Runner</a>
+    <span class="sep">&middot;</span>
+    <a href="https://docs.docker.com/scout/" target="_blank" rel="noopener">Docker Scout</a>
+    <span class="sep">&middot;</span>
+    <a href="https://github.com/docker/agent" target="_blank" rel="noopener">Docker Agent</a>
+    <span class="sep">&middot;</span>
+    <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">MCP specification</a>
+    <span class="sep">&middot;</span>
+    <a href="https://hub.docker.com/u/mcp" target="_blank" rel="noopener">Docker Hub MCP catalog</a>
+    <span class="sep">&middot;</span>
+    <a href="https://hub.docker.com/u/ai" target="_blank" rel="noopener">Docker Hub AI catalog</a>
+  </p>
 </footer>
 
 <script>
@@ -4073,7 +4314,7 @@ Generated by LP2 workshop assembly on the local host.
     var URL_PARAMS = new URLSearchParams(window.location.search);
 
     // Track selector: pick which workshop (SBX 101 developer intro, or Docker
-    // AI Governance for corporate audiences). Same show/hide pattern as the
+    // AI Governance for security / platform / governance audiences). Same show/hide pattern as the
     // provider selector, at the workshop level. Persists in localStorage,
     // deep-linkable via ?track=<name>.
     var TRACK_KEY = 'workshop-track';
