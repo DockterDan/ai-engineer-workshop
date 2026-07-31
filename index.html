@@ -2826,6 +2826,50 @@ CMD ["python", "app.py"]
     <pre class="cmd active" data-os="mac">sed -i.bak 's|FROM python:3.14-slim|FROM dhi.io/python:3.14|' Dockerfile</pre>
     <pre class="cmd" data-os="windows">(Get-Content Dockerfile) -replace 'FROM python:3.14-slim', 'FROM dhi.io/python:3.14' | Set-Content Dockerfile</pre>
   </div>
+
+  <details class="go-deeper">
+    <summary>Go deeper: let the agent do the DHI swap instead</summary>
+    <div class="go-deeper-body">
+      <p>The <code class="inline">sed</code> / <code class="inline">Set-Content</code> command above is the shortest path to a predictable one-line edit. But in real life, the person doing this hardening pass is often working through the agent, not opening a text editor. The workshop is about agent-driven workflows, so it's worth seeing what the agent-driven variant looks like.</p>
+      <p>If you skipped the manual edit above (or want to redo it through the agent), undo it first:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">mv Dockerfile.bak Dockerfile 2&gt;/dev/null || sed -i.bak 's|FROM dhi.io/python:3.14|FROM python:3.14-slim|' Dockerfile</pre>
+        <pre class="cmd" data-os="windows">(Get-Content Dockerfile) -replace 'FROM dhi.io/python:3.14', 'FROM python:3.14-slim' | Set-Content Dockerfile</pre>
+      </div>
+      <p>Reconnect to <code class="inline">sandbox-alpha</code> if you exited the agent:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <span class="cmd-label">host shell (Terminal A)</span>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active">sbx run --name sandbox-alpha</pre>
+      </div>
+      <p>Ask the agent to swap the base image. Be specific about the target so the model doesn't freelance a different variant:</p>
+      <div class="prompt-box" data-no-command-copy="">
+        <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
+        Edit the Dockerfile in the current directory. Change the FROM line from <code>python:3.14-slim</code> to <code>dhi.io/python:3.14</code>. Change only the FROM line; leave everything else exactly as it is. Show me the diff when you're done.
+      </div>
+      <p>The agent reads the file, changes the one line, writes it back, and reports the diff. Confirm on the host that the edit is what you expected before proceeding:</p>
+      <div class="cmd-block">
+        <div class="cmd-bar">
+          <button class="cmd-tab active" data-os="mac">MacOS</button>
+          <button class="cmd-tab" data-os="windows">Windows</button>
+          <button class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <pre class="cmd active" data-os="mac">grep -n '^FROM' Dockerfile</pre>
+        <pre class="cmd" data-os="windows">Select-String -Path Dockerfile -Pattern '^FROM'</pre>
+      </div>
+      <p>You should see <code class="inline">FROM dhi.io/python:3.14</code>. If it says anything else (the agent picked <code class="inline">-alpine</code>, an older tag, or edited more than the FROM line), redo it with a more prescriptive prompt or fall back to the manual <code class="inline">sed</code>.</p>
+      <p><strong>Governance takeaway.</strong> Two things are worth naming here. First, the agent CAN do the hardening pass; you don't have to open the editor yourself. Second, the agent's edits are still worth verifying by hand. A one-line prompt saved you three seconds, but the audit only takes another one. In a real governance workflow you'd land these edits as PRs that a human (and CI) review before merge.</p>
+      <p>From here, continue with the rebuild / run / scan steps in section 5.6 below. The end state is identical either way.</p>
+    </div>
+  </details>
+
   <p>Rebuild the image with the same flags as before, this time tagged <code class="inline">:v2</code>:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
