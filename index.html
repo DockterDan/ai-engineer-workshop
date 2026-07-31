@@ -994,6 +994,7 @@
   </div>
 
   <h3 class="substep">Log in to Docker</h3>
+  <p class="note-inline"><span class="label">Heads up: personal Docker account only</span> If your Docker Hub account is part of an organization that has <strong>Docker AI Governance</strong> enabled, that org's policies will override the workshop's defaults and several steps won't behave as documented. Sign in with a personal Docker Hub account for this workshop, not with an org-linked one. If you don't have a personal account, create a free one at <a href="https://hub.docker.com/" target="_blank" rel="noopener">hub.docker.com</a> before continuing.</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell</span>
@@ -1932,18 +1933,13 @@ bash: ../sbx-docs/agent-wrote.txt: Read-only file system</pre>
     </div>
     <pre class="cmd active">sbx policy ls</pre>
   </div>
-  <p>You'll see five default policy groups, all allow:</p>
-  <table class="teach">
-    <thead><tr><th>Policy</th><th>What it covers</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">default-ai-services</code></td><td>OpenAI, Anthropic, Gemini, Cursor, Perplexity</td></tr>
-      <tr><td><code class="inline">default-package-managers</code></td><td>PyPI, npm, cargo, maven, rubygems</td></tr>
-      <tr><td><code class="inline">default-code-and-containers</code></td><td>GitHub, GitLab, Docker Hub, ghcr.io</td></tr>
-      <tr><td><code class="inline">default-cloud-infrastructure</code></td><td>AWS, GCP, Azure, Vercel, Fastly</td></tr>
-      <tr><td><code class="inline">default-os-packages</code></td><td>Ubuntu, Debian, Alpine package repos</td></tr>
-    </tbody>
-  </table>
-  <p>Plus an implicit default-deny posture for everything not on one of these lists.</p>
+  <div class="expected">
+    <div class="label">Should look like</div>
+    <pre>POLICY                                 SOURCE  APPLIES TO             SUMMARY
+907eda6d-fde5-4f68-ad90-42d2ecf2fa7f   kit     sandbox:sandbox-alpha  network: 3 allow
+local-policy                           local   all                    network: 192 allow; filesystem read: 1 allow; filesystem write: 1 allow</pre>
+  </div>
+  <p>Two rows, two levels of policy. The <code class="inline">local-policy</code> row (source <code class="inline">local</code>, applies to <code class="inline">all</code>) is the Balanced default you selected in Getting Started: 192 allowed hosts covering the destinations a coding workflow actually needs (Docker Hub, package managers for common languages, GitHub / GitLab, cloud provider APIs, OS package repos, popular AI-service endpoints). The other row (source <code class="inline">kit</code>, scoped to <code class="inline">sandbox-alpha</code>) is a small per-sandbox add-on that ships with the default agent kit. Everything not covered by these rules falls under default-deny.</p>
 
   <h3 class="substep">3.2 Allow vs deny in action</h3>
   <p>Inside the sandbox, ask the agent to hit five URLs. Two that should be allowed by default (GitHub and PyPI, both in the defaults above), three that are not (Reddit, Wikipedia, and the official FIFA site). For each one we print the status code and the number of bytes downloaded, which makes "passed through" vs "blocked at the proxy" obvious at a glance.</p>
@@ -2359,7 +2355,7 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp add wiki-mcp --command docker --args "run,-i,--rm,mcp/wikipedia-mcp"</pre>
   </div>
   <p>Walking through that command piece by piece:</p>
-  <p><code class="inline">sbx mcp add</code> registers a new MCP server so sbx-managed sandboxes can attach to it later. <code class="inline">wiki-mcp</code> is just a name we picked for this registration; you can call it whatever you want. It's the handle you'll reference in later commands like <code class="inline">sbx mcp inspect wiki-mcp</code> or as the value of <code class="inline">--mcp wiki-mcp</code> when creating a sandbox.</p>
+  <p><code class="inline">sbx mcp add</code> registers a new MCP server so sbx-managed sandboxes can attach to it later. <code class="inline">wiki-mcp</code> is just a name we picked for this registration; you can call it whatever you want. It's the handle you'll reference in later commands like <code class="inline">sbx mcp inspect wiki-mcp</code> or as the value of <code class="inline">--static-mcp wiki-mcp</code> when creating a sandbox.</p>
   <p><code class="inline">--command docker</code> tells sbx what executable to invoke when it starts the MCP server, so the server runs in a container rather than on the bare host. <code class="inline">--args</code> is comma-separated (not space-separated, a common gotcha), and these args translate to <code class="inline">docker run -i --rm mcp/wikipedia-mcp</code>. Of those Docker flags: <code class="inline">-i</code> keeps stdin open, which is what makes stdio transport work in the first place (without it sbx can't pipe JSON-RPC into the container); <code class="inline">--rm</code> auto-removes the container on exit so you don't accumulate stopped containers every MCP session.</p>
   <p><code class="inline">mcp/wikipedia-mcp</code> is the OCI image, published in Docker's MCP catalog as a Verified Publisher image. It wraps Wikipedia's API in the MCP protocol and exposes 22 read-only tools that the agent can call once the server is attached to a sandbox: <code class="inline">search_wikipedia</code>, <code class="inline">get_article</code>, <code class="inline">get_summary</code>, <code class="inline">extract_key_facts</code>, <code class="inline">get_sections</code>, <code class="inline">get_links</code>, and friends. We're using Wikipedia here because every tool the server exposes is scoped to Wikipedia (no general web access), it's free and requires no API key, and it gives the agent a capability that's clearly distinct from anything in its default toolkit. Any MCP server published to the catalog could take its place: a GitHub MCP, a Notion MCP, a Slack MCP, a custom one you built.</p>
   <p>Now inspect the server you just registered to see what it actually exposes. This pulls the server's tool list, descriptions, and metadata back from the underlying MCP server, so you can confirm both that the registration worked and what the agent will be able to call:</p>
@@ -2371,6 +2367,7 @@ ERROR: No matching distribution found for requests</pre>
     <pre class="cmd active">sbx mcp inspect wiki-mcp</pre>
   </div>
   <p>You'll see the server's name, transport mode (stdio), the underlying command sbx will launch when an agent attaches to it, and the tools it advertises (the 22 Wikipedia-scoped tools listed above). If anything looks wrong here, sbx never got to a clean working state with that registration; fix it before moving on.</p>
+  <p class="note-inline"><span class="label">If <code class="inline">sbx mcp add</code> reported any error</span> Even when <code class="inline">add</code> fails, sbx sometimes caches a broken registration that will block subsequent attach attempts on this name. If <code class="inline">sbx mcp inspect wiki-mcp</code> above showed anything unexpected, remove the bad entry and re-add it: <code class="inline">sbx mcp rm wiki-mcp</code>, then re-run the <code class="inline">sbx mcp add</code> command from the step above.</p>
   <p>If you want to see every MCP server registered so far in one view, list them:</p>
   <div class="cmd-block">
     <div class="cmd-bar">
@@ -2459,23 +2456,51 @@ ERROR: No matching distribution found for requests</pre>
   </div>
   <p>You'll see a fresh Blocked requests entry for <code class="inline">en.wikipedia.org</code> with the reason "No matching allow rule (default deny)." That's the network-policy-only baseline.</p>
 
-  <p><strong>Part 2: attach both MCPs to the running sandbox.</strong> The agent in <code class="inline">sandbox-alpha</code> has no Wikipedia or web-search tool right now. We're going to give it both without restarting the sandbox or the agent. Switch to Terminal B and run:</p>
+  <p><strong>Part 2: attach both MCPs at sandbox creation time.</strong> The agent in <code class="inline">sandbox-alpha</code> has no Wikipedia or web-search tool right now. We're going to give it both by recreating the sandbox with the MCPs declared up front via <code class="inline">--static-mcp</code>. This is the reliable path in current sbx builds; the runtime-attach flow (<code class="inline">sbx mcp load</code>) has known constraints, and the create-time flow works cleanly.</p>
+  <p>Exit the agent (Terminal A) with Ctrl+C twice to free the sandbox. Then switch to Terminal B and remove sandbox-alpha (it currently has no MCPs, so we're going to swap it for one that does):</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal B)</span>
       <button class="cmd-copy" aria-label="Copy command">Copy</button>
     </div>
-    <pre class="cmd active">sbx mcp load wiki-mcp --sandbox sandbox-alpha</pre>
+    <pre class="cmd active">sbx rm sandbox-alpha</pre>
   </div>
-  <div class="cmd-block">
-    <div class="cmd-bar">
-      <span class="cmd-label">host shell (Terminal B)</span>
-      <button class="cmd-copy" aria-label="Copy command">Copy</button>
+  <p>Confirm the removal at the <code class="inline">y/N</code> prompt. Now recreate sandbox-alpha with both MCPs declared at create time:</p>
+  <div data-show-for="claude">
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp claude ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp claude $HOME/workshop/sbx</pre>
     </div>
-    <pre class="cmd active">sbx mcp load duck-mcp --sandbox sandbox-alpha</pre>
   </div>
-  <p>Each <code class="inline">load</code> attaches its MCP server to the running sandbox's MCP gateway. The agent inside the sandbox sees the new servers' tools immediately via the standard MCP <code class="inline">tools/list_changed</code> notification, once per load call. No restart required. That's the "boundary shifts at runtime" pattern: the same sandbox went from no-tools to two-tools without a restart.</p>
-  <p>Switch back to Terminal A. If you exited the agent at any point during Part 1 (Ctrl+C twice), reconnect now:</p>
+  <div data-show-for="codex">
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp codex ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp codex $HOME/workshop/sbx</pre>
+    </div>
+  </div>
+  <div data-show-for="opencode">
+    <div class="cmd-block">
+      <div class="cmd-bar">
+        <button class="cmd-tab active" data-os="mac">MacOS</button>
+        <button class="cmd-tab" data-os="windows">Windows</button>
+        <button class="cmd-copy" aria-label="Copy command">Copy</button>
+      </div>
+      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp opencode ~/workshop/sbx</pre>
+      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --static-mcp wiki-mcp --static-mcp duck-mcp opencode $HOME/workshop/sbx</pre>
+    </div>
+  </div>
+  <p>The <code class="inline">--static-mcp</code> flag tells sbx "spin up the sandbox with the per-sandbox MCP gateway pre-wired to these registrations." The <code class="inline">create</code> command doesn't print anything MCP-specific when it succeeds; the gateway wiring happens in the background.</p>
+  <p>Reconnect to the sandbox (Terminal A):</p>
   <div class="cmd-block">
     <div class="cmd-bar">
       <span class="cmd-label">host shell (Terminal A)</span>
@@ -2483,7 +2508,7 @@ ERROR: No matching distribution found for requests</pre>
     </div>
     <pre class="cmd active">sbx run --name sandbox-alpha</pre>
   </div>
-  <p>If you're already at the agent prompt, skip the command above. Either way, ask an open question that naturally needs both background and current information. Don't tell the agent which tools to use; let it decide:</p>
+  <p>The agent inside this fresh sandbox has both Wikipedia and DuckDuckGo tools available from the start. Ask an open question that naturally needs both background and current information. Don't tell the agent which tools to use; let it decide:</p>
   <div class="prompt-box" data-no-command-copy="">
     <div class="label">Prompt to agent <span class="prompt-actions"><button class="prompt-copy" aria-label="Copy full prompt">Copy full prompt</button></span></div>
     Tell me what's happening with the 2026 FIFA World Cup. Give me a short background on the tournament (host countries, format, what makes this edition notable), and then any recent news you can find about it. At the end, tell me which tools you used to get the information, and if you tried anything that didn't work, explain what happened.
@@ -2501,18 +2526,8 @@ ERROR: No matching distribution found for requests</pre>
   <p>Two things are worth looking for in the log. First, if the agent tried to reach any domain directly before falling back to the MCP tools, you'll see that as a Blocked entry with a "no matching allow rule" reason. Some models do try the direct network path first; that attempt hits the default-deny policy and shows up in the log. Second, and this is the important half: there should be no successful Allowed entries for the information sources themselves (like <code class="inline">wikipedia.org</code> or <code class="inline">duckduckgo.com</code>). The agent got its answer through the MCP tools, which means every tool call traveled from the agent, through the MCP protocol, to the host-side MCP server, out to the underlying API on the host's network, and back. The sandbox boundary stayed in place. MCP added a new lane that runs alongside the network policy, not through it.</p>
 
   <div class="callout">
-    <span class="label">One-step alternative</span>
-    We split this into "create the sandbox, then attach the MCPs" deliberately so you could see the boundary shift at runtime: the same sandbox went from no-tools to two-tools without a restart. If you'd rather declare MCPs at create time and skip the runtime <code class="inline">load</code>, the <code class="inline">--mcp</code> flag on <code class="inline">sbx create</code> does the same end-state in one command:
-    <div class="cmd-block" style="margin-top: 10px;">
-      <div class="cmd-bar">
-        <button class="cmd-tab active" data-os="mac">MacOS</button>
-        <button class="cmd-tab" data-os="windows">Windows</button>
-        <button class="cmd-copy" aria-label="Copy command">Copy</button>
-      </div>
-      <pre class="cmd active" data-os="mac">sbx create --name sandbox-alpha --mcp wiki-mcp --mcp duck-mcp claude ~/workshop/sbx</pre>
-      <pre class="cmd" data-os="windows">sbx create --name sandbox-alpha --mcp wiki-mcp --mcp duck-mcp claude $HOME/workshop/sbx</pre>
-    </div>
-    Use whichever flow fits the situation: <code class="inline">--mcp</code> at create when the MCPs are part of the sandbox's identity from the start, <code class="inline">sbx mcp load</code> when you want to add (or swap) tools on a sandbox that's already running.
+    <span class="label">Why not <code class="inline">sbx mcp load</code>?</span>
+    sbx also has a runtime-attach command, <code class="inline">sbx mcp load &lt;name&gt; --sandbox &lt;sandbox&gt;</code>, that in theory would let you add an MCP to a running sandbox without recreating it. In current builds it hits either a 501 "MCP gateway is not enabled" or an "unknown flag: --sandbox" depending on your version, so this workshop uses the create-time <code class="inline">--static-mcp</code> path exclusively. When the runtime-attach flow stabilizes upstream, you'll be able to swap MCPs on a live sandbox without the rm/recreate dance.
   </div>
 
   <h3 class="substep">4.4 Wrap up</h3>
@@ -4306,7 +4321,7 @@ Generated by LP2 workshop assembly on the local host.
   <ul>
     <li><strong>What does the agent ship?</strong> A DHI base image with a CVE quickview attached. Verified in the Foundational module.</li>
     <li><strong>What can the agent see?</strong> A sandbox VM with an explicit network policy. Every outbound request is in the policy log. That <em>is</em> your audit trail.</li>
-    <li><strong>What can the agent do?</strong> Two MCP servers registered by name (Wikipedia and DuckDuckGo), attached to the sandbox by <code class="inline">sbx mcp load</code>. The Docker MCP Gateway sits behind it as the team-scale primitive for scoping tools per client. In Step 7 the Docker Agent yaml declares per-role tools; the yaml itself reads as an auditable compliance artifact.</li>
+    <li><strong>What can the agent do?</strong> Two MCP servers registered by name (Wikipedia and DuckDuckGo), attached to the sandbox at create time via <code class="inline">--static-mcp</code>. The Docker MCP Gateway sits behind it as the team-scale primitive for scoping tools per client. In Step 7 the Docker Agent yaml declares per-role tools; the yaml itself reads as an auditable compliance artifact.</li>
   </ul>
 
   <h3 class="substep">The concrete artifacts you now have on disk</h3>
@@ -4624,7 +4639,7 @@ Generated by LP2 workshop assembly on the local host.
         var summary = document.createElement('summary');
         // Prefer the substep label. If none, use the FIRST h2 variant text (which
         // may be track-specific, but we're only here if the group is itself
-        // track-scoped, so it'll be right — or the group is shared and both
+        // track-scoped, so it'll be right; or the group is shared and both
         // h2 variants show as the group headers above already).
         summary.textContent = g.h3 || (g.h2Variants[0] && g.h2Variants[0].text) || 'Commands';
         details.appendChild(summary);
